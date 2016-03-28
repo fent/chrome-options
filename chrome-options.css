@@ -220,21 +220,26 @@
   width: 210px;
 }
 
-.chrome-bootstrap .saved {
+.chrome-bootstrap .save-container {
   position: absolute;
   -webkit-padding-start: 18px;
   left: 5px;
   bottom: 5px;
-  color: #999;
   line-height: 23px;
 }
 
-.chrome-bootstrap .saved .auto {
+.chrome-bootstrap .save-container,
+.chrome-bootstrap .save-container button {
+  color: #999;
+  transition: color 100ms;
+}
+
+.chrome-bootstrap .save-container .auto {
   opacity: 0;
   transition: opacity 1000ms;
 }
 
-.chrome-bootstrap .saved button:not(:disabled) {
+.chrome-bootstrap .save-container button:not(:disabled) {
   -webkit-appearance: none;
   -webkit-user-select: none;
   background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
@@ -249,7 +254,11 @@
   text-shadow: 0 1px 0 rgb(240, 240, 240);
 }
 
-.chrome-bootstrap .saved.show .auto {
+.chrome-bootstrap .save-container.show .auto {
   opacity: 1;
   transition: opacity 50ms;
+}
+.chrome-bootstrap .save-container.flash,
+.chrome-bootstrap .save-container.flash button {
+  color: steelblue;
 }
