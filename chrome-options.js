@@ -408,7 +408,7 @@
     addNewRow();
 
     // When user focuses on the last row, add another.
-    $tbody.on('focus', 'tr:last-child', addNewRow.bind(null, true));
+    $tbody.on('input change', 'tr:last-child', addNewRow.bind(null, true));
 
     if (options.sortable) {
       $tbody.sortable({
@@ -693,8 +693,8 @@ chrome.options.fields.checkbox = function(value, save, option, inList) {
 chrome.options.fields.text = function(value, save) {
   var $textbox = $('<input type="text">');
   $textbox.val(value);
-  $textbox.on('keydown paste change', $.debounce(500, false, function() {
-    save($textbox.val());
+  $textbox.on('input change', $.debounce(500, false, function(e) {
+    save($textbox.val(), e);
   }));
   return $textbox;
 };
@@ -715,9 +715,9 @@ chrome.options.fields.color = function(value, save, option, inList) {
   }
   if (option.default) {
     var $reset = $('<span class="color-reset"></span>')
-      .click(function() {
+      .click(function(e) {
         $color.spectrum('set', option.default);
-        save(option.default);
+        save(option.default, e);
       })
       .attr('title', 'Reset to default')
       .tooltip({ position: { my: 'left bottom-10', at: 'left top' } })
@@ -737,8 +737,8 @@ chrome.options.fields.url = function(value, save) {
 
 chrome.options.fields.select = function(value, save, option) {
   var $select = $('<select>');
-  $select.change(function() {
-    save($select.val());
+  $select.change(function(e) {
+    save($select.val(), e);
   });
   var firstValue = null;
   option.options.forEach(function(option) {
@@ -769,9 +769,9 @@ chrome.options.fields.radio = function(value, save, options) {
       .attr('id', id)
       .attr('name', name)
       .attr('value', option)
-      .change(function() {
+      .change(function(e) {
         if ($radio[0].checked) {
-          save(option);
+          save(option, e);
         }
       })
       .appendTo($row);
@@ -796,9 +796,9 @@ chrome.options.fields.predefined_sound = function(value, save) {
   ];
 
   value = value || options[0];
-  function saveField(newValue) {
+  function saveField(newValue, e) {
     value = newValue;
-    save(newValue);
+    save(newValue, e);
   }
 
   function playSound() {
@@ -820,9 +820,9 @@ chrome.options.fields.predefined_sound = function(value, save) {
 chrome.options.fields.custom_sound = function(value, save) {
   var $container = $('<span class="custom-sound">');
 
-  function saveField(newValue) {
+  function saveField(newValue, e) {
     value = newValue;
-    save(newValue);
+    save(newValue, e);
   }
 
   function playSound() {
@@ -848,7 +848,7 @@ chrome.options.fields.file = function(value, save) {
   var $file = $('<input type="file">');
   $file.val(value);
   $file.change(function(e) {
-    save(e.target.files);
+    save(e.target.files, e);
   });
   return $file;
 };
