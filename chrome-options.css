@@ -107,9 +107,8 @@
   padding-left: 48px;
 }
 
-.chrome-bootstrap input[type="color"], .chrome-bootstrap .color-reset {
+.chrome-bootstrap .color {
   margin-right: 0.65em;
-  cursor: pointer;
 }
 
 .chrome-bootstrap .color-reset {
