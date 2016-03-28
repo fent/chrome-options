@@ -689,8 +689,13 @@ chrome.options.fields.text = function(value, save) {
 chrome.options.fields.color = function(value, save, option, inList) {
   var $container = $('<span></span>');
   var $color = chrome.options.fields.text(value, save)
-    .attr('type', 'color')
-    .appendTo($container);
+    //.attr('type', 'color')
+    .appendTo($container)
+    .spectrum($.extend({
+      showInput: true,
+      showAlpha: true,
+      showInitial: true,
+    }, option));
   if (inList && option.desc) {
     $color
       .attr('title', option.desc)
@@ -699,7 +704,7 @@ chrome.options.fields.color = function(value, save, option, inList) {
   if (option.default) {
     var $reset = $('<span class="color-reset"></span>')
       .click(function() {
-        $color.val(option.default);
+        $color.spectrum('set', option.default);
         save(option.default);
       })
       .attr('title', 'Reset to default')
