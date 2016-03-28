@@ -504,6 +504,17 @@
         }
       };
 
+      update.hide = function() {
+        if (field.bindTo) {
+          $field.animateAuto({
+            dimension: 'width',
+            action: 'close',
+          }, 250, function() {
+            $field.css('display', 'none');
+          });
+        }
+      };
+
       update.checkSelect = function(newValues) {
         if (field.type === 'select') {
           field.options
@@ -542,7 +553,8 @@
       if (!fn) {
         throw Error('Could not find option type: ' + field.type);
       }
-      $field = fn(fieldValue, saveField, field, true).appendTo($fieldContainer);
+      $field = fn(fieldValue, saveField, field, true)
+        .appendTo($fieldContainer);
 
       raf(function() {
         if (!bindTo) { return; }
@@ -563,9 +575,10 @@
     $('<td><a class="delete">delete</a></td>')
       .appendTo($tr)
       .find('a').click(function() {
-        hideTR($tr, function() {
-          $tr.remove();
-        });
+        fieldUpdates.forEach(function(update) { update.hide(); });
+        setTimeout(function() {
+          hideTR($tr, function() { $tr.remove(); });
+        }, 250);
         remove();
       });
     
@@ -689,7 +702,6 @@ chrome.options.fields.text = function(value, save) {
 chrome.options.fields.color = function(value, save, option, inList) {
   var $container = $('<span></span>');
   var $color = chrome.options.fields.text(value, save)
-    //.attr('type', 'color')
     .appendTo($container)
     .spectrum($.extend({
       showInput: true,
