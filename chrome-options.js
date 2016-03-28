@@ -52,14 +52,8 @@
 
   var $saveContainer = $('.save-container');
   var $saveButton = $saveContainer.find('button');
-  var savedTimeout;
-  function showSavedAlert() {
-    $saveContainer.addClass('show');
-    clearTimeout(savedTimeout);
-    savedTimeout = setTimeout(function() {
-      $saveContainer.removeClass('show');
-    }, 2000);
-  }
+  var showSavedAlert = flashClass($saveContainer, 'show', 2000);
+  var flashSavedAlert = flashClass($saveContainer, 'flash', 150);
 
   // Shortcut.
   var raf = window.requestAnimationFrame;
@@ -148,10 +142,12 @@
                   if (!isEqual) {
                     chrome.storage.sync.set(savedValues);
                     showSavedAlert();
+                    flashSavedAlert();
                     value = deepClone(newValue);
                   }
                 } else if (isEqual) {
                   $saveButton.attr('disabled', true);
+                  flashSavedAlert();
                 } else {
                   $saveButton.attr('disabled', false);
                   $saveButton.off('click');
@@ -160,6 +156,7 @@
                     $saveButton.attr('disabled', true);
                     value = deepClone(newValue);
                   });
+                  flashSavedAlert();
                 }
               });
             };
@@ -618,6 +615,17 @@
         var $set = $(this);
         $set.replaceWith($set.contents());
       });
+  }
+
+  function flashClass($container, className, ms) {
+    var timeoutID;
+    return function() {
+      $container.addClass(className);
+      clearTimeout(timeoutID);
+      timeoutID = setTimeout(function() {
+        $container.removeClass(className);
+      }, ms);
+    };
   }
 
   function deepEqual(a, b) {
