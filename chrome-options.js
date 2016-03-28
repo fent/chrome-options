@@ -700,7 +700,7 @@ chrome.options.fields.text = function(value, save) {
 };
 
 chrome.options.fields.color = function(value, save, option, inList) {
-  var $container = $('<span></span>');
+  var $container = $('<span class="color"></span>');
   var $color = chrome.options.fields.text(value, save)
     .appendTo($container)
     .spectrum($.extend({
