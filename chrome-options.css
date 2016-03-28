@@ -113,14 +113,14 @@
 }
 
 .chrome-bootstrap .color-reset {
-  margin-top: 2px;
   vertical-align: top;
   border: 3px #000 solid;
-  border-radius: 35%;
+  border-top-right-radius: 35%;
+  border-bottom-right-radius: 35%;
   background-color: #fff;
   display: inline-block;
   width: 15px;
-  height: 15px;
+  height: 19px;
   cursor: pointer;
 }
 
@@ -258,7 +258,21 @@
   opacity: 1;
   transition: opacity 50ms;
 }
+
 .chrome-bootstrap .save-container.flash,
 .chrome-bootstrap .save-container.flash button {
   color: steelblue;
+}
+
+.chrome-bootstrap .sp-replacer {
+  height: 15px;
+}
+
+.chrome-bootstrap .sp-replacer .sp-preview {
+  height: 13px;
+}
+
+.chrome-bootstrap .sp-replacer .sp-dd {
+  padding: 0;
+  height: 13px;
 }

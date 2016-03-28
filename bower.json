@@ -13,6 +13,7 @@
     "jquery.animateAuto": "~0.1.0",
     "jquery-ui": "~1.11.4",
     "throttle-debounce": "~0.1.1",
-    "chrome-bootstrap": "~1.5.0"
+    "chrome-bootstrap": "~1.5.0",
+    "spectrum": "~1.8.0"
   }
 }
