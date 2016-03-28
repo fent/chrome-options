@@ -13,7 +13,7 @@
     about: null,
 
     // True if you want settings to be saved as they are changed.
-    autoSave: false,
+    autoSave: true,
 
     // True if you want default values to be saved when user visits
     // the options page. Useful if you want to only specify default values
@@ -50,14 +50,19 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
-  var $saved = $('.saved');
-  var $saveButton = $saved.find('button');
+  var $saveContainer = $('.save-container');
+  var $saveButton = $saveContainer.find('button');
   var savedTimeout;
   function showSavedAlert() {
-    $saved.addClass('show');
+    $saveContainer.addClass('show');
     clearTimeout(savedTimeout);
-    savedTimeout = setTimeout($saved.removeClass.bind($saved, 'show'), 2000);
+    savedTimeout = setTimeout(function() {
+      $saveContainer.removeClass('show');
+    }, 2000);
   }
+
+  // Shortcut.
+  var raf = window.requestAnimationFrame;
 
   // Add the extension's title to the top of the page.
   var setupRan = false;
@@ -82,8 +87,8 @@
     if (chrome.options.opts.autoSave) {
       $saveButton.hide();
     } else {
-      $saved.find('.auto').hide();
-      $saved.addClass('show');
+      $saveContainer.find('.auto').hide();
+      $saveContainer.addClass('show');
     }
 
     setupRan = true;
@@ -129,19 +134,34 @@
           default:
             var savedValues = {};
             var value = items[key];
+
+            // Clone value so that it can be compared to new value.
+            // Also use a timeout so that it doensn't seep into load time.
+            raf(function() { value = deepClone(value); });
             var save = function(newValue) {
-              savedValues[key] = newValue;
-              if (chrome.options.opts.autoSave) {
-                chrome.storage.sync.set(savedValues);
-                showSavedAlert();
-              } else {
-                $saveButton.attr('disabled', false);
-                $saveButton.off('click');
-                $saveButton.one('click', function() {
-                  chrome.storage.sync.set(savedValues);
+              // Wrap this in requestAnimationFrame so that it
+              // doesn't block user interaction.
+              raf(function() {
+                savedValues[key] = newValue;
+                var isEqual = deepEqual(value, newValue);
+                if (chrome.options.opts.autoSave) {
+                  if (!isEqual) {
+                    chrome.storage.sync.set(savedValues);
+                    showSavedAlert();
+                    value = deepClone(newValue);
+                  }
+                } else if (isEqual) {
                   $saveButton.attr('disabled', true);
-                });
-              }
+                } else {
+                  $saveButton.attr('disabled', false);
+                  $saveButton.off('click');
+                  $saveButton.one('click', function() {
+                    chrome.storage.sync.set(savedValues);
+                    $saveButton.attr('disabled', true);
+                    value = deepClone(newValue);
+                  });
+                }
+              });
             };
             $container = addOption(key, value, save, option);
         }
@@ -344,7 +364,7 @@
         }
         return true;
       }));
-      setTimeout(function() {
+      raf(function() {
         rows.forEach(function(row) { row.update(newValues); });
       });
     }
@@ -363,7 +383,7 @@
       row = addListRow($tbody, null, options.fields, fieldsMap, saveFields,
                            remove, false, options.sortable, animate);
       rows.push(row);
-      setTimeout(function() {
+      raf(function() {
         var rowValues = rows.map(function(getValue) { return getValue(); });
         rows.forEach(function(row) { row.update(rowValues); });
       });
@@ -528,7 +548,7 @@
       }
       $field = fn(fieldValue, saveField, field, true).appendTo($fieldContainer);
 
-      setTimeout(function() {
+      raf(function() {
         if (!bindTo) { return; }
         if (
              (values[bindTo.field] && bindTo.value !== values[bindTo.field]) ||
@@ -599,6 +619,31 @@
         $set.replaceWith($set.contents());
       });
   }
+
+  function deepEqual(a, b) {
+    var t1 = typeof a;
+    var t2 = typeof b;
+    if (t1 !== t2) { return false; }
+    if (t1 !== 'object') { return a === b; }
+
+    var k1 = Object.keys(a).sort();
+    var k2 = Object.keys(b).sort();
+    if (k1.length !== k2.length) { return false; }
+
+    for (var i = 0, len = k1.length; i < len; i++) {
+      if (k1[i] !== k2[i]) { return false; }
+      if (!deepEqual(a[k1[i]], b[k2[i]])) { return false; }
+    }
+
+    return true;
+  }
+
+  function deepClone(obj) {
+    if (!(obj instanceof Object)) { return obj; }
+    var clone = {};
+    for (var prop in obj) { clone[prop] = deepClone(obj[prop]); }
+    return clone;
+  }
 })();
 
 
@@ -655,7 +700,7 @@ chrome.options.fields.color = function(value, save, option, inList) {
       .appendTo($container);
 
     // There's a bug with jquery where it will save a field's value.
-    setTimeout(function() {
+    requestAnimationFrame(function() {
       $reset.css('background-color', option.default);
     });
   }
