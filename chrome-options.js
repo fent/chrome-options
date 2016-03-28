@@ -13,7 +13,7 @@
     about: null,
 
     // True if you want settings to be saved as they are changed.
-    autoSave: true,
+    autoSave: false,
 
     // True if you want default values to be saved when user visits
     // the options page. Useful if you want to only specify default values
@@ -50,14 +50,25 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
+  var $saved = $('.saved');
+  var $saveButton = $saved.find('button');
+  var savedTimeout;
+  function showSavedAlert() {
+    $saved.addClass('show');
+    clearTimeout(savedTimeout);
+    savedTimeout = setTimeout($saved.removeClass.bind($saved, 'show'), 2000);
+  }
+
   // Add the extension's title to the top of the page.
   var setupRan = false;
   function setup() {
     if (setupRan) { return; }
     var manifest = chrome.runtime.getManifest();
+
     var extensionName = chrome.options.opts.title || manifest.name || 'chrome';
     $('title').html(extensionName + ' options');
     $('.chrome-options-title').text(extensionName);
+
     if (chrome.options.opts.about === false || !manifest.description) {
       $('.menu.about').hide();
     } else {
@@ -67,15 +78,15 @@
         $('#about .content > p').text(manifest.description);
       }
     }
-    setupRan = true;
-  }
 
-  var $saved = $('.saved');
-  var savedTimeout;
-  function showSavedAlert() {
-    $saved.addClass('show');
-    clearTimeout(savedTimeout);
-    savedTimeout = setTimeout(function() { $saved.removeClass('show'); }, 2000);
+    if (chrome.options.opts.autoSave) {
+      $saveButton.hide();
+    } else {
+      $saved.find('.auto').hide();
+      $saved.addClass('show');
+    }
+
+    setupRan = true;
   }
 
 
@@ -120,8 +131,17 @@
             var value = items[key];
             var save = function(newValue) {
               savedValues[key] = newValue;
-              chrome.storage.sync.set(savedValues);
-              showSavedAlert();
+              if (chrome.options.opts.autoSave) {
+                chrome.storage.sync.set(savedValues);
+                showSavedAlert();
+              } else {
+                $saveButton.attr('disabled', false);
+                $saveButton.off('click');
+                $saveButton.one('click', function() {
+                  chrome.storage.sync.set(savedValues);
+                  $saveButton.attr('disabled', true);
+                });
+              }
             };
             $container = addOption(key, value, save, option);
         }
