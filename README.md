@@ -3,7 +3,7 @@
 Recommended that you create an options folder in your extension, for organization purposes.
 
     bower install chrome-options
-    ln -f bower_components/chrome-options/options.html .
+    ln -s bower_components/chrome-options/options.html .
     touch custom.css
     touch options.js
 
