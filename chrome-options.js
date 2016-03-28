@@ -177,10 +177,9 @@
     if (value === undefined &&
        (option.default || typeof option.default === 'boolean')) {
       value = option.default;
-      // Save this option if there is a default value set on it.
-      // If you want this default value to be available, the user will
-      // have to visit the options page at least once.
-      save(value);
+      if (chrome.options.opts.saveDefaults) {
+        save(value);
+      }
     }
 
     var $option, fn, r;
@@ -292,7 +291,7 @@
       value.value = option.defaultValue;
       mustSave = true;
     }
-    if (mustSave) {
+    if (mustSave && chrome.options.opts.saveDefaults) {
       save(value);
     }
 
