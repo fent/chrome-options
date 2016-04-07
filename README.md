@@ -23,3 +23,4 @@ If you'll be using the `predefined_sound` fields, also add
       "bower_components/chrome-options/sounds/*.wav"
     ]
 
+If you're using git, I recommend adding `options/bower_components` to your `.gitignore`.
