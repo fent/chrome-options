@@ -195,7 +195,7 @@
     chrome.options.addTab('', desc, options);
     $('.frame .navigation, .frame .mainview header').hide();
     $('.frame .mainview').css('-webkit-margin-start', '10px');
-    $('.frame .content').css('padding-top', 0);
+    $('.frame .content').css('padding-top', '2px');
   };
 
   function addH3(option) {
@@ -219,6 +219,8 @@
     var $option, fn, r;
     if (option.type === 'checkbox' || !option.type) {
       $option = addCheckbox(value, save, option, key);
+    } else if (option.type === 'object') {
+      $option = addObject(value, save, option, key);
     } else if (option.type === 'list') {
       $option = addList(value, save, option);
     } else if (fn = chrome.options.fields[option.type]) {
@@ -298,15 +300,9 @@
       .appendTo($label);
 
     if (hasOptions) {
-      $subContainer = $('<div class="suboptions"></div>').appendTo($container);
+      $subContainer = addOptions(value, save, option, key)
+        .appendTo($container);
       if (!checked) { $subContainer.hide(); }
-      options.forEach(function(option) {
-        var optionKey = (key ? key + '.' : '') + option.name;
-        addOption(optionKey, value[option.name], function(newValue) {
-          value[option.name] = newValue;
-          save(value);
-        }, option).appendTo($subContainer);
-      });
     }
 
     return $container;
@@ -349,6 +345,28 @@
     if (option.desc) {
       $('<label></label>').text(option.desc).appendTo($container);
     }
+    return $container;
+  }
+
+  function addObject(value, save, option, key) {
+    var $container = $('<div class="object"><label></label></div>');
+    $container.find('label').text(option.desc);
+    addOptions(value, save, option, key).appendTo($container);
+    return $container;
+  }
+
+  function addOptions(value, save, option, key) {
+    if (value == null || typeof value !== 'object') {
+      value = {};
+    }
+    var $container = $('<div class="suboptions"></div>');
+    option.options.forEach(function(option) {
+      var optionKey = (key ? key + '.' : '') + option.name;
+      addOption(optionKey, value[option.name], function(newValue) {
+        value[option.name] = newValue;
+        save(value);
+      }, option).appendTo($container);
+    });
     return $container;
   }
 
