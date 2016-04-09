@@ -50,8 +50,13 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
+  var changedValues = {};
   var $saveContainer = $('.save-container');
-  var $saveButton = $saveContainer.find('button');
+  var $saveButton = $saveContainer.find('button')
+    .click(function() {
+      chrome.storage.sync.set(changedValues);
+      $saveButton.attr('disabled', true);
+    });
   var showSavedAlert = flashClass($saveContainer, 'show', 2000);
   var flashSavedAlert = flashClass($saveContainer, 'flash', 150);
 
@@ -137,30 +142,39 @@
             // Clone value so that it can be compared to new value.
             // Also use a timeout so that it doensn't seep into load time.
             raf(function() { value = deepClone(value); });
+
+            var cloneNewValue;
             var save = function(newValue) {
               // Wrap this in requestAnimationFrame so that it
               // doesn't block user interaction.
               raf(function() {
-                savedValues[key] = newValue;
                 var isEqual = deepEqual(value, newValue);
                 if (chrome.options.opts.autoSave) {
                   if (!isEqual) {
+                    savedValues[key] = newValue;
                     chrome.storage.sync.set(savedValues);
                     showSavedAlert();
                     flashSavedAlert();
                     value = deepClone(newValue);
                   }
                 } else if (isEqual) {
-                  $saveButton.attr('disabled', true);
+                  delete changedValues[key];
+                  $saveButton.off('click', cloneNewValue);
                   flashSavedAlert();
-                } else {
-                  $saveButton.attr('disabled', false);
-                  $saveButton.off('click');
-                  $saveButton.one('click', function() {
-                    chrome.storage.sync.set(savedValues);
+                  if (!Object.keys(changedValues).length) {
                     $saveButton.attr('disabled', true);
+                  }
+                } else {
+                  changedValues[key] = newValue;
+                  $saveButton.attr('disabled', false);
+                  if (cloneNewValue) {
+                    $saveButton.off('click', cloneNewValue);
+                  }
+                  cloneNewValue = function() {
                     value = deepClone(newValue);
-                  });
+                    return true;
+                  };
+                  $saveButton.one('click', cloneNewValue);
                   flashSavedAlert();
                 }
               });
