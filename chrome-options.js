@@ -199,6 +199,11 @@
       }
     }
 
+    if (option.transform) {
+      var origSave = save;
+      save = function(newValue) { origSave(option.transform(newValue)); };
+    }
+
     var $option, fn, r;
     if (option.type === 'checkbox' || !option.type) {
       $option = addCheckbox(value, save, option, key);
@@ -284,7 +289,7 @@
       $subContainer = $('<div class="suboptions"></div>').appendTo($container);
       if (!checked) { $subContainer.hide(); }
       options.forEach(function(option) {
-        var optionKey = key + '.' + option.name;
+        var optionKey = (key ? key + '.' : '') + option.name;
         addOption(optionKey, value[option.name], function(newValue) {
           value[option.name] = newValue;
           save(value);
