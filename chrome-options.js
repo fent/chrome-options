@@ -398,17 +398,19 @@
     var rows;
     function saveFields() {
       var newValues = rows.map(function(getValue) { return getValue(); });
-      save(newValues.filter(function(rowValue, i) {
+      save(newValues.filter(function(rowValue) {
         if (rowValue == null || rowValue === '') {
           return false;
         } else if (typeof rowValue === 'object') {
-          if (i !== 0 && !rowValue.page) {
-            return false;
-          } else {
-            return Object.keys(rowValue).some(function(key) {
-              return rowValue[key] != null;
-            });
+          for (var i = 0, len = options.fields.length; i < len; i++) {
+            var field = options.fields[i];
+            if (field.required && !rowValue[field.name]) {
+              return false;
+            }
           }
+          return Object.keys(rowValue).some(function(key) {
+            return rowValue[key] != null;
+          });
         }
         return true;
       }));
