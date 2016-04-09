@@ -5,6 +5,7 @@
   chrome.options = {};
   chrome.options.opts = {
     // If not given, title of the page will be set to the extension's name.
+    // Set to `false` if you want to hide the title.
     title: null,
 
     // Set this if you want to customize the about page's contents,
@@ -37,8 +38,7 @@
     if (hash === lastHash) { return; }
     lastHash = hash;
 
-    $('.mainview > *').removeClass('selected');
-    $('.menu li').removeClass('selected');
+    $('.mainview > *, .menu li').removeClass('selected');
 
     var $target = $('.menu a[href="' + hash + '"]');
     $target.parent().addClass('selected');
@@ -65,8 +65,12 @@
     var manifest = chrome.runtime.getManifest();
 
     var extensionName = chrome.options.opts.title || manifest.name || 'chrome';
-    $('title').html(extensionName + ' options');
-    $('.chrome-options-title').text(extensionName);
+    $('title').text(extensionName + ' options');
+    var $title = $('.chrome-options-title');
+    $title.text(extensionName);
+    if (chrome.options.opts.title === false) {
+      $title.hide();
+    }
 
     if (chrome.options.opts.about === false || !manifest.description) {
       $('.menu.about').hide();
@@ -167,6 +171,18 @@
     });
     $tabcontent.appendTo($tabview);
     $tabview.appendTo($mainview);
+  };
+
+
+  /**
+   * @param {Array.<Object>} options
+   */
+  chrome.options.set = function(options) {
+    chrome.options.opts.title = false;
+    chrome.options.addTab('General', options);
+    $('.frame .navigation, .frame .mainview header').hide();
+    $('.frame .mainview').css('-webkit-margin-start', '10px');
+    $('.frame .content').css('padding-top', 0);
   };
 
   function addH3(option) {
@@ -742,8 +758,8 @@ chrome.options.fields.select = function(value, save, option) {
   });
   var firstValue = null;
   option.options.forEach(function(option) {
-    var value = typeof option === 'string' ? option : option.value;
-    var desc = typeof option === 'string' ? option : option.desc;
+    var value = typeof option === 'object' ? option.value : option ;
+    var desc = typeof option === 'object' ? option.desc : option;
     $('<option>')
       .attr('value', value)
       .text(desc)
