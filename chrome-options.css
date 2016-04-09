@@ -93,7 +93,7 @@
 }
 
 .chrome-bootstrap .content div.checkbox > div.checkbox > label,
-.chrome-bootstrap .content div.checkbox > .suboptions {
+.chrome-bootstrap .content div > .suboptions {
   padding-left: 24px;
 }
 
