@@ -187,11 +187,12 @@
 
 
   /**
+   * @param {String} desc
    * @param {Array.<Object>} options
    */
-  chrome.options.set = function(options) {
+  chrome.options.set = function(desc, options) {
     chrome.options.opts.title = false;
-    chrome.options.addTab('', options);
+    chrome.options.addTab('', desc, options);
     $('.frame .navigation, .frame .mainview header').hide();
     $('.frame .mainview').css('-webkit-margin-start', '10px');
     $('.frame .content').css('padding-top', 0);
