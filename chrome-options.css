@@ -1,13 +1,21 @@
-.chrome-bootstrap .frame .mainview > *:not(.selected) {
-  top: -9999px;
-}
-
 .chrome-bootstrap .navigation {
   background: #fff;
+  position: relative;
 }
 
-.chrome-bootstrap .frame .content {
-  padding-bottom: 15%;
+.chrome-bootstrap .frame .mainview > * {
+  position: relative;
+  overflow: auto;
+}
+
+.chrome-bootstrap .frame .mainview > *:not(.selected) {
+  height: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.chrome-bootstrap .frame .mainview > * > .content {
+  padding-bottom: 10%;
 }
 
 .chrome-bootstrap .predefined-sound, .custom-sound {
@@ -78,7 +86,9 @@
 }
 
 .chrome-bootstrap .checkbox label > input[type=checkbox],
-.chrome-bootstrap .checkbox span > input[type=checkbox] {
+.chrome-bootstrap .checkbox span > input[type=checkbox],
+.chrome-bootstrap .suboption > input,
+.chrome-bootstrap .suboption > select {
   margin-right: 12px;
 }
 
@@ -220,10 +230,11 @@
 }
 
 .chrome-bootstrap .save-container {
-  position: absolute;
-  -webkit-padding-start: 18px;
+  position: fixed;
   left: 5px;
   bottom: 5px;
+  z-index: 4;
+  -webkit-padding-start: 20px;
   line-height: 23px;
 }
 
