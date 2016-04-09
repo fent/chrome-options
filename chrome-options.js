@@ -770,14 +770,17 @@ chrome.options.fields.url = function(value, save) {
 };
 
 chrome.options.fields.select = function(value, save, option) {
+  var valueMap = {};
   var $select = $('<select>');
   $select.change(function(e) {
-    save($select.val(), e);
+    var val = $select.val();
+    save(valueMap[val] !== undefined ? valueMap[val] : val, e);
   });
   var firstValue = null;
   option.options.forEach(function(option) {
     var value = typeof option === 'object' ? option.value : option ;
     var desc = typeof option === 'object' ? option.desc : option;
+    valueMap[value] = value;
     $('<option>')
       .attr('value', value)
       .text(desc)
@@ -797,23 +800,25 @@ chrome.options.fields.radio = function(value, save, options) {
   var $container = $('<div class="radio-options"></div>');
   var name = (~~(Math.random() * 1e9)).toString(36);
   options.forEach(function(option) {
+    var val = typeof option === 'object' ? option.value : option ;
+    var desc = typeof option === 'object' ? option.desc : option;
     var id = (~~(Math.random() * 1e9)).toString(36);
     var $row = $('<div class="radio-option"></div>').appendTo($container);
     var $radio = $('<input type="radio" />')
       .attr('id', id)
       .attr('name', name)
-      .attr('value', option)
+      .attr('value', val)
       .change(function(e) {
         if ($radio[0].checked) {
-          save(option, e);
+          save(val, e);
         }
       })
       .appendTo($row);
-    if (value === option) {
+    if (value === val) {
       $radio.attr('checked', true);
     }
 
-    $('<label></label>').attr('for', id).text(option).appendTo($row);
+    $('<label></label>').attr('for', id).text(desc).appendTo($row);
   });
 
   return $container;
