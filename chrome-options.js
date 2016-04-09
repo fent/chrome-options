@@ -116,14 +116,15 @@
     if (desc) {
       $tabcontent.append($('<p></p>').text(desc));
     }
+    keyName = keyName ? keyName + '.' : '';
     var keys = options
       .filter(function(option) { return !!option.name; })
       .map(function(option) {
-        return keyName + '.' + option.name;
+        return keyName + option.name;
       });
     chrome.storage.sync.get(keys, function(items) {
       options.forEach(function(option) {
-        var key = keyName + '.' + option.name;
+        var key = keyName + option.name;
         var $container;
         switch (option.type) {
           case 'h3':
@@ -179,7 +180,7 @@
    */
   chrome.options.set = function(options) {
     chrome.options.opts.title = false;
-    chrome.options.addTab('General', options);
+    chrome.options.addTab('', options);
     $('.frame .navigation, .frame .mainview header').hide();
     $('.frame .mainview').css('-webkit-margin-start', '10px');
     $('.frame .content').css('padding-top', 0);
