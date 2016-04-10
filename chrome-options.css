@@ -42,6 +42,10 @@
   transform: translate3d(1px, 1px, 0);
 }
 
+.chrome-bootstrap .list thead th div {
+  overflow: hidden;
+}
+
 .chrome-bootstrap .list table .delete {
   position: initial;
 }
