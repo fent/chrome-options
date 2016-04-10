@@ -394,8 +394,43 @@
     list = list || [];
     var $table = $('<table></table>').appendTo($container);
     var $tbody = $('<tbody></tbody>').appendTo($table);
-
     var rows;
+    var heads = {};
+
+    if (options.head) {
+      var $thead = $('<thead><tr></tr></head>').prependTo($table).find('tr');
+      options.fields.forEach(function(field) {
+        heads[field.name] = $('<th><div></div></th>')
+          .appendTo($thead)
+          .find('div')
+          .text(field.desc);
+      });
+    }
+
+    function checkColumns(init) {
+      options.fields.forEach(function(field) {
+        if (!field.bindTo) { return; }
+        var show = rows.some(function(row) { return row.shown[field.name]; });
+        var $head = heads[field.name];
+        var isVisible = $head.is(':visible');
+        if (show && !isVisible) {
+          setTimeout(function() {
+            $head.css('display', '');
+            $head.animateAuto('width', init ? 250 : 500);
+          }, init ? 0 : 500);
+        } else if (!show && isVisible) {
+          if (init) {
+            $head.css({display: 'none', width: 0 });
+          } else {
+            $head.animateAuto({
+              dimension: 'width',
+              action: 'close',
+            }, 500, function() { $head.css('display', 'none'); });
+          }
+        }
+      });
+    }
+
     function saveFields() {
       var newValues = rows.map(function(getValue) { return getValue(); });
       save(newValues.filter(function(rowValue) {
@@ -416,6 +451,7 @@
       }));
       raf(function() {
         rows.forEach(function(row) { row.update(newValues); });
+        if (options.head) { checkColumns(false); }
       });
     }
 
@@ -460,6 +496,11 @@
 
     // Always start with one new row.
     addNewRow();
+
+    // Check if columns with the `bindTo` should be displayed.
+    if (options.head) {
+      raf(checkColumns.bind(null, true));
+    }
 
     // When user focuses on the last row, add another.
     $tbody.on('input change', 'tr:last-child', addNewRow.bind(null, true));
@@ -523,6 +564,10 @@
       setTimeout(showTR.bind(null, $tr), 100);
     }
 
+    var getValue = function() { return values; };
+    getValue.$tr = $tr;
+    getValue.shown = {};
+
     var $prevtd, prevfield;
     var fieldUpdates = fields.map(function(field) {
       function saveField(newValue) {
@@ -532,10 +577,10 @@
         } else {
           values[name] = newValue;
         }
-        save();
         fieldUpdates.forEach(function(up) {
           up.checkBind(name, newValue);
         });
+        save();
       }
 
       var $field;
@@ -547,13 +592,13 @@
           if (bindTo.value === newValue && !isVisible) {
             $field.css('display', '');
             $field.animateAuto('width', 500);
+            getValue.shown[field.name] = true;
           } else if (isVisible) {
             $field.animateAuto({
               dimension: 'width',
               action: 'close',
-            }, 500, function() {
-              $field.css('display', 'none');
-            });
+            }, 500, function() { $field.css('display', 'none'); });
+            getValue.shown[field.name] = false;
           }
         }
       };
@@ -618,8 +663,10 @@
               bindTo.value !== fieldsMap[bindTo.field].options[0].value)
            ) {
           $field.css({ display: 'none', width: 0 });
+          getValue.shown[field.name] = false;
         } else {
           $field.animateAuto('width', 500);
+          getValue.shown[field.name] = true;
         }
       });
 
@@ -641,8 +688,6 @@
     }
     $tr.appendTo($table);
 
-    var getValue = function() { return values; };
-    getValue.$tr = $tr;
     getValue.update = function(newValues) {
       fieldUpdates.forEach(function(update) {
         update.checkSelect(newValues);
