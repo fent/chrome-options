@@ -483,7 +483,7 @@
       }
       var fields = i === 0 && options.first ? options.first : options.fields;
       row = addListRow($tbody, rowData, fields, fieldsMap, saveFields,
-                           remove, i === 0, options.sortable);
+                           remove, i === 0 && options.first, options.sortable);
       return row;
     });
 
