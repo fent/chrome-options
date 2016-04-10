@@ -237,6 +237,9 @@
   position: fixed;
   left: 5px;
   bottom: 5px;
+  width: 100%;
+  background-color: #fff;
+  padding-top: 3px;
   z-index: 4;
   -webkit-padding-start: 20px;
   line-height: 23px;
