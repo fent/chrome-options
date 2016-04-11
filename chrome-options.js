@@ -387,7 +387,7 @@
   chrome.options.base.list = function(list, save, options) {
     var $container = $('<div class="suboption list"></div>');
     if (options.desc) {
-      $('<span></span>')
+      $('<label></label>')
         .text(options.desc)
         .appendTo($container);
     }
