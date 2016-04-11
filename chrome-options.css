@@ -32,9 +32,15 @@
   font-size: 120%;
   padding: 0 3px;
   -webkit-user-select: none;
+  vertical-align: middle;
 }
 
-.chrome-bootstrap .play:active {
+.chrome-bootstrap .play.disabled {
+  cursor: auto;
+  color: #ccc;
+}
+
+.chrome-bootstrap .play:active:not(.disabled) {
   position: relative;
   top: 1px;
 }
