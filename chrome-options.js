@@ -437,6 +437,8 @@
       save(newValues.filter(function(rowValue) {
         if (rowValue == null || rowValue === '') {
           return false;
+        } else if (options.filter && !options.filter(rowValue)) {
+          return false;
         } else if (typeof rowValue === 'object') {
           for (var i = 0, len = options.fields.length; i < len; i++) {
             var field = options.fields[i];
@@ -504,7 +506,7 @@
     }
 
     // When user focuses on the last row, add another.
-    $tbody.on('input change', 'tr:last-child', addNewRow.bind(null, true));
+    $tbody.on('input change', '> tr:last-child', addNewRow.bind(null, true));
 
     if (options.sortable) {
       $tbody.sortable({

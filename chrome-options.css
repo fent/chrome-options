@@ -53,15 +53,15 @@
   position: initial;
 }
 
-.chrome-bootstrap .list table tr:last-child .delete,
-.chrome-bootstrap .list table tr.unremovable .delete,
-.chrome-bootstrap .list table tr:last-child .sort,
-.chrome-bootstrap .list table tr.unremovable .sort {
+.chrome-bootstrap .list table tr:last-child > td > .delete,
+.chrome-bootstrap .list table tr.unremovable > td > .delete,
+.chrome-bootstrap .list table tr:last-child > td > .sort,
+.chrome-bootstrap .list table tr.unremovable > td > .sort {
   display: none;
 }
 
-.chrome-bootstrap .list table tr:hover:not(:last-child):not(.unremovable) .delete,
-.chrome-bootstrap .list table tr:hover .sort {
+.chrome-bootstrap .list table tr:hover:not(:last-child):not(.unremovable) > td > .delete,
+.chrome-bootstrap .list table tr:hover > td > .sort {
   opacity: 1;
   visibility: visible;
 }
