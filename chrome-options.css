@@ -18,17 +18,12 @@
   padding-bottom: 10%;
 }
 
-.chrome-bootstrap .predefined-sound, .custom-sound {
-  display: flex;
-  align-items: center;
+.chrome-bootstrap .predefined-sound,
+.chorme-bootstrap .custom-sound {
+  display: inline-block;
 }
 
 .chrome-bootstrap .bind-to > :first-child {
-  float: left;
-}
-
-.chrome-bootstrap .predefined-sound, .custom-sound {
-  display: flex;
   float: left;
 }
 
@@ -36,10 +31,12 @@
   cursor: pointer;
   font-size: 120%;
   padding: 0 3px;
+  -webkit-user-select: none;
 }
 
 .chrome-bootstrap .play:active {
-  transform: translate3d(1px, 1px, 0);
+  position: relative;
+  top: 1px;
 }
 
 .chrome-bootstrap .list thead th div {
@@ -92,7 +89,8 @@
 .chrome-bootstrap .checkbox label > input[type=checkbox],
 .chrome-bootstrap .checkbox span > input[type=checkbox],
 .chrome-bootstrap .suboption > input,
-.chrome-bootstrap .suboption > select {
+.chrome-bootstrap .suboption > select,
+.chrome-bootstrap .suboption > span > input {
   margin-right: 12px;
 }
 
