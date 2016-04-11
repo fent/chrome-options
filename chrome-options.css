@@ -233,11 +233,11 @@
 
 .chrome-bootstrap .save-container {
   position: fixed;
-  left: 5px;
-  bottom: 5px;
+  left: 0;
+  bottom: 0;
   width: 100%;
+  padding: 3px 5px 5px;
   background-color: #fff;
-  padding-top: 3px;
   z-index: 4;
   -webkit-padding-start: 20px;
   line-height: 23px;
