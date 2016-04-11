@@ -9,7 +9,10 @@ Recommended that you create an options folder in your extension, for organizatio
 
 Add options page to `manifest.json`
 
-    "options_page": "options/options.html"
+    "options_ui": {
+      "page": "options/options.html",
+      "open_in_tab": false
+    }
 
 Also needs `storage` permission.
 
@@ -17,10 +20,10 @@ Also needs `storage` permission.
       "storage"
     ]
 
-If you'll be using the `predefined_sound` fields, also add
+If you'll be using the `predefined_sound` fields, and want to play sounds from a context script, also add
 
     "web_accessible_resources": [
-      "bower_components/chrome-options/sounds/*.wav"
+      "options/bower_components/chrome-options/sounds/*.wav"
     ]
 
 If you're using git, I recommend adding `options/bower_components` to your `.gitignore`.
