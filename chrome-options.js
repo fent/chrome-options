@@ -3,6 +3,7 @@
 (function() {
   // Expose this library.
   chrome.options = {};
+  chrome.options.base = {};
   chrome.options.opts = {
     // If not given, title of the page will be set to the extension's name.
     // Set to `false` if you want to hide the title.
@@ -218,17 +219,17 @@
 
     var $option, fn, r;
     if (option.type === 'checkbox' || !option.type) {
-      $option = addCheckbox(value, save, option, key);
+      $option = chrome.options.base.checkbox(value, save, option, key);
     } else if (option.type === 'object') {
-      $option = addObject(value, save, option, key);
+      $option = chrome.options.base.object(value, save, option, key);
     } else if (option.type === 'list') {
-      $option = addList(value, save, option);
+      $option = chrome.options.base.list(value, save, option);
     } else if (fn = chrome.options.fields[option.type]) {
-      $option = addField(value, save, option, fn);
+      $option = chrome.options.base.field(value, save, option, fn);
     } else if (r = /(\w+)-list/.exec(option.type)) {
-      $option = addSingleFieldList(value, save, option, r[1]);
+      $option = chrome.options.base.singleFieldList(value, save, option, r[1]);
     } else if (r = /checkbox-(\w+)/.exec(option.type)) {
-      $option = addCheckboxNField(value, save, option, r[1]);
+      $option = chrome.options.base.checkboxNField(value, save, option, r[1]);
     } else {
       throw Error('Could not find option type: ' + option.type);
     }
@@ -244,7 +245,7 @@
     return $option;
   }
 
-  function addCheckbox(value, save, option, key) {
+  chrome.options.base.checkbox = function(value, save, option, key) {
     var $container = $('<div class="checkbox"><label></label></div>');
     var $subContainer, $triangle;
     var options = option.options;
@@ -306,9 +307,9 @@
     }
 
     return $container;
-  }
+  };
 
-  function addCheckboxNField(value, save, option, type) {
+  chrome.options.base.checkboxNField = function(value, save, option, type) {
     if (value == null || typeof value !== 'object') {
       value = {};
     }
@@ -346,14 +347,14 @@
       $('<label></label>').text(option.desc).appendTo($container);
     }
     return $container;
-  }
+  };
 
-  function addObject(value, save, option, key) {
+  chrome.options.base.object = function(value, save, option, key) {
     var $container = $('<div class="object"><label></label></div>');
     $container.find('label').text(option.desc);
     addOptions(value, save, option, key).appendTo($container);
     return $container;
-  }
+  };
 
   function addOptions(value, save, option, key) {
     if (value == null || typeof value !== 'object') {
@@ -370,7 +371,7 @@
     return $container;
   }
 
-  function addField(value, save, option, fn) {
+  chrome.options.base.field = function(value, save, option, fn) {
     var $container = $('<div class="suboption"><label></label></div>');
     var $label = $container.find('label');
     $label.text(option.desc);
@@ -381,9 +382,9 @@
       $container.prepend($field);
     }
     return $container;
-  }
+  };
 
-  function addList(list, save, options) {
+  chrome.options.base.list = function(list, save, options) {
     var $container = $('<div class="suboption list"></div>');
     if (options.desc) {
       $('<span></span>')
@@ -551,7 +552,7 @@
     }
 
     return $container;
-  }
+  };
 
   function addListRow($table, values, fields, fieldsMap, save, remove,
                       unremovable, sort, animate) {
@@ -696,10 +697,10 @@
     return getValue;
   }
 
-  function addSingleFieldList(value, save, options, type) {
+  chrome.options.base.singleFieldList = function(value, save, options, type) {
     options.fields = [{ type: type, name: options.name }];
-    return addList(value, save, options);
-  }
+    return chrome.options.base.list(value, save, options);
+  };
 
   function hideTR($tr, callback) {
     $tr
@@ -889,8 +890,11 @@ chrome.options.fields.radio = function(value, save, options) {
   return $container;
 };
 
-chrome.options.fields.predefined_sound = function(value, save) {
+chrome.options.fields.predefined_sound = function(value, save, option) {
   var $container = $('<span class="predefined-sound">');
+  var $play = $('<span class="play">&#9654;</span>');
+  $play.click(playSound);
+
   var options = [
     'Basso', 'Bip', 'Blow', 'Boing', 'Bottle', 'Clink-Klank',
     'Droplet', 'Frog', 'Funk', 'Glass', 'Hero', 'Indigo', 'Laugh',
@@ -899,13 +903,25 @@ chrome.options.fields.predefined_sound = function(value, save) {
     'Voltage', 'Whit', 'Wild Eep'
   ];
 
-  value = value || options[0];
+  if (option.allowNoSound) {
+    options.unshift({ value: '', desc: 'Select' });
+    value = value || '';
+    if (!value) { $play.addClass('disabled'); }
+  } else {
+    value = value || options[0];
+  }
+
   function saveField(newValue, e) {
     value = newValue;
     save(newValue, e);
   }
 
   function playSound() {
+    if (!value) {
+      $play.addClass('disabled');
+      return;
+    }
+    $play.removeClass('disabled');
     var audio = new Audio();
     audio.src = 'bower_components/chrome-options/sounds/' + value + '.wav';
     audio.onerror = console.error;
@@ -915,8 +931,7 @@ chrome.options.fields.predefined_sound = function(value, save) {
   chrome.options.fields.select(value, saveField, { options: options })
     .change(playSound)
     .appendTo($container);
-  var $play = $('<span class="play">&#9654;</span>').appendTo($container);
-  $play.click(playSound);
+  $play.appendTo($container);
 
   return $container;
 };
