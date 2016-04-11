@@ -297,3 +297,7 @@
   padding: 0;
   height: 13px;
 }
+
+.chrome-bootstrap h3 {
+  margin-top: 1.5em;
+}
