@@ -592,11 +592,12 @@
         var bindTo = field.bindTo;
         if (bindTo && bindTo.field === name) {
           var isVisible = $field.is(':visible');
-          if (bindTo.value === newValue && !isVisible) {
+          var equals = bindToEquals(bindTo.value, newValue);
+          if (equals && !isVisible) {
             $field.css('display', '');
             $field.animateAuto('width', 500);
             getValue.shown[field.name] = true;
-          } else if (isVisible) {
+          } else if (!equals && isVisible) {
             $field.animateAuto({
               dimension: 'width',
               action: 'close',
@@ -661,9 +662,11 @@
       raf(function() {
         if (!bindTo) { return; }
         if (
-             (values[bindTo.field] && bindTo.value !== values[bindTo.field]) ||
+             (values[bindTo.field] &&
+              !bindToEquals(bindTo.value, values[bindTo.field])) ||
              (!values[bindTo.field] &&
-              bindTo.value !== fieldsMap[bindTo.field].options[0].value)
+              !bindToEquals(bindTo.value,
+                            fieldsMap[bindTo.field].options[0].value))
            ) {
           $field.css({ display: 'none', width: 0 });
           getValue.shown[field.name] = false;
@@ -697,6 +700,11 @@
       });
     };
     return getValue;
+  }
+
+  function bindToEquals(bindToValue, fieldValue) {
+    return Array.isArray(bindToValue) ?
+      bindToValue.indexOf(fieldValue) > -1 : bindToValue === fieldValue;
   }
 
   chrome.options.base.singleFieldList = function(value, save, options, type) {
