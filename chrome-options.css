@@ -45,6 +45,11 @@
   top: 1px;
 }
 
+.chrome-bootstrap .list > label {
+  display: inline-block;
+  margin-bottom: 0.5em;
+}
+
 .chrome-bootstrap .list thead th div {
   overflow: hidden;
 }
