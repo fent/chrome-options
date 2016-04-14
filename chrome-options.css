@@ -54,6 +54,10 @@
   overflow: hidden;
 }
 
+.chrome-bootstrap .list tbody td {
+  text-align: center;
+}
+
 .chrome-bootstrap .list table .delete {
   position: initial;
 }
