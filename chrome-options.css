@@ -210,14 +210,12 @@
   position: absolute;
   margin-top: 0.65em;
   z-index: 99;
-  left: -9999px;
   opacity: 0;
   transition: opacity 300ms;
   display: block;
 }
 
 .chrome-bootstrap .preview:hover + .preview-image {
-  left: auto;
   opacity: 1;
 }
 
