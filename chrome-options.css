@@ -310,3 +310,24 @@
 .chrome-bootstrap h3 {
   margin-top: 1.5em;
 }
+
+.chrome-bootstrap [data-title] {
+  position: relative;
+}
+
+.chrome-bootstrap [data-title]:hover:after {
+  background-color: #000;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 2px;
+  content: attr(data-title);
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  transform: translate3d(-50%, -100%, 0);
+  white-space: pre;
+}
+
+.chrome-bootstrap label > [data-title]:after {
+  display: none;
+}

@@ -656,7 +656,7 @@
       if (!fn) {
         throw Error('Could not find option type: ' + field.type);
       }
-      $field = fn(fieldValue, saveField, field, true)
+      $field = fn(fieldValue, saveField, field)
         .appendTo($fieldContainer);
 
       raf(function() {
@@ -780,7 +780,7 @@
 // Define all available fields.
 chrome.options.fields = {};
 
-chrome.options.fields.checkbox = function(value, save, option, inList) {
+chrome.options.fields.checkbox = function(value, save, option) {
   var $checkbox = $('<input type="checkbox">');
 
   if (value != null) {
@@ -791,10 +791,8 @@ chrome.options.fields.checkbox = function(value, save, option, inList) {
     save($checkbox[0].checked);
   });
 
-  if (inList && option.desc) {
-    $checkbox
-      .attr('title', option.desc)
-      .tooltip({ position: { my: 'left bottom-10', at: 'left top' } });
+  if (option.desc) {
+    $checkbox.attr('data-title', option.desc);
   }
 
   return $checkbox;
@@ -809,7 +807,7 @@ chrome.options.fields.text = function(value, save) {
   return $textbox;
 };
 
-chrome.options.fields.color = function(value, save, option, inList) {
+chrome.options.fields.color = function(value, save, option) {
   var $container = $('<span class="color"></span>');
   var $color = chrome.options.fields.text(value, save)
     .appendTo($container)
@@ -818,10 +816,8 @@ chrome.options.fields.color = function(value, save, option, inList) {
       showAlpha: true,
       showInitial: true,
     }, option));
-  if (inList && option.desc) {
-    $color
-      .attr('title', option.desc)
-      .tooltip({ position: { my: 'left bottom-10', at: 'left top' } });
+  if (option.desc) {
+    $color.attr('data-title', option.desc);
   }
   if (option.default) {
     var $reset = $('<span class="color-reset"></span>')
@@ -829,8 +825,7 @@ chrome.options.fields.color = function(value, save, option, inList) {
         $color.spectrum('set', option.default);
         save(option.default, e);
       })
-      .attr('title', 'Reset to default')
-      .tooltip({ position: { my: 'left bottom-10', at: 'left top' } })
+      .attr('data-title', 'Reset to default')
       .appendTo($container);
 
     // There's a bug with jquery where it will save a field's value.
