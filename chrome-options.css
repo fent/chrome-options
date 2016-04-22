@@ -331,6 +331,11 @@
   white-space: pre;
 }
 
-.chrome-bootstrap label > [data-title]:after {
+.chrome-bootstrap label > [data-title]:after,
+.chrome-bootstrap .multiline > [data-title]:after {
   display: none;
+}
+
+.chrome-bootstrap .multiline {
+  margin-top: 0.325em;
 }
