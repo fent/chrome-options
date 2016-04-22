@@ -317,13 +317,15 @@
 
 .chrome-bootstrap [data-title] {
   position: relative;
+  z-index: 9;
 }
 
 .chrome-bootstrap [data-title]:hover:after {
   background-color: #000;
   color: #fff;
   padding: 2px 5px;
-  border-radius: 2px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   content: attr(data-title);
   position: absolute;
   left: 50%;
