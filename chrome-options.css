@@ -4,11 +4,11 @@
 }
 
 .chrome-bootstrap .frame .mainview > * {
-  position: relative;
-  overflow: auto;
+  position: static;
 }
 
 .chrome-bootstrap .frame .mainview > *:not(.selected) {
+  position: relative;
   height: 0;
   width: 0;
   overflow: hidden;
@@ -214,7 +214,7 @@
 .chrome-bootstrap .preview-image {
   position: absolute;
   margin-top: 0.65em;
-  z-index: 99;
+  z-index: -99;
   opacity: 0;
   transition: opacity 300ms;
   display: block;
@@ -222,6 +222,7 @@
 
 .chrome-bootstrap .preview:hover + .preview-image {
   opacity: 1;
+  z-index: 99;
 }
 
 .chrome-bootstrap input[type='url'] {
