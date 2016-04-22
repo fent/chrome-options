@@ -78,7 +78,8 @@
       $title.hide();
     }
 
-    if (chrome.options.opts.about === false || !manifest.description) {
+    if (chrome.options.opts.about === false ||
+       (!chrome.options.opts.about && !manifest.description)) {
       $('.menu.about').hide();
     } else {
       if (chrome.options.opts.about) {
