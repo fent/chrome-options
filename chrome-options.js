@@ -373,14 +373,9 @@
 
   chrome.options.base.field = function(value, save, option, fn) {
     var $container = $('<div class="suboption"><label></label></div>');
-    var $label = $container.find('label');
-    $label.text(option.desc);
+    $container.find('label').text(option.desc);
     var $field = fn(value, save, option);
-    if (fn.multiline) {
-      $('<div></div>').append($field).appendTo($container);
-    } else {
-      $container.prepend($field);
-    }
+    $('<div class="multiline"></div>').append($field).appendTo($container);
     return $container;
   };
 
