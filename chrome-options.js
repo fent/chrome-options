@@ -885,11 +885,11 @@ chrome.options.fields.select = function(value, save, option) {
   return $select;
 };
 
-chrome.options.fields.radio = function(value, save, options) {
+chrome.options.fields.radio = function(value, save, option) {
   var $container = $('<div class="radio-options"></div>');
   var name = (~~(Math.random() * 1e9)).toString(36);
-  options.forEach(function(option) {
-    var val = typeof option === 'object' ? option.value : option ;
+  option.options.forEach(function(option) {
+    var val = typeof option === 'object' ? option.value : option;
     var desc = typeof option === 'object' ? option.desc : option;
     var id = (~~(Math.random() * 1e9)).toString(36);
     var $row = $('<div class="radio-option"></div>').appendTo($container);

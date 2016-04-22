@@ -114,19 +114,19 @@
   padding-left: 24px;
 }
 
-.chrome-bootstrap .content div.checkbox > .suboptions > .radio > .radio-options {
+.chrome-bootstrap .content .suboption .radio-options {
   margin-left: 24px;
 }
 
-.chrome-bootstrap .content div.checkbox > .suboptions .radio-option {
+.chrome-bootstrap .content .suboption .radio-option {
   margin: 0.3em 0;
 }
 
-.chrome-bootstrap .content div.checkbox .radio-option label {
+.chrome-bootstrap .content .suboption .radio-option label {
   margin: 0 0.4em;
 }
 
-.chrome-bootstrap .content div.checkbox .radio-option input:not(:checked) + label {
+.chrome-bootstrap .content .suboption .radio-option input:not(:checked) + label {
   cursor: pointer;
 }
 
