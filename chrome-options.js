@@ -9,7 +9,7 @@
     // Set to `false` if you want to hide the title.
     title: null,
 
-    // Set this if you want to customize the about page's contents,
+    // Set this if you want to customize the about tab's contents,
     // otherwise it will be set to the extension's description.
     // Set to `false` if you don't want an About page.
     about: null,
@@ -692,7 +692,11 @@
           $field.css({ display: 'none', width: 0 });
           getValue.shown[field.name] = false;
         } else {
-          $field.animateAuto('width', 500);
+          if (animate) {
+            setTimeout(function() { $field.animateAuto('width', 500); }, 500);
+          } else {
+            $field.animateAuto('width', 500);
+          }
           getValue.shown[field.name] = true;
         }
       });
