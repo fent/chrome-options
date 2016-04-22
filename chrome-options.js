@@ -212,11 +212,6 @@
       }
     }
 
-    if (option.transform) {
-      var origSave = save;
-      save = function(newValue) { origSave(option.transform(newValue)); };
-    }
-
     var $option, fn, r;
     if (option.type === 'checkbox' || !option.type) {
       $option = chrome.options.base.checkbox(value, save, option, key);
@@ -338,10 +333,10 @@
       save(value);
     }, option).appendTo($box);
 
-    fn(value.value, function(newValue) {
+    addField(value.value, function(newValue) {
       value.value = newValue;
       save(value);
-    }, option).appendTo($container);
+    }, option, fn).appendTo($container);
 
     if (option.desc) {
       $('<label></label>').text(option.desc).appendTo($container);
@@ -373,8 +368,10 @@
 
   chrome.options.base.field = function(value, save, option, fn) {
     var $container = $('<div class="suboption"><label></label></div>');
-    $container.find('label').text(option.desc);
-    var $field = fn(value, save, option);
+    var $field = addField(value, save, option, fn);
+    if (option.desc) {
+      $container.find('label').text(option.desc);
+    }
     $('<div class="multiline"></div>').append($field).appendTo($container);
     return $container;
   };
@@ -672,7 +669,7 @@
       if (!fn) {
         throw Error('Could not find option type: ' + field.type);
       }
-      $field = fn(fieldValue, saveField, field)
+      $field = addField(fieldValue, saveField, field, fn)
         .appendTo($fieldContainer);
 
       raf(function() {
@@ -794,13 +791,24 @@
     for (var prop in obj) { clone[prop] = deepClone(obj[prop]); }
     return clone;
   }
+
+  function addField(value, save, option, fn) {
+    var $field = fn(value, save, option);
+    if (option.desc) {
+      $field.attr('data-title', option.desc);
+    }
+    if (option.disabled) {
+      $field.find('input, select, textarea').attr('disabled', true);
+    }
+    return $field;
+  }
 })();
 
 
 // Define all available fields.
 chrome.options.fields = {};
 
-chrome.options.fields.checkbox = function(value, save, option) {
+chrome.options.fields.checkbox = function(value, save) {
   var $checkbox = $('<input type="checkbox">');
 
   if (value != null) {
@@ -810,10 +818,6 @@ chrome.options.fields.checkbox = function(value, save, option) {
   $checkbox.click(function() {
     save($checkbox[0].checked);
   });
-
-  if (option.desc) {
-    $checkbox.attr('data-title', option.desc);
-  }
 
   return $checkbox;
 };
@@ -836,9 +840,6 @@ chrome.options.fields.color = function(value, save, option) {
       showAlpha: true,
       showInitial: true,
     }, option));
-  if (option.desc) {
-    $color.attr('data-title', option.desc);
-  }
   if (option.default) {
     var $reset = $('<span class="color-reset"></span>')
       .click(function(e) {
@@ -880,9 +881,6 @@ chrome.options.fields.select = function(value, save, option) {
       firstValue = value;
     }
   });
-  if (option.disabled) {
-    $select.attr('disabled', true);
-  }
   $select.val(value || firstValue);
   return $select;
 };
