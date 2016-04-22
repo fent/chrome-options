@@ -97,13 +97,13 @@ Uses [spectrum](http://bgrins.github.io/spectrum/) as the colorpicker.
 
 ### predefined_sound
 
-![predefined_sound](images/predefined_sounds.png)
+![predefined_sound](images/field_predefined_sound.png)
 
 * `Boolean` - `allowNoSound` - Adds a no sound option to the top of the select field.
 
 ### custom_sound
 
-![custom_sound](images/custom_sound.png)
+![custom_sound](images/field_custom_sound.png)
 
 
 # Complex Field Types
@@ -169,6 +169,6 @@ Current basic type of fields can be accessed through `chrome.options.fields`. Th
 A few options are supported.
 
 * `chrome.options.opts.title` - Title of the page if opening the page in a new tab. If not set, will set thet title to the extension's name from the manifest. Set to `false` if you don't want a title displayed.
-* `chrome.options.opts.about` - Contents of the About tab. If not set, will set the contents to the extension's description from the manifest. Set to `false` if you don't want this tab at all.
+* `chrome.options.opts.about` - Contents of the About tab. If not set, will set the contents to the extension's description from the manifest. Can be an html string. Set to `false` if you don't want this tab at all.
 * `chrome.options.opts.autoSave` - If `true`, will save options as they are changed. Otherwise, a button will be shown on the bottom left of the page for saving. Defaults to `true`.
 * `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Could be useful if you only want to keep defaults in your options page, and not in background and/or content pages. Defaults to `true`.
