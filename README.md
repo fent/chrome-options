@@ -4,7 +4,7 @@ Option pages should be easy to make given a structure of your options, and look 
 
 From extension [veefeed](https://github.com/fent/chrome-veefeed)
 
-[Demo](https://fent.github.com/chrome-options)
+[Demo](https://fent.github.com/chrome-options/options.html)
 
 
 # Install
@@ -147,6 +147,9 @@ Uset this as a shortcut for a single field list.
 ### checkbox-[field]
 
 ![checkbox-field](images/complex_checkbox_field.png)
+
+* `Boolean` - `defaultEnabled`
+* `Object` - `defaultValue`
 
 A checkbox and a type of field, side by side. Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
 
