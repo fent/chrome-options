@@ -158,6 +158,11 @@
   margin-right: 0.65em;
   font-size: 80%;
   cursor: pointer;
+  -webkit-user-select: none;
+}
+
+.chrome-bootstrap label:hover > .triangle {
+  -webkit-text-stroke: 1px black;
 }
 
 .chrome-bootstrap .image-upload {

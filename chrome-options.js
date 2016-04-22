@@ -386,14 +386,35 @@
 
   chrome.options.base.list = function(list, save, options) {
     var $container = $('<div class="suboption list"></div>');
+    var $wrapper, shown = true;
+
     if (options.desc) {
-      $('<label></label>')
+      var $label = $('<label></label>')
         .text(options.desc)
         .appendTo($container);
+      if (options.collapsible) {
+        shown = false;
+        var $triangle = $('<span class="triangle"></span>')
+          .text('▶')
+          .click(function() {
+            shown = !shown;
+            if (shown) {
+              $triangle.text('▼');
+              $wrapper.slideDown();
+            } else {
+              $triangle.text('▶');
+              $wrapper.slideUp();
+            }
+          })
+          .prependTo($label);
+      }
     }
 
     list = list || [];
     var $table = $('<table></table>').appendTo($container);
+    if (options.desc && options.collapsible) {
+      $wrapper = $table.wrap('<div></div>').closest('div').hide();
+    }
     var $tbody = $('<tbody></tbody>').appendTo($table);
     var rows;
     var heads = {};
