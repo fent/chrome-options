@@ -4,7 +4,7 @@ Option pages should be easy to make given a structure of your options, and look 
 
 From extension [veefeed](https://github.com/fent/chrome-veefeed)
 
-[Demo](https://fent.github.com/chrome-options/options.html)
+[Demo](https://fent.github.io/chrome-options/)
 
 
 # Install
