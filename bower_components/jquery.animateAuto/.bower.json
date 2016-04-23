@@ -1,0 +1,38 @@
+{
+  "name": "jquery.animateAuto",
+  "main": "jquery.animateAuto.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/davidtheclark/jquery.animateAuto",
+  "authors": [
+    "David Clark <david.dave.clark@gmail.com>"
+  ],
+  "description": "A jQuery plugin for animating (with jQuery animations) an element's height or width from something to `auto`, or from `auto` to something.",
+  "keywords": [
+    "jQuery",
+    "animate",
+    "auto",
+    "height",
+    "width"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "*"
+  },
+  "devDependencies": {},
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "e9c5e11f56f33ec914a9b3ab415aed8197ab8b76"
+  },
+  "_source": "git://github.com/davidtheclark/jquery.animateAuto.git",
+  "_target": "~0.1.0",
+  "_originalSource": "jquery.animateAuto"
+}

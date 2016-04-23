@@ -1,0 +1,42 @@
+{
+  "name": "throttle-debounce",
+  "version": "0.1.1",
+  "description": "Throttle/debounce your functions.",
+  "authors": [
+    "Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com/)",
+    "Ben Alman (http://benalman.com/)"
+  ],
+  "license": "MIT",
+  "main": "dist/throttle-debounce.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src",
+    "lib",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "homepage": "https://github.com/niksy/throttle-debounce",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "keywords": [
+    "throttle",
+    "debounce",
+    "browserify"
+  ],
+  "_release": "0.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.1",
+    "commit": "9021265d7afeccf6bebc8a1ceb0d45be5946d384"
+  },
+  "_source": "git://github.com/niksy/throttle-debounce.git",
+  "_target": "~0.1.1",
+  "_originalSource": "throttle-debounce",
+  "_direct": true
+}
