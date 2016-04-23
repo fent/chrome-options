@@ -2,9 +2,11 @@ Option pages should be easy to make given a structure of your options, and look 
 
 ![example](images/example.png)
 
-From extension [veefeed](https://github.com/fent/chrome-veefeed)
+Screenshot is from extension [veefeed](https://github.com/fent/chrome-veefeed)
 
-[Demo](https://fent.github.io/chrome-options/)
+Here's a [demo](https://fent.github.io/chrome-options/).
+
+This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bootstrap) for styling.
 
 
 # Install
