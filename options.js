@@ -17,7 +17,7 @@ chrome.options.addTab('General', [
 		{ name: 'color', type: 'color', desc: 'Choose a color fish' },
 	] },
 	{ type: 'h3', desc: 'My List' },
-	{ type: 'list', name: 'mylist', desc: 'Here\'s a list, add some stuff',
+	{ type: 'list', name: 'mylist', desc: 'Here\'s a list, add some things',
 		head: true, sortable: true, fields: [
 			{ type: 'select', name: 'number', desc: 'Number',
 				options: ['One', 'Two'] },
