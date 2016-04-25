@@ -257,7 +257,7 @@
   width: 100%;
   padding: 3px 5px 5px;
   background-color: #fff;
-  z-index: 4;
+  z-index: 99;
   -webkit-padding-start: 20px;
   line-height: 23px;
 }
