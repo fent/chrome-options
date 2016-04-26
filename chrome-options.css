@@ -54,8 +54,13 @@
   overflow: hidden;
 }
 
+.chrome-bootstrap .list thead th,
 .chrome-bootstrap .list tbody td {
   text-align: center;
+}
+
+.chrome-bootstrap .list tbody td > * {
+  text-align: left;
 }
 
 .chrome-bootstrap .list table .delete {
@@ -114,7 +119,7 @@
   padding-left: 24px;
 }
 
-.chrome-bootstrap .content .suboption .radio-options {
+.chrome-bootstrap .content .suboption > .radio-options {
   margin-left: 24px;
 }
 
