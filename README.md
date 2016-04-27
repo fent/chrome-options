@@ -177,3 +177,11 @@ A few options are supported.
 * `chrome.options.opts.about` - Contents of the About tab. If not set, will set the contents to the extension's description from the manifest. Can be an html string. Set to `false` if you don't want this tab at all.
 * `chrome.options.opts.autoSave` - If `true`, will save options as they are changed. Otherwise, a button will be shown on the bottom left of the page for saving. Defaults to `true`.
 * `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Could be useful if you only want to keep defaults in your options page, and not in background and/or content pages. Defaults to `true`.
+
+
+# Roadmap
+
+* Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
+* Possibly more layout-esque fields just like h3. Such as rows and columns. Will eliminate having to make common custom fields for complex option pages.
+* Validation, for things like URL fields.
+* A way to embed part of the options page whereever you want in your extension. Be it browser action or content scripts.
