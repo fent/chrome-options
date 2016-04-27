@@ -25,13 +25,13 @@ Add options page to `manifest.json`. `open_in_tab` set to `true` or `false` are 
       "open_in_tab": false
     }
 
-Also needs `storage` permission.
+Also needs `storage` permission. Options are saved to [`chrome.storage.sync`](https://developer.chrome.com/extensions/storage#property-sync).
 
     "permissions": [
       "storage"
     ]
 
-If you'll be using the `predefined_sound` fields, and want to play sounds from a context script, also add
+If you'll be using the [predefined_sound](#predefined_sound) fields, and want to play sounds from a content script, also add
 
     "web_accessible_resources": [
       "options/bower_components/chrome-options/sounds/*.wav"
