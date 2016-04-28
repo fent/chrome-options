@@ -89,7 +89,7 @@ Uses [spectrum](http://bgrins.github.io/spectrum/) as the colorpicker.
 
 ![select](images/field_select.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` attributes.
+* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` attributes. If value is an integer, it'll be saved as an integer.
 
 ### radio
 
