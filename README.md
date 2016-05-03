@@ -57,7 +57,7 @@ Use only one of the following functions to setup your options. If you're plannin
 
 Options all can have the following properties.
 
-* `String` - `type` - What type of option this is. Defaults to "checkbox". Can also be "h3" to add a separator-like heading for sections.
+* `String` - `type` - What type of option this is. Defaults to "checkbox".
 * `String` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
 * `String` - `description`
 * `String` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
@@ -123,6 +123,7 @@ When saved, will be saved as an object with all option names as keys along with 
 ![object](images/complex_object.png)
 
 * `Array.<Object>` - `options`
+* `String` - `layout` - "column" or "row". Defaults to "column".
 
 Similar to checkbox with `options`, but without a checkbox. Not just aesthetic, will still be saved as an object.
 
@@ -138,15 +139,17 @@ Similar to checkbox with `options`, but without a checkbox. Not just aesthetic, 
 * `Boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
 * `Boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
 * `Boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
-* `Array.<Object>` - `first` - You can specify a different set of fields for the first row.
+* `Array.<Option>` - `first` - You can specify a different set of fields for the first row.
 
 Will save its value as an array. If the list only contains one field, it will be an array of values of that field. Otherwise, an array of objects. When the last row's value is changed, a new row will be added.
 
 ### [field]-list
 
-Uset this as a shortcut for a single field list.
+A shortcut for a single field list.
 
 ### checkbox-[field]
+
+A checkbox with a field right next to it. I found myself using this one a few times.
 
 ![checkbox-field](images/complex_checkbox_field.png)
 
@@ -154,6 +157,23 @@ Uset this as a shortcut for a single field list.
 * `Object` - `defaultValue`
 
 A checkbox and a type of field, side by side. Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
+
+
+# Layout Fields
+
+Use these to help structure your page.
+
+### h3
+
+* `String` - `desc` - Text contents.
+
+A heading that can be used as a separator.
+
+### column/row
+
+* `Array.<Object>` - `options` - List of options.
+
+Places options in a column/row structure. Does not require a `name` property, so unlike the object type, does not save each option in a separate object, but on the parent object.
 
 
 # Custom Fields
@@ -166,7 +186,7 @@ Current basic type of fields can be accessed through `chrome.options.fields`. Th
 * `Function` - Should be called with new value when this option is updated.
 * `Object` - The object describing this option.
 
-[Here's an example](https://github.com/fent/chrome-veefeed/blob/master/options/options.js#L19) that creates a custom field that represents a text field and a list, which can be used inside a list.
+[Here's an example](https://github.com/fent/chrome-veefeed/blob/v0.1.1/options/options.js#L19) that creates a custom field that represents a text field and a list, which can be used inside a list.
 
 
 # Options
@@ -182,6 +202,5 @@ A few options are supported.
 # Roadmap
 
 * Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
-* Possibly more layout-esque fields just like h3. Such as rows and columns. Will eliminate having to make common custom fields for complex option pages.
 * Validation, for things like URL fields.
 * A way to embed part of the options page whereever you want in your extension. Be it browser action or content scripts.
