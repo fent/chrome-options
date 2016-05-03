@@ -45,6 +45,15 @@
   top: 1px;
 }
 
+.chrome-bootstrap .row > div {
+  margin: 0.65em 0;
+  display: inline-block;
+}
+
+.chrome-bootstrap .row > div:not(:last-child) {
+  margin-right: 0.65em !important;
+}
+
 .chrome-bootstrap .list > label {
   display: inline-block;
   margin-bottom: 0.5em;
@@ -340,10 +349,20 @@
 }
 
 .chrome-bootstrap label > [data-title]:after,
-.chrome-bootstrap .multiline > [data-title]:after {
+.chrome-bootstrap .multiline > .field-container [data-title]:after,
+.chrome-bootstrap .singleline > .field-container [data-title]:after {
   display: none;
 }
 
-.chrome-bootstrap .multiline {
+.chrome-bootstrap .multiline > .field-container {
   margin-top: 0.325em;
+}
+
+.chrome-bootstrap .singleline > .field-container {
+  display: inline-block;
+}
+
+.chrome-bootstrap .singleline > label:after {
+  content: ":";
+  margin-right: 0.65em;
 }
