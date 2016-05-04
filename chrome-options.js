@@ -185,9 +185,10 @@
               } else if (isEqual) {
                 delete changedValues[key];
                 $saveButton.off('click', cloneValue);
-                flashSavedAlert();
                 if (!Object.keys(changedValues).length) {
                   $saveButton.attr('disabled', true);
+                } else {
+                  flashSavedAlert();
                 }
               } else {
                 changedValues[key] = newValue;
