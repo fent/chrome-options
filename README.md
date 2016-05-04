@@ -63,6 +63,8 @@ Options all can have the following properties.
 * `String` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
 * `Boolean` - `disabled` - You can have the field be disabled, for whatever reason...
+* `Boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline behavior.
+* `Function` - `validate` - A function that will be given the new value of the field, will only save if it returns `true`.
 
 
 # Fields Types Available
@@ -186,7 +188,12 @@ Current basic type of fields can be accessed through `chrome.options.fields`. Th
 * `Function` - Should be called with new value when this option is updated.
 * `Object` - The object describing this option.
 
-[Here's an example](https://github.com/fent/chrome-veefeed/blob/v0.1.1/options/options.js#L19) that creates a custom field that represents a text field and a list, which can be used inside a list.
+You can add your own to this object, [here's an example](https://github.com/fent/chrome-veefeed/blob/v0.1.1/options/options.js#L19) that creates a custom field that represents a text field and a list, which can be used inside a list.
+
+To use one of the already existing basic fields with your custom field, you can call the following functions.
+
+`chrome.options.addField(value, save, option)`
+`chrome.options.addLabelNField(value, save, option)`
 
 
 # Options
@@ -202,5 +209,4 @@ A few options are supported.
 # Roadmap
 
 * Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
-* Validation, for things like URL fields.
 * A way to embed part of the options page whereever you want in your extension. Be it browser action or content scripts.
