@@ -51,6 +51,14 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
+  var $style = document.createElement('style');
+  document.body.appendChild($style);
+
+  var urlParams = {};
+  window.location.search.substring(1).split('&').forEach(function(param) {
+    urlParams[param] = true;
+  });
+
   var changedValues = {};
   var $saveContainer = $('.save-container');
   var $saveButton = $saveContainer.find('button')
@@ -74,13 +82,14 @@
     $('title').text(extensionName + ' options');
     var $title = $('.chrome-options-title');
     $title.text(extensionName);
-    if (chrome.options.opts.title === false) {
-      $title.hide();
+    if (chrome.options.opts.title === false || urlParams.hideTitle) {
+      $style.innerHTML += '.chrome-options-title { display: none; }';
     }
 
     if (chrome.options.opts.about === false ||
-       (!chrome.options.opts.about && !manifest.description)) {
-      $('.menu.about').hide();
+       (!chrome.options.opts.about && !manifest.description) ||
+        urlParams.hideAbout) {
+      $style.innerHTML += '.menu.about { display: none; }';
     } else {
       if (chrome.options.opts.about) {
         $('#about .content > p').html(chrome.options.opts.about);
@@ -94,6 +103,18 @@
     } else {
       $saveContainer.find('.auto').hide();
       $saveContainer.addClass('show');
+    }
+
+    if (urlParams.hideSidebar) {
+      $style.innerHTML +=
+        '.frame .navigation { display: none; }' +
+        '.frame .mainview { -webkit-margin-start: 10px !important; }';
+    }
+
+    if (urlParams.hideTabTitle) {
+      $style.innerHTML +=
+        '.frame .mainview header { display: none; }' +
+        '.frame .content { padding-top: 2px !important; }';
     }
 
     setupRan = true;
@@ -142,11 +163,9 @@
    * @param {Array.<Object>} options
    */
   chrome.options.set = function(desc, options) {
-    chrome.options.opts.title = false;
+    urlParams.hideSidebar = true;
+    urlParams.hideTabTitle = true;
     chrome.options.addTab('', desc, options);
-    $('.frame .navigation, .frame .mainview header').hide();
-    $('.frame .mainview').css('-webkit-margin-start', '10px');
-    $('.frame .content').css('padding-top', '2px');
   };
 
   function addTabOptions($parent, keyName, values, options) {

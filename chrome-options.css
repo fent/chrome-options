@@ -260,8 +260,8 @@
   color: #999;
 }
 
-.chrome-bootstrap header .corner input[type="url"] {
-  width: 210px;
+.chrome-bootstrap header {
+  z-index: 99;
 }
 
 .chrome-bootstrap .save-container {
