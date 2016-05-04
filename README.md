@@ -216,9 +216,13 @@ You can use the following query parameters to help you customize what specifical
 `hideAbout` - Hides about tab.
 `hideSidebar` - Hides entire sidebar, including title and about tab.
 `hideTabTitle` - Hides the selected tab's title.
+`hideTabDesc` - Hides the selected tab's description.
+
+You can also choose to display one option, suboption, or part of an option, by specifying it in the hash.
+
+    /options.html?#general.my_option
 
 
 # Roadmap
 
 * Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
-* A way to embed part of the options page whereever you want in your extension. Be it browser action or content scripts.

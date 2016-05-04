@@ -28,22 +28,28 @@
   var $menu = $('#main-menu');
   var $mainview = $('.mainview');
   var lastHash = null;
+  var hashPath = window.location.hash.split('.');
+  var hashOption = hashPath.length > 1;
+  var hashPosition = 1;
 
   function menuClick() {
-    var hash = window.location.hash;
-    if (!hash) {
+    var newHash = window.location.hash;
+    if (!newHash) {
       $('.mainview > *:nth-child(2)').addClass('selected');
       $('#main-menu li:first-child').addClass('selected');
       return;
     }
-    if (hash === lastHash) { return; }
-    lastHash = hash;
+    if (newHash === lastHash) { return; }
+    lastHash = newHash;
 
     $('.mainview > *, .menu li').removeClass('selected');
 
-    var $target = $('.menu a[href="' + hash + '"]');
+    hashPath = newHash.split('.');
+    hashOption = hashPath.length > 1;
+
+    var $target = $('.menu a[href="' + hashPath[0] + '"]');
     $target.parent().addClass('selected');
-    var $currentView = $(hash);
+    var $currentView = $(hashPath[0]);
     $currentView.addClass('selected');
     $('body')[0].scrollTop = 0;
   }
@@ -117,6 +123,10 @@
         '.frame .content { padding-top: 2px !important; }';
     }
 
+    if (urlParams.hideTabDesc) {
+      $style.innerHTML += '.frame .content .tab-desc { display: none; }';
+    }
+
     setupRan = true;
   }
 
@@ -142,7 +152,7 @@
     $tabview.find('header > h1').text(name);
     var $tabcontent = $('<div class="content"></div>');
     if (desc) {
-      $tabcontent.append($('<p></p>').text(desc));
+      $tabcontent.append($('<p class="tab-desc"></p>').text(desc));
     }
     keyName = keyName ? keyName + '.' : '';
     var keys = options
@@ -219,15 +229,23 @@
           };
           $container = addOption(key, values, value, save, option, top);
       }
-      $container.appendTo($parent);
+      if ($container) { $container.appendTo($parent); }
     });
   }
 
   function addH3(option) {
-    return $('<h3>').text(option.desc);
+    return !hashOption && $('<h3>').text(option.desc);
   }
 
   function addOption(key, values, value, save, option, top) {
+    if (hashOption) {
+      if (hashPosition < hashPath.length &&
+          option.name && option.name !== hashPath[hashPosition]) {
+        return;
+      }
+      hashPosition++;
+    }
+
     if (value === undefined &&
        (option.default || typeof option.default === 'boolean')) {
       value = option.default;
@@ -269,6 +287,7 @@
         }
     }
 
+    if (hashOption) { hashPosition--; }
     if (option.preview) {
       var $label = $option.find('label').first();
       $label.append('<span class="preview"></span>');
@@ -397,10 +416,12 @@
     var $container = $('<div class="suboptions"></div>');
     option.options.forEach(function(option) {
       var optionKey = (key ? key + '.' : '') + option.name;
-      addOption(optionKey, value, value[option.name], function(newValue) {
-        if (option.name) { value[option.name] = newValue; }
-        save(value);
-      }, option).appendTo($container);
+      var $option = addOption(optionKey, value, value[option.name],
+        function(newValue) {
+          if (option.name) { value[option.name] = newValue; }
+          save(value);
+        }, option);
+      if ($option) { $option.appendTo($container); }
     });
     return $container;
   }
