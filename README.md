@@ -206,6 +206,18 @@ A few options are supported.
 * `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Could be useful if you only want to keep defaults in your options page, and not in background and/or content pages. Defaults to `true`.
 
 
+# Embed Options Page
+
+In case you'd like to embed your option page, or part of it, inside a browser action, page action, or another page, you can do so with an iframe. You can get the option page url with `chrome.runtime.getURL("/options/options.html")`.
+
+You can use the following query parameters to help you customize what specifically you want users to see.
+
+`hideTitle` - Hides the extension title on the top left.
+`hideAbout` - Hides about tab.
+`hideSidebar` - Hides entire sidebar, including title and about tab.
+`hideTabTitle` - Hides the selected tab's title.
+
+
 # Roadmap
 
 * Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
