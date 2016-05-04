@@ -185,7 +185,7 @@ You can add custom containers with multiple fields, other types of form fields t
 Current basic type of fields can be accessed through `chrome.options.fields`. They're functions that are called with
 
 * `Object` - The current value of this option.
-* `Function` - Should be called with new value when this option is updated.
+* `Function` - Should be called with new value when this option is updated, and the event object if any.
 * `Object` - The object describing this option.
 
 You can add your own to this object, [here's an example](https://github.com/fent/chrome-veefeed/blob/v0.1.1/options/options.js#L19) that creates a custom field that represents a text field and a list, which can be used inside a list.

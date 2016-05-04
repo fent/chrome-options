@@ -839,7 +839,10 @@
   chrome.options.addField = function(value, save, option, type) {
     var fn = chrome.options.fields[type || option.type];
     if (!fn) { return; }
+    var lastTimeStamp;
     var $field = fn(value, function(newValue, e) {
+      if (e && e.timeStamp < lastTimeStamp) { return; }
+      lastTimeStamp = e.timeStamp;
       if (option.validate && !option.validate(newValue)) {
         $field.addClass('invalid');
       } else {
