@@ -366,3 +366,7 @@
   content: ":";
   margin-right: 0.65em;
 }
+
+.chrome-bootstrap .invalid {
+  outline: 1px solid red !important;
+}
