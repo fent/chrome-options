@@ -225,4 +225,9 @@ You can also choose to display one option, suboption, or part of an option, by s
 
 # Roadmap
 
-* Additional fields as needed. Sliders, file upload, image upload, date picker, number, URL.
+* Additional fields as needed.
+  * Number
+  * Slider
+  * Date picker
+  * file upload
+  * image upload
