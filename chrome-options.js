@@ -882,8 +882,10 @@
     if (!fn) { return; }
     var lastTimeStamp;
     var $field = fn(value, function(newValue, e) {
-      if (e && e.timeStamp < lastTimeStamp) { return; }
-      lastTimeStamp = e.timeStamp;
+      if (e) {
+        if (e.timeStamp < lastTimeStamp) { return; }
+        lastTimeStamp = e.timeStamp;
+      }
       if (option.validate && !option.validate(newValue)) {
         $field.addClass('invalid');
       } else {
@@ -923,7 +925,9 @@ chrome.options.fields.text = function(value, save) {
   var $textbox = $('<input type="text">');
   $textbox.val(value);
   $textbox.on('input change', $.debounce(500, false, function(e) {
-    save($textbox.val(), e);
+    if (e.target.validity.valid) {
+      save($textbox.val(), e);
+    }
   }));
   return $textbox;
 };
@@ -955,10 +959,7 @@ chrome.options.fields.color = function(value, save, option) {
 };
 
 chrome.options.fields.url = function(value, save, option) {
-  option.validate = function(newValue) {
-    return !newValue || /^https?:\/\//.test(newValue);
-  };
-  return chrome.options.fields.text(value, save).attr('type', 'url');
+  return chrome.options.fields.text(value, save, option).attr('type', 'url');
 };
 
 chrome.options.fields.select = function(value, save, option) {
