@@ -212,11 +212,11 @@ In case you'd like to embed your option page, or part of it, inside a browser ac
 
 You can use the following query parameters to help you customize what specifically you want users to see.
 
-`hideTitle` - Hides the extension title on the top left.
-`hideAbout` - Hides about tab.
-`hideSidebar` - Hides entire sidebar, including title and about tab.
-`hideTabTitle` - Hides the selected tab's title.
-`hideTabDesc` - Hides the selected tab's description.
+* `hideTitle` - Hides the extension title on the top left.
+* `hideAbout` - Hides about tab.
+* `hideSidebar` - Hides entire sidebar, including title and about tab.
+* `hideTabTitle` - Hides the selected tab's title.
+* `hideTabDesc` - Hides the selected tab's description.
 
 You can also choose to display one option, suboption, or part of an option, by specifying it in the hash.
 
