@@ -231,3 +231,5 @@ You can also choose to display one option, suboption, or part of an option, by s
   * Date picker
   * file upload
   * image upload
+* Build and minimize release
+  * Optionally include sound files in installation
