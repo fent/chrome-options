@@ -237,6 +237,10 @@
     return !hashOption && $('<h3>').text(option.desc);
   }
 
+  function addHtml(option) {
+    console.log(option);
+    return (!hashOption) && $('<div>').html(option.html);
+  }
   function addOption(key, values, value, save, option, top) {
     if (hashOption) {
       if (hashPosition < hashPath.length &&
@@ -244,6 +248,10 @@
         return;
       }
       hashPosition++;
+    }
+
+    if (option.type == 'html') {
+      return addHtml(option);
     }
 
     if (value === undefined &&
