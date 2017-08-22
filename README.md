@@ -177,6 +177,12 @@ A heading that can be used as a separator.
 
 Places options in a column/row structure. Does not require a `name` property, so unlike the object type, does not save each option in a separate object, but on the parent object.
 
+### html
+
+* `DOMNode|String` - `html` - Contents.
+
+Places HTML content directly into the page.
+
 
 # Custom Fields
 

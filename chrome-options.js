@@ -237,6 +237,10 @@
     return !hashOption && $('<h3>').text(option.desc);
   }
 
+  function addHtml(option) {
+    return (!hashOption) && $('<div>').html(option.html);
+  }
+
   function addOption(key, values, value, save, option, top) {
     if (hashOption) {
       if (hashPosition < hashPath.length &&
@@ -270,6 +274,9 @@
         break;
       case 'row':
         $option = chrome.options.base.row(values, save, option, key, top);
+        break;
+      case 'html':
+        $option = addHtml(option);
         break;
       default:
         if (!option.type) {
