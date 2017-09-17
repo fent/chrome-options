@@ -501,19 +501,13 @@
         var isVisible = $head.is(':visible');
         if (show && !isVisible) {
           setTimeout(function() {
-            $head.css({ display: '', 'max-width': '0' });
-            raf(() => {
-              $head.css('max-width', '100%');
-            });
+            slideShow($head);
           }, init ? 0 : 500);
         } else if (!show && isVisible) {
           if (init) {
-            $head.css({ display: 'none', 'max-width': 0 });
+            $head.css('display', 'none');
           } else {
-            $head.css('max-width', '0');
-            setTimeout(() => {
-              $head.css('display', 'none');
-            }, 500);
+            slideHide($head);
           }
         }
       });
@@ -682,16 +676,10 @@
           var isVisible = $field.is(':visible');
           var equals = bindToEquals(bindTo.value, newValue);
           if (equals && !isVisible) {
-            $field.css({ display: '', 'max-width': '0' });
-            raf(() => {
-              $field.css('max-width', '100%');
-            });
+            slideShow($field);
             getValue.shown[field.name] = true;
           } else if (!equals && isVisible) {
-            $field.css('max-width', '0');
-            setTimeout(() => {
-              $field.css('display', 'none');
-            }, 500);
+            slideHide($field);
             getValue.shown[field.name] = false;
           }
         }
@@ -699,10 +687,7 @@
 
       update.hide = function() {
         if (field.bindTo) {
-          $field.css('max-width', '0');
-          setTimeout(() => {
-            $field.css('display', 'none');
-          }, 500);
+          slideHide($field);
         }
       };
 
@@ -764,12 +749,12 @@
            !bindToEquals(bindTo.value,
              fieldsMap[bindTo.field].options[0].value))
         ) {
-          $field.css({ display: 'none', 'max-width': 0 });
+          $field.css('display', 'none');
           getValue.shown[field.name] = false;
         } else {
           if (animate) {
             setTimeout(() => {
-              $field.css('max-width', '100%');
+              slideShow($field);
             }, 500);
           } else {
             $field.css('max-width', '100%');
@@ -807,6 +792,42 @@
   function bindToEquals(bindToValue, fieldValue) {
     return Array.isArray(bindToValue) ?
       bindToValue.indexOf(fieldValue) > -1 : bindToValue === fieldValue;
+  }
+
+  function slideHide($node, ms = 500) {
+    $node.css({
+      maxWidth: '100%',
+      paddingLeft: null,
+      paddingRight: null,
+      transition: `max-width ${ms}ms, padding ${ms}ms`,
+    });
+    setTimeout(() => {
+      $node.css({
+        maxWidth: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+      });
+      setTimeout(() => {
+        $node.css('display', 'none');
+      }, ms);
+    });
+  }
+
+  function slideShow($node, ms = 500) {
+    $node.css({
+      display: '',
+      maxWidth: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      transition: `max-width ${ms}ms, padding ${ms}ms`,
+    });
+    setTimeout(() => {
+      $node.css({
+        maxWidth: '100%',
+        paddingLeft: null,
+        paddingRight: null,
+      });
+    });
   }
 
   chrome.options.base.singleFieldList = function(value, save, options, type) {

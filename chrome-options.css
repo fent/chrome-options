@@ -25,7 +25,6 @@
 
 .chrome-bootstrap .bind-to > :first-child {
   float: left;
-  transition: max-width 500ms;
 }
 
 .chrome-bootstrap .play {
@@ -62,7 +61,6 @@
 
 .chrome-bootstrap .list thead th div {
   overflow: hidden;
-  transition: max-width 500ms;
 }
 
 .chrome-bootstrap .list thead th,
