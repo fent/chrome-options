@@ -203,6 +203,7 @@
             // Wrap this in requestAnimationFrame so that it
             // doesn't block user interaction.
             raf(function() {
+              console.log('checking', value, newValue);
               var isEqual = deepEqual(value, newValue);
               if (chrome.options.opts.autoSave) {
                 if (!isEqual) {
@@ -422,7 +423,8 @@
     }
     var $container = $('<div class="suboptions"></div>');
     option.options.forEach(function(option) {
-      var optionKey = (key ? key + '.' : '') + option.name;
+      var optionKey = (key || '') +
+        (key && option.name ? '.' : '') + (option.name || '');
       var $option = addOption(optionKey, value, value[option.name],
         function(newValue) {
           if (option.name) { value[option.name] = newValue; }
@@ -728,10 +730,14 @@
       prevfield = field;
       var $fieldContainer = $td.appendTo($tr);
       var fieldValue;
+      if (!values && (fields.length > 1 ||
+          field.type === 'column' || field.type === 'row')) {
+        values = {};
+      }
+
       if (fields.length === 1) {
         fieldValue = values = values !== undefined ? values : field.default;
       } else {
-        if (!values) { values = {}; }
         fieldValue = values[field.name] =
           values[field.name] !== undefined ? values[field.name] : field.default;
       }
