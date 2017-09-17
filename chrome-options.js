@@ -938,10 +938,20 @@ chrome.options.fields.checkbox = function(value, save) {
   return $checkbox;
 };
 
+function debounce(wait, func) {
+  var timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, wait);
+  };
+}
+
 chrome.options.fields.text = function(value, save) {
   var $textbox = $('<input type="text">');
   $textbox.val(value);
-  $textbox.on('input change', $.debounce(500, false, function(e) {
+  $textbox.on('input change', debounce(500, function(e) {
     if (e.target.validity.valid) {
       save($textbox.val(), e);
     }
