@@ -203,7 +203,6 @@
             // Wrap this in requestAnimationFrame so that it
             // doesn't block user interaction.
             raf(function() {
-              console.log('checking', value, newValue);
               var isEqual = deepEqual(value, newValue);
               if (chrome.options.opts.autoSave) {
                 if (!isEqual) {
@@ -493,6 +492,7 @@
       });
     }
 
+    // Check if each column should be shown.
     function checkColumns(init) {
       options.fields.forEach(function(field) {
         if (!field.bindTo) { return; }
@@ -501,17 +501,19 @@
         var isVisible = $head.is(':visible');
         if (show && !isVisible) {
           setTimeout(function() {
-            $head.css('display', '');
-            $head.animateAuto('width', init ? 250 : 500);
+            $head.css({ display: '', 'max-width': '0' });
+            raf(() => {
+              $head.css('max-width', '100%');
+            });
           }, init ? 0 : 500);
         } else if (!show && isVisible) {
           if (init) {
-            $head.css({display: 'none', width: 0 });
+            $head.css({ display: 'none', 'max-width': 0 });
           } else {
-            $head.animateAuto({
-              dimension: 'width',
-              action: 'close',
-            }, 500, function() { $head.css('display', 'none'); });
+            $head.css('max-width', '0');
+            setTimeout(() => {
+              $head.css('display', 'none');
+            }, 500);
           }
         }
       });
@@ -680,14 +682,16 @@
           var isVisible = $field.is(':visible');
           var equals = bindToEquals(bindTo.value, newValue);
           if (equals && !isVisible) {
-            $field.css('display', '');
-            $field.animateAuto('width', 500);
+            $field.css({ display: '', 'max-width': '0' });
+            raf(() => {
+              $field.css('max-width', '100%');
+            });
             getValue.shown[field.name] = true;
           } else if (!equals && isVisible) {
-            $field.animateAuto({
-              dimension: 'width',
-              action: 'close',
-            }, 500, function() { $field.css('display', 'none'); });
+            $field.css('max-width', '0');
+            setTimeout(() => {
+              $field.css('display', 'none');
+            }, 500);
             getValue.shown[field.name] = false;
           }
         }
@@ -695,12 +699,10 @@
 
       update.hide = function() {
         if (field.bindTo) {
-          $field.animateAuto({
-            dimension: 'width',
-            action: 'close',
-          }, 250, function() {
+          $field.css('max-width', '0');
+          setTimeout(() => {
             $field.css('display', 'none');
-          });
+          }, 500);
         }
       };
 
@@ -762,13 +764,15 @@
            !bindToEquals(bindTo.value,
              fieldsMap[bindTo.field].options[0].value))
         ) {
-          $field.css({ display: 'none', width: 0 });
+          $field.css({ display: 'none', 'max-width': 0 });
           getValue.shown[field.name] = false;
         } else {
           if (animate) {
-            setTimeout(function() { $field.animateAuto('width', 500); }, 500);
+            setTimeout(() => {
+              $field.css('max-width', '100%');
+            }, 500);
           } else {
-            $field.animateAuto('width', 500);
+            $field.css('max-width', '100%');
           }
           getValue.shown[field.name] = true;
         }
