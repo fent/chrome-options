@@ -192,7 +192,7 @@
           var latestValue = value;
 
           // Clone value so that it can be compared to new value.
-          function cloneValue() { value = deepClone(latestValue); }
+          var cloneValue = function() { value = deepClone(latestValue); };
 
           // Also use a timeout so that it doensn't seep into load time.
           raf(cloneValue);
@@ -284,10 +284,10 @@
           $option = chrome.options.base.checkbox(value, save, option, key);
         } else if (chrome.options.fields[option.type]) {
           $option = chrome.options.addLabelNField(value, save, option);
-        } else if (r = /(\w+)-list/.exec(option.type)) {
+        } else if ((r = /(\w+)-list/.exec(option.type))) {
           $option = chrome.options.base
             .singleFieldList(value, save, option, r[1]);
-        } else if (r = /checkbox-(\w+)/.exec(option.type)) {
+        } else if ((r = /checkbox-(\w+)/.exec(option.type))) {
           $option = chrome.options.base
             .checkboxNField(value, save, option, r[1]);
         } else {
@@ -555,7 +555,7 @@
         saveFields();
       }
       row = addListRow($tbody, null, options.fields, fieldsMap, saveFields,
-                           remove, false, options.sortable, animate, key);
+        remove, false, options.sortable, animate, key);
       rows.push(row);
       raf(function() {
         var rowValues = rows.map(function(getValue) { return getValue(); });
@@ -571,14 +571,14 @@
       }
       var fields = i === 0 && options.first ? options.first : options.fields;
       row = addListRow($tbody, rowData, fields, fieldsMap, saveFields,
-                       remove, i === 0 && options.first,
-                       options.sortable, false, key);
+        remove, i === 0 && options.first,
+        options.sortable, false, key);
       return row;
     });
 
     if (options.first && !rows.length) {
       var row = addListRow($tbody, null, options.first, fieldsMap, saveFields,
-                           function() {}, true, options.sortable, false, key);
+        function() {}, true, options.sortable, false, key);
       rows.push(row);
       saveFields();
     }
@@ -643,7 +643,7 @@
   };
 
   function addListRow($table, values, fields, fieldsMap, save, remove,
-                      unremovable, sort, animate, key) {
+    unremovable, sort, animate, key) {
     var $tr = $('<tr></tr>');
     if (unremovable) {
       $tr.addClass('unremovable');
@@ -756,12 +756,12 @@
       raf(function() {
         if (!bindTo) { return; }
         if (
-             (values[bindTo.field] &&
-              !bindToEquals(bindTo.value, values[bindTo.field])) ||
-             (!values[bindTo.field] &&
-              !bindToEquals(bindTo.value,
-                            fieldsMap[bindTo.field].options[0].value))
-           ) {
+          (values[bindTo.field] &&
+           !bindToEquals(bindTo.value, values[bindTo.field])) ||
+          (!values[bindTo.field] &&
+           !bindToEquals(bindTo.value,
+             fieldsMap[bindTo.field].options[0].value))
+        ) {
           $field.css({ display: 'none', width: 0 });
           getValue.shown[field.name] = false;
         } else {
