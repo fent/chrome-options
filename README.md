@@ -37,7 +37,7 @@ If you'll be using the [predefined_sound](#predefined_sound) fields, and want to
       "options/bower_components/chrome-options/sounds/*.wav"
     ]
 
-If you're using git, I recommend adding `options/bower_components` to your `.gitignore`.
+If you're using git, consider adding `options/bower_components` to your `.gitignore`.
 
 Afterwards, you can start setting up your options page by editing `options.js`, and additionally, `custom.css` if you need to set any styles.
 
@@ -62,9 +62,9 @@ Options all can have the following properties.
 * `String` - `description`
 * `String` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
-* `Boolean` - `disabled` - You can have the field be disabled, for whatever reason...
-* `Boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline behavior.
-* `Function` - `validate` - A function that will be given the new value of the field, will only save if it returns `true`.
+* `Boolean` - `disabled` - The field can be disabled, for whatever reason...
+* `Boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
+* `Function` - `validate` - Will be given the new value of the field, will only save if it returns `true`.
 
 
 # Fields Types Available
@@ -85,19 +85,19 @@ If `default` is set, will have an additional button for resetting to that color.
 
 ![color](images/field_color_2.png)
 
-Uses [spectrum](http://bgrins.github.io/spectrum/) as the colorpicker.
+Uses [spectrum](http://bgrins.github.io/spectrum/) for the colorpicker.
 
 ### select
 
 ![select](images/field_select.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` attributes. If value is an integer, it'll be saved as an integer.
+* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties. `value` can be a string or int.
 
 ### radio
 
 ![select](images/field_radio.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` attributes.
+* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties.
 
 ### predefined_sound
 
@@ -127,43 +127,43 @@ When saved, will be saved as an object with all option names as keys along with 
 * `Array.<Object>` - `options`
 * `String` - `layout` - "column" or "row". Defaults to "column".
 
-Similar to checkbox with `options`, but without a checkbox. Not just aesthetic, will still be saved as an object.
+Similar to checkbox with `options`, but without the checkbox. Not just for aesthetic purposes, will still be saved as an object.
 
 ### list
 
 ![list](images/complex_list.png)
 
 * `Array.<Object>` - `fields` - Required. List of fields for this list.
-  * `String` - `type` - Only basic types listed above and custom fields supported.
-  * `String` - `name` - Required.
-  * `Boolean` - `required` - Set to true if you require this particular field to be a truthy value in order for this row to be saved.
+  * `String` - `type` - Only basic field types listed above and custom fields supported.
+  * `String` - `name` - Required for non-layout types.
+  * `Boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
   * `Object` - `bindTo` - Will only display this field if another field with name matching `bindTo.field` has the value `bindTo.value`, which can be be a string or an array of strings.
 * `Boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
 * `Boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
 * `Boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
 * `Array.<Option>` - `first` - You can specify a different set of fields for the first row.
 
-Will save its value as an array. If the list only contains one field, it will be an array of values of that field. Otherwise, an array of objects. When the last row's value is changed, a new row will be added.
+Will save its value as an array. If there is only one field, it will be an array of values of that field. Otherwise, an array of objects. When the last row's value is changed, a new row will be added.
 
 ### [field]-list
 
-A shortcut for a single field list.
+Shortcut for a single field list.
 
 ### checkbox-[field]
 
-A checkbox with a field right next to it. I found myself using this one a few times.
+Shortcut for a checkbox with a field right next to it.
 
 ![checkbox-field](images/complex_checkbox_field.png)
 
 * `Boolean` - `defaultEnabled`
 * `Object` - `defaultValue`
 
-A checkbox and a type of field, side by side. Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
+Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
 
 
 # Layout Fields
 
-Use these to help structure your page.
+Use these to help structure the layout of your page.
 
 ### h3
 
@@ -175,7 +175,7 @@ A heading that can be used as a separator.
 
 * `Array.<Object>` - `options` - List of options.
 
-Places options in a column/row structure. Does not require a `name` property, so unlike the object type, does not save each option in a separate object, but on the parent object.
+Places options in a column/row structure. Unlike the object type, does not save each option in a separate object, but on the parent object.
 
 ### html
 
@@ -209,7 +209,7 @@ A few options are supported.
 * `chrome.options.opts.title` - Title of the page if opening the page in a new tab. If not set, will set thet title to the extension's name from the manifest. Set to `false` if you don't want a title displayed.
 * `chrome.options.opts.about` - Contents of the About tab. If not set, will set the contents to the extension's description from the manifest. Can be an html string. Set to `false` if you don't want this tab at all.
 * `chrome.options.opts.autoSave` - If `true`, will save options as they are changed. Otherwise, a button will be shown on the bottom left of the page for saving. Defaults to `true`.
-* `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Could be useful if you only want to keep defaults in your options page, and not in background and/or content pages. Defaults to `true`.
+* `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Can be useful if you only want to keep defaults in your options page, and not in background and/or content pages for when your extension is first installed. Defaults to `true`.
 
 
 # Embed Options Page
