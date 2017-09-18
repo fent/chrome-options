@@ -72,6 +72,14 @@
   text-align: left;
 }
 
+.chrome-bootstrap .list table {
+  border-collapse: collapse;
+}
+
+.chrome-bootstrap .list table tr > td {
+  padding-bottom: 2px;
+}
+
 .chrome-bootstrap .list table .delete {
   position: initial;
 }

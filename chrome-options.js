@@ -1,4 +1,4 @@
-/* global chrome, $ */
+/* global chrome, $, dragula */
 
 (function() {
   // Expose this library.
@@ -591,38 +591,36 @@
     $tbody.on('input change', '> tr:last-child', addNewRow.bind(null, true));
 
     if (options.sortable) {
-      $tbody.sortable({
-        axis: 'y',
-        items: '> *' + (options.first ? ':not(:first-child)' : ''),
-        handle: '.sort',
-        placeholder: 'placeholder',
-        cursor: 'move',
-      }).on('sortstart', function(e, ui) {
-        // It's possible that the width of each column will change as
-        // a row is removed to be sorted. This keeps the widths as they were
-        // when sorting started, and then resets things when sorting is done.
-        var $trs = ui.placeholder.closest('table').find('tr:not(.placeholder)');
-        var widths = [];
-        $trs.each(function() {
-          $(this).find('td').each(function(i) {
-            var column = widths[i] = widths[i] || [];
-            column.push($(this).width());
-          });
+      dragula([$tbody.get(0)], {
+        moves: (el, source, handle) => {
+          return (!options.first || el != el.parentNode.children[0]) &&
+            handle.closest('tbody') == $tbody.get(0) &&
+            handle.classList.contains('sort');
+        },
+        accepts: (el, target, source, sibling) => {
+          return !sibling.classList.contains('gu-mirror');
+        },
+        direction: 'vertical',
+        mirrorContainer: $tbody.get(0),
+
+      }).on('cloned', (mirror, original) => {
+        // Set the mirror's td's to a fixed width since taking a row
+        // out of a table removes its alignments from the
+        // table's columns.
+        var $mirrorTDs = $(mirror).find('> td');
+        $(original).find('> td').each(function(i) {
+          $mirrorTDs.eq(i).width($(this).width());
         });
-        var height = $trs.eq(0).find('td').eq(0).height();
-        widths = widths.map(function(row) {
-          return Math.max.apply(null, row);
+
+        // Copy the value of the mirror's select elements.
+        // Since `node.cloneNode()` does not do so.
+        var $mirrorSelects = $(mirror).find('select');
+        $(original).find('select').each(function(i) {
+          $mirrorSelects.eq(i).val($(this).val());
         });
-        var $placeholderTDs = ui.placeholder.find('td');
-        var $itemTDs = ui.item.find('td');
-        widths.forEach(function(width, i) {
-          var $td = $placeholderTDs.eq(i);
-          $td.css('width', width + 'px');
-          $td.html('<div style="height: ' + height + 'px;">&nbsp;</div>');
-          $itemTDs.eq(i).css('width', width + 'px');
-        });
-      }).on('sortstop', function(e, ui) {
-        ui.item.find('td').css('width', '');
+
+      }).on('dragend', () => {
+        //ui.item.find('td').css('width', '');
         rows.forEach(function(a) {
           var child = a.$tr[0];
           a.index = 0;
