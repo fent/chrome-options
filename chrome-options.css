@@ -1,3 +1,59 @@
+.chrome-bootstrap .chrome-options.title {
+  display: none;
+}
+
+.chrome-bootstrap .menu.about {
+  display: none;
+}
+
+.chrome-bootstrap .frame .navigation {
+  display: none;
+}
+
+.chrome-bootstrap .frame .mainview {
+  -webkit-margin-start: 10px;
+}
+
+.chrome-bootstrap .frame .mainview header {
+  display: none;
+}
+
+.chrome-bootstrap .frame .content {
+  padding-top: 2px;
+}
+
+.chrome-bootstrap .frame .content .tab-desc {
+  display: none;
+}
+
+.chrome-bootstrap.show-title .chrome-options-title {
+  display: block;
+}
+
+.chrome-bootstrap.show-about .menu.about {
+  display: block;
+}
+
+.chrome-bootstrap.show-sidebar .frame .navigation {
+  display: block;
+}
+
+.chrome-bootstrap.show-sidebar .frame .mainview {
+  -webkit-margin-start: 155px;
+}
+
+.chrome-bootstrap.show-tab-title .frame .mainview header {
+  display: block;
+}
+
+.chrome-bootstrap.show-tab-title .frame .content {
+  padding-top: 55px;
+}
+
+.chrome-bootstrap .frame .content .tab-desc {
+  display: block;
+}
+
 .chrome-bootstrap .navigation {
   background: #fff;
   position: relative;

@@ -57,9 +57,6 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
-  var $style = document.createElement('style');
-  document.body.appendChild($style);
-
   var urlParams = {};
   window.location.search.substring(1).split('&').forEach(function(param) {
     urlParams[param] = true;
@@ -88,15 +85,14 @@
     $('title').text(extensionName + ' options');
     var $title = $('.chrome-options-title');
     $title.text(extensionName);
-    if (chrome.options.opts.title === false || urlParams.hideTitle) {
-      $style.innerHTML += '.chrome-options-title { display: none; }';
+    if (chrome.options.opts.title !== false && !urlParams.hideTitle) {
+      $(document.body).addClass('show-title');
     }
 
-    if (chrome.options.opts.about === false ||
-       (!chrome.options.opts.about && !manifest.description) ||
-        urlParams.hideAbout) {
-      $style.innerHTML += '.menu.about { display: none; }';
-    } else {
+    if (chrome.options.opts.about !== false &&
+       (chrome.options.opts.about || manifest.description) &&
+        !urlParams.hideAbout) {
+      $(document.body).addClass('show-about');
       if (chrome.options.opts.about) {
         $('#about .content > p').html(chrome.options.opts.about);
       } else {
@@ -104,27 +100,23 @@
       }
     }
 
+    if (!urlParams.hideSidebar) {
+      $(document.body).addClass('show-sidebar');
+    }
+
+    if (!urlParams.hideTabTitle) {
+      $(document.body).addClass('show-tab-title');
+    }
+
+    if (!urlParams.hideTabDesc) {
+      $(document.body).addClass('show-tab-desc');
+    }
+
     if (chrome.options.opts.autoSave) {
       $saveButton.hide();
     } else {
       $saveContainer.find('.auto').hide();
       $saveContainer.addClass('show');
-    }
-
-    if (urlParams.hideSidebar) {
-      $style.innerHTML +=
-        '.frame .navigation { display: none; }' +
-        '.frame .mainview { -webkit-margin-start: 10px !important; }';
-    }
-
-    if (urlParams.hideTabTitle) {
-      $style.innerHTML +=
-        '.frame .mainview header { display: none; }' +
-        '.frame .content { padding-top: 2px !important; }';
-    }
-
-    if (urlParams.hideTabDesc) {
-      $style.innerHTML += '.frame .content .tab-desc { display: none; }';
     }
 
     setupRan = true;
