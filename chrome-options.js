@@ -795,8 +795,8 @@
   function slideHide($node, ms = 500) {
     $node.css({
       maxWidth: '100%',
-      paddingLeft: null,
-      paddingRight: null,
+      paddingLeft: '',
+      paddingRight: '',
       transition: `max-width ${ms}ms, padding ${ms}ms`,
     });
     setTimeout(() => {
@@ -822,8 +822,8 @@
     setTimeout(() => {
       $node.css({
         maxWidth: '100%',
-        paddingLeft: null,
-        paddingRight: null,
+        paddingLeft: '',
+        paddingRight: '',
       });
     });
   }
