@@ -604,11 +604,19 @@
           $mirrorTDs.eq(i).width($(this).width());
         });
 
-        // Copy the value of the mirror's select elements.
-        // Since `node.cloneNode()` does not do so.
-        var $mirrorSelects = $(mirror).find('select');
-        $(original).find('select').each(function(i) {
-          $mirrorSelects.eq(i).val($(this).val());
+        // Copy the value of the mirror's form elements.
+        // Since `node.cloneNode()` does not do so for some of them.
+        var selection = 'select, input[type=radio]';
+        var $mirrorSelects = $(mirror).find(selection);
+        $(original).find(selection).each(function(i) {
+          var $node = $mirrorSelects.get(i);
+          $node.value = this.value;
+          if ($node.checked) {
+            // Change the name of the radio field so that checking the
+            // original element again won't uncheck the mirrored element.
+            $node.setAttribute('name', $node.getAttribute('name') + '_');
+            this.checked = true;
+          }
         });
 
       }).on('dragend', () => {
