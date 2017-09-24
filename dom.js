@@ -90,28 +90,32 @@
 
   window.slideXShow = function($node, ms = animTime) {
     $node.style.display = '';
-    $node.style.maxWidth = '0';
+    $node.style.width = '';
+    var width = window.getComputedStyle($node).width;
+    $node.style.width = '0';
     $node.style.paddingLeft = '0';
     $node.style.paddingRight = '0';
     $node.style.transition =
-      `max-width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+      `width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+    $node.style.overflow = 'hidden';
+    $node.style.whiteSpace = 'nowrap';
     setTimeout(() => {
-      $node.style.maxWidth = '100%';
+      $node.style.width = width;
       $node.style.paddingLeft = '';
       $node.style.paddingRight = '';
     });
   };
 
   window.slideXHide = function($node, ms = animTime) {
-    $node.style.maxWidth = '100%';
-    $node.style.paddingLeft = '';
-    $node.style.paddingRight = '';
-    $node.transition =
-      `max-width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+    $node.style.width = window.getComputedStyle($node).width;
+    $node.style.transition =
+      `width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+    $node.style.overflow = 'hidden';
+    $node.style.whiteSpace = 'nowrap';
     setTimeout(() => {
-      $node.style.maxWidth = '0';
-      $node.style.paddingLeft = '';
-      $node.style.paddingRight = '';
+      $node.style.width = '0';
+      $node.style.paddingLeft = '0';
+      $node.style.paddingRight = '0';
       setTimeout(() => {
         $node.style.display = 'none';
       }, ms);

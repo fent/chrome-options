@@ -471,7 +471,7 @@
         if (!field.bindTo) { return; }
         var show = rows.some(function(row) { return row.shown[field.name]; });
         var $head = heads[field.name];
-        var isVisible = !$head.offsetParent;
+        var isVisible = !!$head.offsetParent;
         if (show && !isVisible) {
           setTimeout(slideXShow.bind(null, $head), init ? 0 : 500);
         } else if (!show && isVisible) {
@@ -658,7 +658,7 @@
       update.checkBind = function(name, newValue) {
         var bindTo = field.bindTo;
         if (bindTo && bindTo.field === name) {
-          var isVisible = !$field.offsetParent;
+          var isVisible = !!$field.offsetParent;
           var equals = bindToEquals(bindTo.value, newValue);
           if (equals && !isVisible) {
             slideXShow($field);

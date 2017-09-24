@@ -79,8 +79,9 @@
   display: inline-block;
 }
 
-.chrome-bootstrap .bind-to > :first-child {
+.chrome-bootstrap .bind-to > * {
   float: left;
+  white-space: nowrap;
 }
 
 .chrome-bootstrap .play {
