@@ -64,15 +64,33 @@
   window.slideYShow = function($node, ms = animTime) {
     $node.style.display = 'block';
     $node.style.height = 'auto';
+    $node.style.paddingTop = '';
+    $node.style.paddingBottom = '';
+    $node.style.marginTop = '';
+    $node.style.marginBottom = '';
     var height = window.getComputedStyle($node).height;
     var heightInt = parseInt(height, 10);
     $node.style.height = '0px';
+    $node.style.paddingTop = '0';
+    $node.style.paddingBottom = '0';
+    $node.style.marginTop = '0';
+    $node.style.marginBottom = '0';
     $node.style.overflow = 'hidden';
     if (heightInt > window.innerHeight) {
       ms *= heightInt / window.innerHeight;
     }
-    $node.style.transition = `height ${ms}ms ${animFunc}`;
-    setTimeout(function() { $node.style.height = height; });
+    $node.style.transition = `
+      height ${ms}ms ${animFunc},
+      padding ${ms}ms ${animFunc},
+      margin ${ms}ms ${animFunc}
+    `;
+    setTimeout(function() {
+      $node.style.height = height;
+      $node.style.paddingTop = '';
+      $node.style.paddingBottom = '';
+      $node.style.marginTop = '';
+      $node.style.marginBottom = '';
+    });
   };
 
   window.slideYHide = function($node, ms = animTime) {
@@ -81,11 +99,25 @@
     var height = window.getComputedStyle($node).height;
     var heightInt = parseInt(height, 10);
     $node.style.height = height;
+    $node.style.paddingTop = '';
+    $node.style.paddingBottom = '';
+    $node.style.marginTop = '';
+    $node.style.marginBottom = '';
     if (heightInt > window.innerHeight) {
       ms *= 1 + (((heightInt / window.innerHeight) - 1) / 2);
     }
-    $node.style.transition = `height ${ms}ms ${animFunc}`;
-    setTimeout(function() { $node.style.height = '0px'; });
+    $node.style.transition = `
+      height ${ms}ms ${animFunc},
+      padding ${ms}ms ${animFunc},
+      margin ${ms}ms ${animFunc}
+    `;
+    setTimeout(function() {
+      $node.style.height = '0';
+      $node.style.paddingTop = '0';
+      $node.style.paddingBottom = '0';
+      $node.style.marginTop = '0';
+      $node.style.marginBottom = '0';
+    });
   };
 
   window.slideXShow = function($node, ms = animTime) {
@@ -95,27 +127,43 @@
     $node.style.width = '0';
     $node.style.paddingLeft = '0';
     $node.style.paddingRight = '0';
-    $node.style.transition =
-      `width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+    $node.style.marginLeft = '0';
+    $node.style.marginRight = '0';
+    $node.style.transition = `
+      width ${ms}ms ${animFunc},
+      padding ${ms}ms ${animFunc},
+      margin ${ms}ms ${animFunc}
+    `;
     $node.style.overflow = 'hidden';
     $node.style.whiteSpace = 'nowrap';
     setTimeout(() => {
       $node.style.width = width;
       $node.style.paddingLeft = '';
       $node.style.paddingRight = '';
+      $node.style.marginLeft = '';
+      $node.style.marginRight = '';
     });
   };
 
   window.slideXHide = function($node, ms = animTime) {
     $node.style.width = window.getComputedStyle($node).width;
-    $node.style.transition =
-      `width ${ms}ms ${animFunc}, padding ${ms}ms ${animFunc}`;
+    $node.style.paddingLeft = '';
+    $node.style.paddingRight = '';
+    $node.style.marginLeft = '';
+    $node.style.marginRight = '';
+    $node.style.transition = `
+      width ${ms}ms ${animFunc},
+      padding ${ms}ms ${animFunc},
+      margin ${ms}ms ${animFunc}
+    `;
     $node.style.overflow = 'hidden';
     $node.style.whiteSpace = 'nowrap';
     setTimeout(() => {
       $node.style.width = '0';
       $node.style.paddingLeft = '0';
       $node.style.paddingRight = '0';
+      $node.style.marginLeft = '0';
+      $node.style.marginRight = '0';
       setTimeout(() => {
         $node.style.display = 'none';
       }, ms);
