@@ -289,9 +289,8 @@
     if (hashOption) { hashPosition--; }
     if (option.preview) {
       var $label = $option.querySelector('label');
-      $label.append(h('span.preview'), h('img.preview-image', {
-        src: 'previews/' + key + '.' + option.preview,
-      }));
+      $label.append(h('span.preview-container', h('span.preview')),
+        h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
     }
 
     return $option;

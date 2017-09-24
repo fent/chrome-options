@@ -247,6 +247,11 @@
   display: inline-block;
 }
 
+.chrome-bootstrap .preview-container {
+  position: relative;
+  padding: 0 1em;
+}
+
 .chrome-bootstrap .preview {
   opacity: 0.5;
   transition: opacity 200ms;
@@ -255,12 +260,11 @@
   height: 1em;
   background: #000;
   position: relative;
-  margin-left: 1em;
   border-radius: 65% 0;
   transform: rotate(45deg);
 }
 
-.chrome-bootstrap .preview:hover {
+.chrome-bootstrap .preview-container:hover .preview {
   opacity: 1;
 }
 
@@ -291,14 +295,18 @@
 
 .chrome-bootstrap .preview-image {
   position: absolute;
-  margin-top: 0.65em;
+  margin: 0.65em 0 40px;
+  padding: 5px;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 3px 3px 10px 1px;
   z-index: -99;
   opacity: 0;
   transition: opacity 300ms;
   display: block;
 }
 
-.chrome-bootstrap .preview:hover + .preview-image {
+.chrome-bootstrap .preview-container:hover + .preview-image {
   opacity: 1;
   z-index: 99;
 }
