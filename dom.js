@@ -62,6 +62,8 @@
   const animTime = 500;
   const animFunc = 'ease-in-out';
   window.slideYShow = function($node, ms = animTime) {
+    var startingHeight = $node.offsetParent ?
+      window.getComputedStyle($node).height : '0';
     $node.style.display = 'block';
     $node.style.height = 'auto';
     $node.style.paddingTop = '';
@@ -70,7 +72,7 @@
     $node.style.marginBottom = '';
     var height = window.getComputedStyle($node).height;
     var heightInt = parseInt(height, 10);
-    $node.style.height = '0px';
+    $node.style.height = startingHeight;
     $node.style.paddingTop = '0';
     $node.style.paddingBottom = '0';
     $node.style.marginTop = '0';
