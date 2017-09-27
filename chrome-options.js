@@ -1,4 +1,4 @@
-/* global chrome, $, dragula */
+/* global chrome, dragula, CP */
 /* global h, slideYShow, slideYHide, slideXShow, slideXHide, hideTR, showTR */
 /* global flashClass, util */
 
@@ -867,27 +867,84 @@ chrome.options.fields.text = function(value, save) {
 };
 
 chrome.options.fields.color = function(value, save, option) {
-  var $container = h('span.color');
-  var $color = $container.appendChild(chrome.options.fields.text(value, save));
-  $($color)
-    .spectrum($.extend({
-      showInput: true,
-      showAlpha: true,
-      showInitial: true,
-    }, option));
-  if (option.default) {
-    var $reset = $container.appendChild(h('span.color-reset', {
-      'data-title': 'Reset to default',
-      onclick: function(e) {
-        $color.spectrum('set', option.default);
-        save(option.default, e);
-      },
-    }));
+  var first = true;
+  var format = option.format || 'rgba';
+  if (!['rgb', 'rgba', 'hsl', 'hsla', 'hex'].includes(format)) {
+    throw TypeError('Unsupported format given for color field: ' + format);
+  }
+  var showAlpha = ['rgba', 'hsla'].includes(format);
+  var hsv2hsl = function(d) {
+    return [
+      Math.round(d[0] * 360),
+      Math.round(d[1] * 100) + '%',
+      Math.round(d[2] * 100) + '%'
+    ];
+  };
+  var fn = {
+    rgb: CP._HSV2RGB, rgba: CP._HSV2RGB,
+    hsl: hsv2hsl, hsv2hsl,
+    hex: CP._HSV2HEX,
+  }[format];
+  var debouncedSave = util.debounce(500, save);
+  var onchange = function() {
+    if (first) { return first = false; }
+    var v = fn(picker.set());
+    var color = /^hex/.test(format) ?
+      `#${v}` :
+      `${format}(${v.join(', ')}${showAlpha ? `, ${$alpha.value}` : ''})`;
+    $field.value = color;
+    $color.style.backgroundColor = color;
+    debouncedSave(color);
+  };
 
-    // There's a bug with jquery where it will save a field's value.
-    requestAnimationFrame(function() {
-      $reset.style.backgroundColor = option.default;
+  function getAlpha(value) {
+    var r = /(?:rgba|hsla)\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*(\d?(?:\.\d+)?)\s*\)/
+      .exec(value);
+    return r && r[1] != '' ? r[1] : 1;
+  }
+
+  var $container = h('span.color');
+  $container.append(h('span.color-alpha'));
+  var $color = $container.appendChild(h('span.color-box', {
+    style: value ? `background-color: ${value};` : '',
+    onclick: function() { picker.enter(); },
+  }));
+  var $field = chrome.options.fields.text(value, function() {
+    if ($alpha) {
+      $alpha.value = getAlpha($field.value);
+    }
+
+    // color-picker doesn't accept alpha, so take it out.
+    var s = $field.value .split(',');
+    s = s.length >=4 ? s.slice(0, 3).join(',') + ')' : s.join(',');
+    s = s.replace('rgba', 'rgb').replace('hsla', 'hsv').replace('hsl', 'hsv');
+    console.log('set it', $field.value, s);
+    picker.set(s);
+  });
+  $container.append($field);
+  var picker = new CP($field);
+  picker.on('change', onchange);
+
+  var $extraOptions = picker.picker.appendChild(h('.extra-options'));
+  if (showAlpha) {
+    var $alpha = h('input[type=range][min=0][max=1][step=.1]', {
+      'data-title': 'Alpha',
+      onchange,
+      oninput: onchange,
+      value: value != null ? getAlpha(value) : 1,
     });
+    $extraOptions.append($alpha);
+  }
+
+  if (option.default) {
+    $extraOptions.append(h('span.color-reset', {
+      'data-title': 'Reset to default',
+      onclick: function() {
+        picker.set(option.default);
+        picker.trigger('change', [option.default]);
+      },
+      style: `background-color: ${option.default};`,
+    }));
   }
   return $container;
 };
