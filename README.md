@@ -81,11 +81,13 @@ Options all can have the following properties.
 
 ![color](images/field_color.png)
 
+* `String` - `format` - Can be `hex`, `rgb`, `rgba`, `hsl`, or `hsla.`.
+
 If `default` is set, will have an additional button for resetting to that color.
 
 ![color](images/field_color_2.png)
 
-Uses [spectrum](http://bgrins.github.io/spectrum/) for the colorpicker.
+Uses [this color picker library](https://github.com/tovic/color-picker).
 
 ### select
 
