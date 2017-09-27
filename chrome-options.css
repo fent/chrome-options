@@ -456,6 +456,10 @@
   white-space: pre;
 }
 
+.chrome-bootstrap .list > table > thead + tbody > tr > td > [data-title]:hover:after {
+  display: none;
+}
+
 .chrome-bootstrap label > [data-title]:after,
 .chrome-bootstrap .multiline > .field-container [data-title]:after,
 .chrome-bootstrap .singleline > .field-container [data-title]:after {
