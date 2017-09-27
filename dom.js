@@ -98,13 +98,13 @@
   window.slideYHide = function($node, ms = animTime) {
     $node.style.overflow = 'hidden';
     $node.style.position = 'relative';
-    var height = window.getComputedStyle($node).height;
-    var heightInt = parseInt(height, 10);
-    $node.style.height = height;
     $node.style.paddingTop = '';
     $node.style.paddingBottom = '';
     $node.style.marginTop = '';
     $node.style.marginBottom = '';
+    var height = window.getComputedStyle($node).height;
+    var heightInt = parseInt(height, 10);
+    $node.style.height = height;
     if (heightInt > window.innerHeight) {
       ms *= 1 + (((heightInt / window.innerHeight) - 1) / 2);
     }
@@ -125,6 +125,10 @@
   window.slideXShow = function($node, ms = animTime) {
     $node.style.display = '';
     $node.style.width = '';
+    $node.style.paddingLeft = '';
+    $node.style.paddingRight = '';
+    $node.style.marginLeft = '';
+    $node.style.marginRight = '';
     var width = window.getComputedStyle($node).width;
     $node.style.width = '0';
     $node.style.paddingLeft = '0';
