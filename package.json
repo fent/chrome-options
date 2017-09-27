@@ -6,7 +6,8 @@
   "author": "fent (https://github.com/fent)",
   "keywords": [
     "chrome",
-    "extension"
+    "extension",
+    "options"
   ],
   "homepage": "https://github.com/fent/chrome-options",
   "license": "MIT",
