@@ -459,10 +459,17 @@
 
     if (options.head) {
       var $thead = h('tr');
-      $table.prepend(h('thead', $thead));
+      var prevfield;
       options.fields.forEach(function(field) {
-        heads[field.name] = $thead.appendChild(h('th', h('div', field.desc)));
+        if (!field.bindTo || !prevfield.bindTo) {
+          var $container = heads[field.name] = h('div', field.desc);
+          $thead.append(h('th', $container));
+        } else {
+          heads[field.name] = heads[prevfield.name];
+        }
+        prevfield = field;
       });
+      $table.prepend(h('thead', $thead));
     }
 
     // Check if each column should be shown.
