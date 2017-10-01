@@ -59,18 +59,19 @@
   position: relative;
 }
 
-.chrome-bootstrap .frame .mainview > * {
+.chrome-bootstrap .frame .mainview > div {
   position: static;
 }
 
-.chrome-bootstrap .frame .mainview > *:not(.selected) {
+.chrome-bootstrap .frame .mainview > div:not(.selected) {
   position: relative;
   height: 0;
   width: 0;
   overflow: hidden;
+  transition: margin 100ms;
 }
 
-.chrome-bootstrap .frame .mainview > * > .content {
+.chrome-bootstrap .frame .mainview > div > .content {
   padding-bottom: 10%;
 }
 
