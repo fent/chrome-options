@@ -186,52 +186,44 @@
   function addTabOptions($parent, keyName, values, options) {
     options.forEach(function(option) {
       var key = getKeyPath(keyName, option);
-      var $container;
-      switch (option.type) {
-        case 'h3':
-          $container = addH3(option);
-          break;
+      var value = values[key];
+      var latestValue = value;
 
-        default:
-          var value = values[key];
-          var latestValue = value;
+      // Clone value so that it can be compared to new value.
+      var cloneValue = function() { value = util.deepClone(latestValue); };
+      $saveButton.addEventListener('click', cloneValue);
 
-          // Clone value so that it can be compared to new value.
-          var cloneValue = function() { value = util.deepClone(latestValue); };
-          $saveButton.addEventListener('click', cloneValue);
+      // Use requestAnimationFrame whenever possible,
+      // so that it doensn't seep into load time.
+      requestAnimationFrame(cloneValue);
 
-          // Use requestAnimationFrame whenever possible,
-          // so that it doensn't seep into load time.
-          requestAnimationFrame(cloneValue);
+      var save = function(newValue) {
+        latestValue = newValue;
 
-          var save = function(newValue) {
-            latestValue = newValue;
-
-            requestAnimationFrame(function() {
-              var isEqual = util.deepEqual(value, newValue);
-              if (chrome.options.opts.autoSave) {
-                if (!isEqual) {
-                  chrome.storage.sync.set({ [key]: newValue });
-                  showSavedAlert();
-                  flashSavedAlert();
-                  cloneValue();
-                }
-              } else if (isEqual) {
-                delete changedValues[key];
-                if (!Object.keys(changedValues).length) {
-                  $saveButton.setAttribute('disabled', true);
-                } else {
-                  flashSavedAlert();
-                }
-              } else {
-                changedValues[key] = newValue;
-                $saveButton.removeAttribute('disabled');
-                flashSavedAlert();
-              }
-            });
-          };
-          $container = addOption(key, values, value, save, option, top);
-      }
+        requestAnimationFrame(function() {
+          var isEqual = util.deepEqual(value, newValue);
+          if (chrome.options.opts.autoSave) {
+            if (!isEqual) {
+              chrome.storage.sync.set({ [key]: newValue });
+              showSavedAlert();
+              flashSavedAlert();
+              cloneValue();
+            }
+          } else if (isEqual) {
+            delete changedValues[key];
+            if (!Object.keys(changedValues).length) {
+              $saveButton.setAttribute('disabled', true);
+            } else {
+              flashSavedAlert();
+            }
+          } else {
+            changedValues[key] = newValue;
+            $saveButton.removeAttribute('disabled');
+            flashSavedAlert();
+          }
+        });
+      };
+      var $container = addOption(key, values, value, save, option, top);
       if ($container) { $parent.append($container); }
     });
   }
@@ -276,6 +268,9 @@
         break;
       case 'row':
         $option = chrome.options.base.row(values, save, option, key, top);
+        break;
+      case 'h3':
+        $option = addH3(option);
         break;
       case 'html':
         $option = addHtml(option);
@@ -386,10 +381,11 @@
     var $container = h('.suboption');
     var $box = $container.appendChild(h('span'));
 
-    $box.append(chrome.options.fields.checkbox(value.enabled, function(checked) {
-      value.enabled = checked;
-      save(value);
-    }, option));
+    $box
+      .append(chrome.options.fields.checkbox(value.enabled, function(checked) {
+        value.enabled = checked;
+        save(value);
+      }, option));
 
     $container.append(chrome.options.addField(value.value, function(newValue) {
       value.value = newValue;
