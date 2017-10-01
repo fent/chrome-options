@@ -75,7 +75,7 @@
   var $saveButton = $saveContainer.querySelector('button');
   $saveButton.addEventListener('click', function() {
     chrome.storage.sync.set(changedValues);
-    $saveButton.attr('disabled', true);
+    $saveButton.setAttribute('disabled', true);
   });
   var showSavedAlert = flashClass($saveContainer, 'show', 2000);
   var flashSavedAlert = flashClass($saveContainer, 'flash', 150);
@@ -148,12 +148,18 @@
     if (desc) {
       $tabcontent.append(h('p.tab-desc', desc));
     }
-    keyName = keyName ? keyName + '.' : '';
-    var keys = options
-      .filter(function(option) { return !!option.name; })
-      .map(function(option) {
-        return keyName + option.name;
+
+    var keys = [];
+    (function getOptionKeys(options) {
+      options.forEach(function(option) {
+        if (option.name) {
+          keys.push(getKeyPath(keyName, option));
+        } else if (option.type === 'column' || option.type === 'row') {
+          getOptionKeys(option.options);
+        }
       });
+    })(options);
+
     chrome.storage.sync.get(keys, function(items) {
       addTabOptions($tabcontent, keyName, items, options);
     });
@@ -172,9 +178,14 @@
     chrome.options.addTab('', desc, options);
   };
 
+  function getKeyPath(parentKey, option) {
+    return (parentKey || '') +
+      (parentKey && option.name ? '.' : '') + (option.name || '');
+  } 
+
   function addTabOptions($parent, keyName, values, options) {
     options.forEach(function(option) {
-      var key = keyName + option.name;
+      var key = getKeyPath(keyName, option);
       var $container;
       switch (option.type) {
         case 'h3':
@@ -242,8 +253,7 @@
       hashPosition++;
     }
 
-    if (value === undefined &&
-       (option.default || typeof option.default === 'boolean')) {
+    if (value === undefined && option.default != null) {
       value = option.default;
       if (chrome.options.opts.saveDefaults) {
         save(value);
@@ -404,8 +414,7 @@
     }
     var $container = h('.suboptions');
     option.options.forEach(function(option) {
-      var optionKey = (key || '') +
-        (key && option.name ? '.' : '') + (option.name || '');
+      var optionKey = getKeyPath(key, option);
       var $option = addOption(optionKey, value, value[option.name],
         function(newValue) {
           if (option.name) { value[option.name] = newValue; }
@@ -800,7 +809,7 @@
       $container = h('div.column');
       addTabOptions($container, key, values, option.options);
     } else {
-      $container =  addOptions(values, save, option, key);
+      $container = addOptions(values, save, option, key);
       $container.classList.add('column');
     }
     return $container;
@@ -925,7 +934,6 @@ chrome.options.fields.color = function(value, save, option) {
     var s = $field.value .split(',');
     s = s.length >=4 ? s.slice(0, 3).join(',') + ')' : s.join(',');
     s = s.replace('rgba', 'rgb').replace('hsla', 'hsv').replace('hsl', 'hsv');
-    console.log('set it', $field.value, s);
     picker.set(s);
   });
   $container.append($field);
