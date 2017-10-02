@@ -13,15 +13,22 @@ chrome.options.addTab('General', [
   { name: '2', desc: 'Enable watching' },
   { name: '3', desc: 'Allow users to start it out' },
   { type: 'h3', desc: 'Section' },
-  { type: 'row', options: [
-    { name: 'first', type: 'text', desc: 'First Name' },
-    { name: 'made-up', type: 'text', desc: 'Nick Name' },
-    { name: 'name3', type: 'text', desc: 'Work Name' },
-  ] },
-  { name: '4', type: 'object', options: [
-    { name: 'enabled', type: 'checkbox', desc: 'Enabled?' },
-    { name: '5', type: 'text', desc: 'Your jacket' },
-  ], desc: 'My character description (this is an object type)' },
+  { name: 'profile', type: 'object', options: [
+    { name: 'name', type: 'text', desc: 'Name' },
+    { name: 'loc', type: 'select', desc: 'Location', options: [
+      'Viridian', 'Pewter', 'Cerulean', 'Vermilion',
+      'Lavender', 'Celadon', 'Fuchsia', 'Saffron', 'Cinnabar'
+    ] },
+    { name: 'party', type: 'list', head: true, fields: [
+      { name: 'name', type: 'text', desc: 'Name' },
+      { name: 'type1', type: 'select', desc: 'Type 1', options: [
+        'Grass', 'Water', 'Fire'
+      ] },
+      { name: 'type2', type: 'select', desc: 'Type 2', options: [
+        'None', 'Grass', 'Water', 'Fire'
+      ] }
+    ] },
+  ], desc: 'My character profile (this is an object type)' },
   { name: '4', desc: 'Enable the sushi feature', options: [
     { name: 'fresh', desc: 'Fresh sushi' },
     { name: 'roll', desc: 'Choose a type', type: 'select',
