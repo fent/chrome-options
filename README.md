@@ -237,7 +237,9 @@ You can also choose to display one option, suboption, or part of an option, by s
   * Number
   * Slider
   * Date picker
-  * file upload
-  * image upload
-* Build and minimize release
-  * Optionally include sound files in installation
+  * File upload
+  * Image upload
+* Optionally include sound files in installation
+* Easier way to include other scripts
+* Updating options from other options
+* Updating structure of options
