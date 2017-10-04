@@ -1045,7 +1045,7 @@ chrome.options.fields.predefined_sound = function(value, save, option) {
     }
     $play.classList.remove('disabled');
     var audio = new Audio();
-    audio.src = 'bower_components/chrome-options/sounds/' + value + '.wav';
+    audio.src = 'sounds/' + value + '.wav';
     audio.onerror = console.error;
     audio.play();
   }
