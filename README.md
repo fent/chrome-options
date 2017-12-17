@@ -14,7 +14,7 @@ This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bo
 Recommended that you create an options folder in your extension, for organization purposes.
 
     bower install chrome-options
-    ln -s bower_components/chrome-options/options.html .
+    ln bower_components/chrome-options/options.html .
     touch custom.css
     touch options.js
 
