@@ -2,7 +2,7 @@
 /* global h, slideYShow, slideYHide, slideXShow, slideXHide, hideTR, showTR */
 /* global flashClass, util */
 
-(function() {
+(() => {
   // Expose this library.
   chrome.options = {};
   chrome.options.base = {};
@@ -27,8 +27,8 @@
   };
 
 
-  var $menu = document.querySelector('#main-menu');
-  var $mainview = document.querySelector('.mainview');
+  const $menu = document.querySelector('#main-menu');
+  const $mainview = document.querySelector('.mainview');
   var lastHash = null;
   var hashPath = window.location.hash.split('.');
   var hashOption = hashPath.length > 1;
@@ -65,20 +65,20 @@
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
 
-  var urlParams = {};
-  window.location.search.substring(1).split('&').forEach(function(param) {
+  const urlParams = {};
+  window.location.search.substring(1).split('&').forEach((param) => {
     urlParams[param] = true;
   });
 
-  var changedValues = {};
-  var $saveContainer = document.querySelector('.save-container');
-  var $saveButton = $saveContainer.querySelector('button');
-  $saveButton.addEventListener('click', function() {
+  const changedValues = {};
+  const $saveContainer = document.querySelector('.save-container');
+  const $saveButton = $saveContainer.querySelector('button');
+  $saveButton.addEventListener('click', () => {
     chrome.storage.sync.set(changedValues);
     $saveButton.setAttribute('disabled', true);
   });
-  var showSavedAlert = flashClass($saveContainer, 'show', 2000);
-  var flashSavedAlert = flashClass($saveContainer, 'flash', 150);
+  const showSavedAlert = flashClass($saveContainer, 'show', 2000);
+  const flashSavedAlert = flashClass($saveContainer, 'flash', 150);
 
   // Add the extension's title to the top of the page.
   var setupRan = false;
@@ -86,8 +86,10 @@
     if (setupRan) { return; }
     var manifest = chrome.runtime.getManifest();
 
-    var extensionName = chrome.options.opts.title || manifest.name || 'chrome';
-    document.querySelector('title').textContent = extensionName + ' options';
+    var extensionName =
+      chrome.options.opts.title || manifest.name || 'chrome';
+    document.querySelector('title').textContent =
+      extensionName + ' options';
     var $title = document.querySelector('.chrome-options-title');
     $title.textContent = extensionName;
     if (chrome.options.opts.title !== false && !urlParams.hideTitle) {
@@ -133,7 +135,7 @@
    * @param {String!} desc Will be placed at the top of the page of the tab
    * @param {Array.<Object>} options
    */
-  chrome.options.addTab = function(name, desc, options) {
+  chrome.options.addTab = (name, desc, options) => {
     setup();
     if (!options) {
       options = desc;
@@ -151,7 +153,7 @@
 
     var keys = [];
     (function getOptionKeys(options) {
-      options.forEach(function(option) {
+      options.forEach((option) => {
         if (option.name) {
           keys.push(getKeyPath(keyName, option));
         } else if (option.type === 'column' || option.type === 'row') {
@@ -160,7 +162,7 @@
       });
     })(options);
 
-    chrome.storage.sync.get(keys, function(items) {
+    chrome.storage.sync.get(keys, (items) => {
       addTabOptions($tabcontent, keyName, items, options);
     });
     $tabview.append($tabcontent);
@@ -172,7 +174,7 @@
    * @param {String} desc
    * @param {Array.<Object>} options
    */
-  chrome.options.set = function(desc, options) {
+  chrome.options.set = (desc, options) => {
     urlParams.hideSidebar = true;
     urlParams.hideTabTitle = true;
     chrome.options.addTab('', desc, options);
@@ -184,23 +186,23 @@
   } 
 
   function addTabOptions($parent, keyName, values, options) {
-    options.forEach(function(option) {
+    options.forEach((option) => {
       var key = getKeyPath(keyName, option);
       var value = values[key];
       var latestValue = value;
 
       // Clone value so that it can be compared to new value.
-      var cloneValue = function() { value = util.deepClone(latestValue); };
+      var cloneValue = () => { value = util.deepClone(latestValue); };
       $saveButton.addEventListener('click', cloneValue);
 
       // Use requestAnimationFrame whenever possible,
       // so that it doensn't seep into load time.
       requestAnimationFrame(cloneValue);
 
-      var save = function(newValue) {
+      var save = (newValue) => {
         latestValue = newValue;
 
-        requestAnimationFrame(function() {
+        requestAnimationFrame(() => {
           var isEqual = util.deepEqual(value, newValue);
           if (chrome.options.opts.autoSave) {
             if (!isEqual) {
@@ -301,7 +303,7 @@
     return $option;
   }
 
-  chrome.options.base.checkbox = function(value, save, option, key) {
+  chrome.options.base.checkbox = (value, save, option, key) => {
     var $label = h('label');
     var $container = h('.checkbox', $label);
     var $subContainer, $triangle;
@@ -316,7 +318,7 @@
       checked = value.enabled;
     }
 
-    var $checkbox = chrome.options.fields.checkbox(checked, function(checked) {
+    var $checkbox = chrome.options.fields.checkbox(checked, (checked) => {
       if (hasOptions) {
         value.enabled = checked;
       } else {
@@ -331,7 +333,7 @@
       $container.append($subContainer);
       if (!checked) { $subContainer.style.display = 'none'; }
 
-      var toggleContainer = function(checked) {
+      var toggleContainer = (checked) => {
         if (checked) {
           $triangle.textContent = '▼';
           slideYShow($subContainer);
@@ -342,13 +344,13 @@
       };
 
       $triangle = $label.appendChild(h('span.triangle', checked ? '▼' : '▶'));
-      $triangle.addEventListener('click', function(e) {
+      $triangle.addEventListener('click', (e) => {
         e.preventDefault();
         checked = !checked;
         toggleContainer(checked);
       });
 
-      $checkbox.addEventListener('change', function() {
+      $checkbox.addEventListener('change', () => {
         checked = $checkbox.checked;
         toggleContainer(checked);
       });
@@ -358,7 +360,7 @@
     return $container;
   };
 
-  chrome.options.base.checkboxNField = function(value, save, option, type) {
+  chrome.options.base.checkboxNField = (value, save, option, type) => {
     if (value == null || typeof value !== 'object') {
       value = {};
     }
@@ -382,12 +384,12 @@
     var $box = $container.appendChild(h('span'));
 
     $box
-      .append(chrome.options.fields.checkbox(value.enabled, function(checked) {
+      .append(chrome.options.fields.checkbox(value.enabled, (checked) => {
         value.enabled = checked;
         save(value);
       }, option));
 
-    $container.append(chrome.options.addField(value.value, function(newValue) {
+    $container.append(chrome.options.addField(value.value, (newValue) => {
       value.value = newValue;
       save(value);
     }, option, type));
@@ -398,7 +400,7 @@
     return $container;
   };
 
-  chrome.options.base.object = function(value, save, option, key) {
+  chrome.options.base.object = (value, save, option, key) => {
     var $container = h('.object', h('label', option.desc));
     $container.append(addOptions(value, save, option, key));
     return $container;
@@ -409,10 +411,10 @@
       value = {};
     }
     var $container = h('.suboptions');
-    option.options.forEach(function(option) {
+    option.options.forEach((option) => {
       var optionKey = getKeyPath(key, option);
       var $option = addOption(optionKey, value, value[option.name],
-        function(newValue) {
+        (newValue) => {
           if (option.name) { value[option.name] = newValue; }
           save(value);
         }, option);
@@ -421,7 +423,7 @@
     return $container;
   }
 
-  chrome.options.addLabelNField = function(value, save, option) {
+  chrome.options.addLabelNField = (value, save, option) => {
     var $container = h('.suboption', h('label', option.desc || ''));
     var $field = chrome.options.addField(value, save, option);
     $container.append(h('.field-container', $field));
@@ -429,7 +431,7 @@
     return $container;
   };
 
-  chrome.options.base.list = function(list, save, options, key) {
+  chrome.options.base.list = (list, save, options, key) => {
     var $container = h('.suboption.list');
     var $wrapper, shown = true;
 
@@ -438,7 +440,7 @@
       if (options.collapsible) {
         shown = false;
         var $triangle = h('span.triangle', {
-          onclick: function() {
+          onclick: () => {
             shown = !shown;
             if (shown) {
               $triangle.textContent = '▼';
@@ -465,7 +467,7 @@
     if (options.head) {
       var $thead = h('tr');
       var prevfield;
-      options.fields.forEach(function(field) {
+      options.fields.forEach((field) => {
         if (!field.bindTo || !prevfield.bindTo) {
           var $container = heads[field.name] = h('div', field.desc);
           $thead.append(h('th', $container));
@@ -479,9 +481,9 @@
 
     // Check if each column should be shown.
     function checkColumns(init) {
-      options.fields.forEach(function(field) {
+      options.fields.forEach((field) => {
         if (!field.bindTo) { return; }
-        var show = rows.some(function(row) { return row.shown[field.name]; });
+        var show = rows.some(row => row.shown[field.name]);
         var $head = heads[field.name];
         var isVisible = !!$head.offsetParent;
         if (show && !isVisible) {
@@ -497,8 +499,8 @@
     }
 
     function saveFields() {
-      var newValues = rows.map(function(getValue) { return getValue(); });
-      save(newValues.filter(function(rowValue) {
+      var newValues = rows.map(getValue => getValue());
+      save(newValues.filter((rowValue) => {
         if (rowValue == null || rowValue === '') {
           return false;
         } else if (options.filter && !options.filter(rowValue)) {
@@ -510,22 +512,18 @@
               return false;
             }
           }
-          return Object.keys(rowValue).some(function(key) {
-            return rowValue[key] != null;
-          });
+          return Object.keys(rowValue).some(key => rowValue[key] != null);
         }
         return true;
       }));
-      requestAnimationFrame(function() {
-        rows.forEach(function(row) { row.update(newValues); });
+      requestAnimationFrame(() => {
+        rows.forEach((row) => { row.update(newValues); });
         if (options.head) { checkColumns(false); }
       });
     }
 
     var fieldsMap = {};
-    options.fields.forEach(function(field) {
-      fieldsMap[field.name] = field;
-    });
+    options.fields.forEach((field) => { fieldsMap[field.name] = field; });
 
     function addNewRow(animate) {
       var row;
@@ -536,13 +534,13 @@
       row = addListRow($tbody, null, options.fields, fieldsMap, saveFields,
         remove, false, options.sortable, animate, key);
       rows.push(row);
-      requestAnimationFrame(function() {
-        var rowValues = rows.map(function(getValue) { return getValue(); });
-        rows.forEach(function(row) { row.update(rowValues); });
+      requestAnimationFrame(() => {
+        var rowValues = rows.map(getValue => getValue());
+        rows.forEach((row) => { row.update(rowValues); });
       });
     }
 
-    rows = list.map(function(rowData, i) {
+    rows = list.map((rowData, i) => {
       var row;
       function remove() {
         rows.splice(rows.indexOf(row), 1);
@@ -556,8 +554,8 @@
     });
 
     if (options.first && !rows.length) {
-      var row = addListRow($tbody, null, options.first, fieldsMap, saveFields,
-        function() {}, true, options.sortable, false, key);
+      var row = addListRow($tbody, null, options.first, fieldsMap,
+        saveFields, () => {}, true, options.sortable, false, key);
       rows.push(row);
       saveFields();
     }
@@ -598,7 +596,7 @@
         // out of a table removes its alignments from the
         // table's columns.
         var $mirrorTDs = $mirror.querySelectorAll(':scope > td');
-        $original.querySelectorAll(':scope > td').forEach(function($td, i) {
+        $original.querySelectorAll(':scope > td').forEach(($td, i) => {
           $mirrorTDs[i].style.width = $td.offsetWidth + 'px';
         });
 
@@ -606,7 +604,7 @@
         // Since `node.cloneNode()` does not do so for some of them.
         var selection = 'select, input[type=radio]';
         var $mirrorFields = $mirror.querySelectorAll(selection);
-        $original.querySelectorAll(selection).forEach(function($field, i) {
+        $original.querySelectorAll(selection).forEach(($field, i) => {
           var $node = $mirrorFields[i];
           $node.value = $field.value;
           if ($node.checked) {
@@ -618,14 +616,12 @@
         });
 
       }).on('dragend', () => {
-        rows.forEach(function(a) {
+        rows.forEach((a) => {
           var $child = a.$tr;
           a.index = 0;
           while (($child = $child.previousSibling) != null) { a.index++; }
         });
-        rows.sort(function(a, b) {
-          return a.index - b.index;
-        });
+        rows.sort((a, b) => a.index - b.index);
         saveFields();
       });
     }
@@ -644,14 +640,14 @@
       setTimeout(showTR.bind(null, $tr), 100);
     }
 
-    var getValue = function() { return values; };
+    var getValue = () => values;
     getValue.$tr = $tr;
 
     // Keep track which fields in this row are being shown.
     getValue.shown = {};
 
     var $prevtd, prevfield;
-    var fieldUpdates = fields.map(function(field) {
+    var fieldUpdates = fields.map((field) => {
       function saveField(newValue) {
         var name = field.name;
         if (fields.length === 1) {
@@ -659,15 +655,13 @@
         } else if (name) {
           values[name] = newValue;
         }
-        fieldUpdates.forEach(function(up) {
-          up.checkBind(name, newValue);
-        });
+        fieldUpdates.forEach((up) => { up.checkBind(name, newValue); });
         save();
       }
 
       var $field;
       var update = {};
-      update.checkBind = function(name, newValue) {
+      update.checkBind = (name, newValue) => {
         var bindTo = field.bindTo;
         if (bindTo && bindTo.field === name) {
           var isVisible = !!$field.offsetParent;
@@ -682,18 +676,18 @@
         }
       };
 
-      update.hide = function() {
+      update.hide = () => {
         if (field.bindTo) {
           slideXHide($field);
         }
       };
 
-      update.checkSelect = function(newValues) {
+      update.checkSelect = (newValues) => {
         if (field.type === 'select') {
           field.options
-            .filter(function(f) { return f.unique; })
-            .forEach(function(option) {
-              var display = newValues.some(function(rowValue) {
+            .filter(f => f.unique)
+            .forEach((option) => {
+              var display = newValues.some((rowValue) => {
                 return rowValue !== values &&
                   rowValue[field.name] === option.value;
               }) ? 'none' : '';
@@ -737,7 +731,7 @@
       }
       $fieldContainer.append($field);
 
-      requestAnimationFrame(function() {
+      requestAnimationFrame(() => {
         if (!bindTo) { return; }
         if (
           (values[bindTo.field] &&
@@ -765,10 +759,10 @@
     });
 
     $tr.append(h('td', h('a.delete', {
-      onclick: function() {
-        fieldUpdates.forEach(function(update) { update.hide(); });
-        setTimeout(function() {
-          hideTR($tr, function() { $tr.remove(); });
+      onclick: () => {
+        fieldUpdates.forEach((update) => { update.hide(); });
+        setTimeout(() => {
+          hideTR($tr, () => { $tr.remove(); });
         }, 250);
         remove();
       },
@@ -779,8 +773,8 @@
     }
     $table.append($tr);
 
-    getValue.update = function(newValues) {
-      fieldUpdates.forEach(function(update) {
+    getValue.update = (newValues) => {
+      fieldUpdates.forEach((update) => {
         update.checkSelect(newValues);
       });
     };
@@ -793,12 +787,12 @@
       bindToValue.indexOf(fieldValue) > -1 : bindToValue === fieldValue;
   }
 
-  chrome.options.base.singleFieldList = function(value, save, options, type) {
+  chrome.options.base.singleFieldList = (value, save, options, type) => {
     options.fields = [{ type: type, name: options.name }];
     return chrome.options.base.list(value, save, options);
   };
 
-  chrome.options.base.column = function(values, save, option, key, top) {
+  chrome.options.base.column = (values, save, option, key, top) => {
     delete option.name;
     var $container;
     if (top) {
@@ -811,17 +805,17 @@
     return $container;
   };
 
-  chrome.options.base.row = function(values, save, option, key, top) {
+  chrome.options.base.row = (values, save, option, key, top) => {
     var $container =  chrome.options.base.column(values, save, option, key, top);
     $container.classList.add('row');
     return $container;
   };
 
-  chrome.options.addField = function(value, save, option, type) {
+  chrome.options.addField = (value, save, option, type) => {
     var fn = chrome.options.fields[type || option.type];
     if (!fn) { return; }
     var lastTimeStamp;
-    var $field = fn(value, function(newValue, e) {
+    var $field = fn(value, (newValue, e) => {
       if (e) {
         if (e.timeStamp < lastTimeStamp) { return; }
         lastTimeStamp = e.timeStamp;
@@ -837,7 +831,7 @@
       $field.setAttribute('data-title', option.desc);
     }
     if (option.disabled) {
-      $field.querySelectorAll('input, select, textarea').forEach(function($f) {
+      $field.querySelectorAll('input, select, textarea').forEach(($f) => {
         $f.setAttribute('disabled', true);
       });
     }
@@ -849,26 +843,26 @@
 // Define all available fields.
 chrome.options.fields = {};
 
-chrome.options.fields.checkbox = function(value, save) {
+chrome.options.fields.checkbox = (value, save) => {
   var $checkbox = h('input[type=checkbox]');
 
   if (value != null) {
     $checkbox.checked = value;
   }
 
-  $checkbox.addEventListener('change', function() {
+  $checkbox.addEventListener('change', () => {
     save($checkbox.checked);
   });
 
   return $checkbox;
 };
 
-chrome.options.fields.text = function(value, save) {
+chrome.options.fields.text = (value, save) => {
   var $textbox = h('input[type=text]');
   if (value !== undefined) {
     $textbox.value = value;
   }
-  var debouncedInput = util.debounce(500, function(e) {
+  var debouncedInput = util.debounce(500, (e) => {
     if (e.target.validity.valid) {
       save($textbox.value, e);
     }
@@ -878,14 +872,14 @@ chrome.options.fields.text = function(value, save) {
   return $textbox;
 };
 
-chrome.options.fields.color = function(value, save, option) {
+chrome.options.fields.color = (value, save, option) => {
   var first = true;
   var format = option.format || 'rgba';
   if (!['rgb', 'rgba', 'hsl', 'hsla', 'hex'].includes(format)) {
     throw TypeError('Unsupported format given for color field: ' + format);
   }
   var showAlpha = ['rgba', 'hsla'].includes(format);
-  var hsv2hsl = function(d) {
+  var hsv2hsl = (d) => {
     return [
       Math.round(d[0] * 360),
       Math.round(d[1] * 100) + '%',
@@ -898,7 +892,7 @@ chrome.options.fields.color = function(value, save, option) {
     hex: CP._HSV2HEX,
   }[format];
   var debouncedSave = util.debounce(500, save);
-  var onchange = function() {
+  var onchange = () => {
     if (first) { return first = false; }
     var v = fn(picker.set());
     var color = /^hex/.test(format) ?
@@ -919,9 +913,9 @@ chrome.options.fields.color = function(value, save, option) {
   $container.append(h('span.color-alpha'));
   var $color = $container.appendChild(h('span.color-box', {
     style: value ? `background-color: ${value};` : '',
-    onclick: function() { picker.enter(); },
+    onclick: () => { picker.enter(); },
   }));
-  var $field = chrome.options.fields.text(value, function() {
+  var $field = chrome.options.fields.text(value, () => {
     if ($alpha) {
       $alpha.value = getAlpha($field.value);
     }
@@ -950,7 +944,7 @@ chrome.options.fields.color = function(value, save, option) {
   if (option.default) {
     $extraOptions.append(h('span.color-reset', {
       'data-title': 'Reset to default',
-      onclick: function() {
+      onclick: () => {
         picker.set(option.default);
         picker.trigger('change', [option.default]);
       },
@@ -960,22 +954,22 @@ chrome.options.fields.color = function(value, save, option) {
   return $container;
 };
 
-chrome.options.fields.url = function(value, save, option) {
+chrome.options.fields.url = (value, save, option) => {
   var $field = chrome.options.fields.text(value, save, option);
   $field.setAttribute('type', 'url');
   return $field;
 };
 
-chrome.options.fields.select = function(value, save, option) {
+chrome.options.fields.select = (value, save, option) => {
   var valueMap = {};
   var $select = h('select', {
-    onchange: function(e) {
+    onchange: (e) => {
       var val = $select.value;
       save(valueMap[val] !== undefined ? valueMap[val] : val, e);
     },
   });
   var firstValue = null;
-  option.options.forEach(function(option) {
+  option.options.forEach((option) => {
     var value = typeof option === 'object' ? option.value : option ;
     var desc = typeof option === 'object' ? option.desc : option;
     valueMap[value] = value;
@@ -988,10 +982,10 @@ chrome.options.fields.select = function(value, save, option) {
   return $select;
 };
 
-chrome.options.fields.radio = function(value, save, option) {
+chrome.options.fields.radio = (value, save, option) => {
   var $container = h('.radio-options');
   var name = (~~(Math.random() * 1e9)).toString(36);
-  option.options.forEach(function(option) {
+  option.options.forEach((option) => {
     var val = typeof option === 'object' ? option.value : option;
     var desc = typeof option === 'object' ? option.desc : option;
     var id = (~~(Math.random() * 1e9)).toString(36);
@@ -1000,7 +994,7 @@ chrome.options.fields.radio = function(value, save, option) {
       id, name,
       value: val,
       checked: value == val,
-      onchange: function(e) {
+      onchange: (e) => {
         if ($radio.checked) {
           save(val, e);
         }
@@ -1013,7 +1007,7 @@ chrome.options.fields.radio = function(value, save, option) {
   return $container;
 };
 
-chrome.options.fields.predefined_sound = function(value, save, option) {
+chrome.options.fields.predefined_sound = (value, save, option) => {
   var $container = h('span.predefined-sound');
   var $play = h('span.play', { onclick: playSound, innerHTML: '&#9654;' });
 
@@ -1057,7 +1051,7 @@ chrome.options.fields.predefined_sound = function(value, save, option) {
   return $container;
 };
 
-chrome.options.fields.custom_sound = function(value, save) {
+chrome.options.fields.custom_sound = (value, save) => {
   var $container = h('span.custom-sound');
 
   function saveField(newValue, e) {
@@ -1072,7 +1066,7 @@ chrome.options.fields.custom_sound = function(value, save) {
   }
 
   var $field = chrome.options.addField(value, saveField, { type: 'url' });
-  $field.addEventListener('keypress', function(e) {
+  $field.addEventListener('keypress', (e) => {
     if (e.keyCode === 13) {
       playSound();
     }
@@ -1083,10 +1077,10 @@ chrome.options.fields.custom_sound = function(value, save) {
   return $container;
 };
 
-chrome.options.fields.file = function(value, save) {
+chrome.options.fields.file = (value, save) => {
   return h('input[type=file]', {
     value,
-    onchange: function(e) {
+    onchange: (e) => {
       save(e.target.files, e);
     },
   });

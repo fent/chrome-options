@@ -1,7 +1,7 @@
-(function() {
+(() => {
   var util = window.util = {};
 
-  util.deepEqual = function(a, b) {
+  util.deepEqual = (a, b) => {
     var t1 = typeof a;
     var t2 = typeof b;
     if (t1 !== t2) { return false; }
@@ -19,14 +19,14 @@
     return true;
   };
 
-  util.deepClone = function(obj) {
+  util.deepClone = (obj) => {
     if (!(obj instanceof Object)) { return obj; }
     var clone = {};
     for (var prop in obj) { clone[prop] = util.deepClone(obj[prop]); }
     return clone;
   };
 
-  util.debounce = function(wait, func) {
+  util.debounce = (wait, func) => {
     var timeout;
     return (...args) => {
       clearTimeout(timeout);

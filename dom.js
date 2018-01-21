@@ -1,10 +1,10 @@
-(function(window) {
+((window) => {
   function isArray(obj) {
     return Array.isArray(obj) ||
       obj instanceof NodeList;
   }
 
-  var h = window.h = function(selector, props = {}, children) {
+  const h = window.h = (selector, props = {}, children) => {
     if (props != null && (isArray(props) ||
       typeof props === 'string' ||
       props.tagName)) {
@@ -61,7 +61,7 @@
 
   const animTime = 500;
   const animFunc = 'ease-in-out';
-  window.slideYShow = function($node, ms = animTime) {
+  window.slideYShow = ($node, ms = animTime) => {
     var startingHeight = $node.offsetParent ?
       window.getComputedStyle($node).height : '0';
     $node.style.display = 'block';
@@ -86,7 +86,7 @@
       padding ${ms}ms ${animFunc},
       margin ${ms}ms ${animFunc}
     `;
-    setTimeout(function() {
+    setTimeout(() => {
       $node.style.height = height;
       $node.style.paddingTop = '';
       $node.style.paddingBottom = '';
@@ -95,7 +95,7 @@
     });
   };
 
-  window.slideYHide = function($node, ms = animTime) {
+  window.slideYHide = ($node, ms = animTime) => {
     $node.style.overflow = 'hidden';
     $node.style.position = 'relative';
     $node.style.paddingTop = '';
@@ -113,7 +113,7 @@
       padding ${ms}ms ${animFunc},
       margin ${ms}ms ${animFunc}
     `;
-    setTimeout(function() {
+    setTimeout(() => {
       $node.style.height = '0';
       $node.style.paddingTop = '0';
       $node.style.paddingBottom = '0';
@@ -122,7 +122,7 @@
     });
   };
 
-  window.slideXShow = function($node, ms = animTime) {
+  window.slideXShow = ($node, ms = animTime) => {
     $node.style.display = '';
     $node.style.width = '';
     $node.style.paddingLeft = '';
@@ -151,7 +151,7 @@
     });
   };
 
-  window.slideXHide = function($node, ms = animTime) {
+  window.slideXHide = ($node, ms = animTime) => {
     $node.style.width = window.getComputedStyle($node).width;
     $node.style.paddingLeft = '';
     $node.style.paddingRight = '';
@@ -176,28 +176,28 @@
     });
   };
 
-  window.showTR = function($tr) {
+  window.showTR = ($tr) => {
     $tr.style.display = '';
     for (let $td of $tr.children) {
       let $wrapper = $td.appendChild(h('', {
         style: 'display: none',
       }, $td.childNodes));
       window.slideYShow($wrapper);
-      setTimeout(function() {
+      setTimeout(() => {
         $td.append(...$wrapper.childNodes);
         $wrapper.remove();
       }, animTime);
     }
   };
 
-  window.hideTR = function($tr, callback) {
+  window.hideTR = ($tr, callback) => {
     var n = $tr.children.length;
     for (let $td of $tr.children) {
       let $wrapper = h('');
       $wrapper.append(...$td.childNodes);
       $td.append($wrapper);
       window.slideYHide($wrapper);
-      setTimeout(function() {
+      setTimeout(() => {
         $tr.style.display = 'none';
         $td.append(...$wrapper.childNodes);
         $wrapper.remove();
@@ -209,12 +209,12 @@
     }
   };
 
-  window.flashClass = function($node, className, ms) {
+  window.flashClass = ($node, className, ms) => {
     var timeoutID;
-    return function() {
+    return () => {
       $node.classList.add(className);
       clearTimeout(timeoutID);
-      timeoutID = setTimeout(function() {
+      timeoutID = setTimeout(() => {
         $node.classList.remove(className);
       }, ms);
     };
