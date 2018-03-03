@@ -6,12 +6,21 @@
   display: none;
 }
 
+.chrome-bootstrap .frame {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 31px;
+}
+
 .chrome-bootstrap .frame .navigation {
   display: none;
 }
 
 .chrome-bootstrap .frame .mainview {
   -webkit-margin-start: 10px;
+  width: calc(100% - 155px);
+  position: relative;
+  max-height: 450px;
 }
 
 .chrome-bootstrap .frame .mainview header {
@@ -38,41 +47,40 @@
   display: block;
 }
 
-.chrome-bootstrap.show-sidebar .frame .mainview {
-  -webkit-margin-start: 155px;
-}
-
 .chrome-bootstrap.show-tab-title .frame .mainview header {
   display: block;
-}
-
-.chrome-bootstrap.show-tab-title .frame .content {
-  padding-top: 55px;
+  position: relative;
 }
 
 .chrome-bootstrap .frame .content .tab-desc {
   display: block;
 }
 
-.chrome-bootstrap .navigation {
+.chrome-bootstrap .frame .navigation {
   background: #fff;
   position: relative;
 }
 
 .chrome-bootstrap .frame .mainview > div {
-  position: static;
+  position: relative;
+  top: 0;
+  left: 0;
+  float: none;
+  height: 100%;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chrome-bootstrap .frame .mainview > div:not(.selected) {
-  position: relative;
-  height: 0;
-  width: 0;
-  overflow: hidden;
-  transition: margin 100ms;
+  position: absolute;
+  left: -99999px;
+  float: left;
 }
 
 .chrome-bootstrap .frame .mainview > div > .content {
-  padding-bottom: 10%;
+  height: 100%;
+  position: relative;
 }
 
 .chrome-bootstrap .predefined-sound,
@@ -332,7 +340,7 @@
 
 .chrome-bootstrap .preview-image {
   position: absolute;
-  margin: 0.65em 0 40px;
+  margin-top: 0.65em;
   padding: 5px;
   border-radius: 5px;
   background: #fff;
