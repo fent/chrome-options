@@ -13,6 +13,12 @@ This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bo
 
 Recommended that you create an options folder in your extension, for organization purposes.
 
+    mkdir options
+    cd options
+
+
+Download chrome-options
+
     bower install chrome-options
     ln bower_components/chrome-options/options.html .
     touch custom.css
@@ -25,7 +31,7 @@ Add options page to `manifest.json`. `open_in_tab` set to `true` or `false` are 
       "open_in_tab": false
     }
 
-Also needs `storage` permission. Options are saved to [`chrome.storage.sync`](https://developer.chrome.com/extensions/storage#property-sync).
+Needs `storage` permission. Options are saved to [`chrome.storage.sync`](https://developer.chrome.com/extensions/storage#property-sync).
 
     "permissions": [
       "storage"
