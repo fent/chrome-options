@@ -20,7 +20,7 @@
   -webkit-margin-start: 10px;
   width: calc(100% - 155px);
   position: relative;
-  max-height: 450px;
+  min-height: 450px;
 }
 
 .chrome-bootstrap .frame .mainview header {
@@ -67,7 +67,7 @@
   left: 0;
   float: none;
   height: 100%;
-  max-height: 450px;
+  min-height: 450px;
   display: flex;
   flex-direction: column;
 }
