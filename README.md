@@ -57,19 +57,19 @@ Use only one of the following functions to setup your options. If you're plannin
 * `options` - List of options.
 
 ### `chrome.options.addTab(name, [description], options)`
-* `String` - `name` - Name of the tab. Will be prepended along with "." to each option's name that's displayed under this tab.
-* `String` - `description` - Will be placed on top of the page when tab is viewed.
+* `string` - `name` - Name of the tab. Will be prepended along with "." to each option's name that's displayed under this tab.
+* `string` - `description` - Will be placed on top of the page when tab is viewed.
 * `Array.<Object>` - `options` - List of options.
 
 Options all can have the following properties.
 
-* `String` - `type` - What type of option this is. Defaults to "checkbox".
-* `String` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
-* `String` - `description`
-* `String` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
+* `string` - `type` - What type of option this is. Defaults to "checkbox".
+* `string` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
+* `string` - `description`
+* `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
-* `Boolean` - `disabled` - The field can be disabled, for whatever reason...
-* `Boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
+* `boolean` - `disabled` - The field can be disabled, for whatever reason...
+* `boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
 * `Function` - `validate` - Will be given the new value of the field, will only save if it returns `true`.
 
 
@@ -87,7 +87,7 @@ Options all can have the following properties.
 
 ![color](images/field_color.png)
 
-* `String` - `format` - Can be `hex`, `rgb`, `rgba`, `hsl`, or `hsla.`.
+* `string` - `format` - Can be `hex`, `rgb`, `rgba`, `hsl`, or `hsla.`.
 
 If `default` is set, will have an additional button for resetting to that color.
 
@@ -99,7 +99,7 @@ Uses [this color picker library](https://github.com/tovic/color-picker).
 
 ![select](images/field_select.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties. `value` can be a string or int.
+* `Array.<Object|string>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties. `value` can be a string or int.
 
 ### radio
 
@@ -111,7 +111,7 @@ Uses [this color picker library](https://github.com/tovic/color-picker).
 
 ![predefined_sound](images/field_predefined_sound.png)
 
-* `Boolean` - `allowNoSound` - Adds a no sound option to the top of the select field.
+* `boolean` - `allowNoSound` - Adds a no sound option to the top of the select field.
 
 ### custom_sound
 
@@ -133,7 +133,7 @@ When saved, will be saved as an object with all option names as keys along with 
 ![object](images/complex_object.png)
 
 * `Array.<Object>` - `options`
-* `String` - `layout` - "column" or "row". Defaults to "column".
+* `string` - `layout` - "column" or "row". Defaults to "column".
 
 Similar to checkbox with `options`, but without the checkbox. Not just for aesthetic purposes, will still be saved as an object.
 
@@ -142,13 +142,13 @@ Similar to checkbox with `options`, but without the checkbox. Not just for aesth
 ![list](images/complex_list.png)
 
 * `Array.<Object>` - `fields` - Required. List of fields for this list.
-  * `String` - `type` - Only basic field types listed above and custom fields supported.
-  * `String` - `name` - Required for non-layout types.
-  * `Boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
+  * `string` - `type` - Only basic field types listed above and custom fields supported.
+  * `string` - `name` - Required for non-layout types.
+  * `boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
   * `Object` - `bindTo` - Will only display this field if another field with name matching `bindTo.field` has the value `bindTo.value`, which can be be a string or an array of strings.
-* `Boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
-* `Boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
-* `Boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
+* `boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
+* `boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
+* `boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
 * `Array.<Option>` - `first` - You can specify a different set of fields for the first row.
 
 Will save its value as an array. If there is only one field, it will be an array of values of that field. Otherwise, an array of objects. When the last row's value is changed, a new row will be added.
@@ -163,7 +163,7 @@ Shortcut for a checkbox with a field right next to it.
 
 ![checkbox-field](images/complex_checkbox_field.png)
 
-* `Boolean` - `defaultEnabled`
+* `boolean` - `defaultEnabled`
 * `Object` - `defaultValue`
 
 Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
@@ -175,7 +175,7 @@ Use these to help structure the layout of your page.
 
 ### h3
 
-* `String` - `desc` - Text contents.
+* `string` - `desc` - Text contents.
 
 A heading that can be used as a separator.
 

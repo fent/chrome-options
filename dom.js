@@ -1,8 +1,8 @@
 ((window) => {
-  function isArray(obj) {
+  const isArray = (obj) => {
     return Array.isArray(obj) ||
       obj instanceof NodeList;
-  }
+  };
 
   const h = window.h = (selector, props = {}, children) => {
     if (props != null && (isArray(props) ||
@@ -12,18 +12,19 @@
       props = {};
     }
 
-    var attrs = {};
-    var attrsRe = /\[([^\s=]+)=(?:"([^"]*)"|([^\]]*))\]/;
-    var res;
+    const attrs = {};
+    const attrsRe = /\[([^\s=]+)=(?:"([^"]*)"|([^\]]*))\]/;
+    let res;
     while ((res = attrsRe.exec(selector))) {
       attrs[res[1]] = res[2] || res[3];
       selector = selector.slice(0, res.index) +
         selector.slice(res.index + res[0].length);
     }
 
-    var m = selector.split(/(\.|#)/);
-    var tagName = m[0] === '.' || m[0] === '#' || m[0] === '' ? 'div' : m[0];
-    var el = document.createElement(tagName);
+    const m = selector.split(/(\.|#)/);
+    const tagName = m[0] === '.' || m[0] === '#' || m[0] === '' ?
+      'div' : m[0];
+    const el = document.createElement(tagName);
     for (let i = 1; i < m.length; i += 2) {
       if (m[i] === '.') {
         el.classList.add(m[i + 1]);
@@ -62,7 +63,7 @@
   const animTime = 500;
   const animFunc = 'ease-in-out';
   window.slideYShow = ($node, ms = animTime) => {
-    var startingHeight = $node.offsetParent ?
+    const startingHeight = $node.offsetParent ?
       window.getComputedStyle($node).height : '0';
     $node.style.display = 'block';
     $node.style.height = 'auto';
@@ -70,8 +71,8 @@
     $node.style.paddingBottom = '';
     $node.style.marginTop = '';
     $node.style.marginBottom = '';
-    var height = window.getComputedStyle($node).height;
-    var heightInt = parseInt(height, 10);
+    const height = window.getComputedStyle($node).height;
+    const heightInt = parseInt(height, 10);
     $node.style.height = startingHeight;
     $node.style.paddingTop = '0';
     $node.style.paddingBottom = '0';
@@ -102,8 +103,8 @@
     $node.style.paddingBottom = '';
     $node.style.marginTop = '';
     $node.style.marginBottom = '';
-    var height = window.getComputedStyle($node).height;
-    var heightInt = parseInt(height, 10);
+    const height = window.getComputedStyle($node).height;
+    const heightInt = parseInt(height, 10);
     $node.style.height = height;
     if (heightInt > window.innerHeight) {
       ms *= 1 + (((heightInt / window.innerHeight) - 1) / 2);
@@ -129,7 +130,7 @@
     $node.style.paddingRight = '';
     $node.style.marginLeft = '';
     $node.style.marginRight = '';
-    var width = window.getComputedStyle($node).width;
+    const width = window.getComputedStyle($node).width;
     $node.style.width = '0';
     $node.style.paddingLeft = '0';
     $node.style.paddingRight = '0';
@@ -191,7 +192,7 @@
   };
 
   window.hideTR = ($tr, callback) => {
-    var n = $tr.children.length;
+    let n = $tr.children.length;
     for (let $td of $tr.children) {
       let $wrapper = h('');
       $wrapper.append(...$td.childNodes);
@@ -210,7 +211,7 @@
   };
 
   window.flashClass = ($node, className, ms) => {
-    var timeoutID;
+    let timeoutID;
     return () => {
       $node.classList.add(className);
       clearTimeout(timeoutID);

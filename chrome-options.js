@@ -29,13 +29,13 @@
 
   const $menu = document.querySelector('#main-menu');
   const $mainview = document.querySelector('.mainview');
-  var lastHash = null;
-  var hashPath = window.location.hash.split('.');
-  var hashOption = hashPath.length > 1;
-  var hashPosition = 1;
+  let lastHash = null;
+  let hashPath = window.location.hash.split('.');
+  let hashOption = hashPath.length > 1;
+  let hashPosition = 1;
 
-  function menuClick() {
-    var newHash = window.location.hash;
+  const menuClick = () => {
+    const newHash = window.location.hash;
     if (!newHash) {
       document.querySelector('.mainview > *:nth-child(2)')
         .classList.add('selected');
@@ -53,14 +53,14 @@
     hashPath = newHash.split('.');
     hashOption = hashPath.length > 1;
 
-    var $currentView = document.querySelector(hashPath[0]);
+    const $currentView = document.querySelector(hashPath[0]);
     if ($currentView) {
-      var $target = document.querySelector('.menu a[href="' + hashPath[0] + '"]');
-      $target.parentNode.classList.add('selected');
+      document.querySelector('.menu a[href="' + hashPath[0] + '"]')
+        .parentNode.classList.add('selected');
       $currentView.classList.add('selected');
       document.body.scrollTop = 0;
     }
-  }
+  };
 
   setTimeout(menuClick, 100);
   window.addEventListener('hashchange', menuClick);
@@ -81,16 +81,16 @@
   const flashSavedAlert = flashClass($saveContainer, 'flash', 150);
 
   // Add the extension's title to the top of the page.
-  var setupRan = false;
-  function setup() {
+  let setupRan = false;
+  const setup = () => {
     if (setupRan) { return; }
-    var manifest = chrome.runtime.getManifest();
+    const manifest = chrome.runtime.getManifest();
 
-    var extensionName =
+    const extensionName =
       chrome.options.opts.title || manifest.name || 'chrome';
     document.querySelector('title').textContent =
       extensionName + ' options';
-    var $title = document.querySelector('.chrome-options-title');
+    const $title = document.querySelector('.chrome-options-title');
     $title.textContent = extensionName;
     if (chrome.options.opts.title !== false && !urlParams.hideTitle) {
       document.body.classList.add('show-title');
@@ -128,11 +128,11 @@
     }
 
     setupRan = true;
-  }
+  };
 
   /**
-   * @param {String} name
-   * @param {String!} desc Will be placed at the top of the page of the tab
+   * @param {string} name
+   * @param {!string} desc Will be placed at the top of the page of the tab
    * @param {Array.<Object>} options
    */
   chrome.options.addTab = (name, desc, options) => {
@@ -141,18 +141,18 @@
       options = desc;
       desc = null;
     }
-    var keyName = name.toLowerCase().replace(' ', '_');
-    var $menuButton = h('li', h('a', { href: `#${keyName}` }, name));
+    const keyName = name.toLowerCase().replace(' ', '_');
+    const $menuButton = h('li', h('a', { href: `#${keyName}` }, name));
     $menuButton.querySelector('a').addEventListener('click', menuClick);
     $menu.append($menuButton);
-    var $tabview = h('div', { id: keyName }, h('header', h('h1', name)));
-    var $tabcontent = h('div.content');
+    const $tabview = h('div', { id: keyName }, h('header', h('h1', name)));
+    const $tabcontent = h('div.content');
     if (desc) {
       $tabcontent.append(h('p.tab-desc', desc));
     }
 
-    var keys = [];
-    (function getOptionKeys(options) {
+    const keys = [];
+    const getOptionKeys = (options) => {
       options.forEach((option) => {
         if (option.name) {
           keys.push(getKeyPath(keyName, option));
@@ -160,7 +160,8 @@
           getOptionKeys(option.options);
         }
       });
-    })(options);
+    };
+    getOptionKeys(options);
 
     chrome.storage.sync.get(keys, (items) => {
       addTabOptions($tabcontent, keyName, items, options);
@@ -171,7 +172,7 @@
 
 
   /**
-   * @param {String} desc
+   * @param {string} desc
    * @param {Array.<Object>} options
    */
   chrome.options.set = (desc, options) => {
@@ -180,30 +181,30 @@
     chrome.options.addTab('', desc, options);
   };
 
-  function getKeyPath(parentKey, option) {
+  const getKeyPath = (parentKey, option) => {
     return (parentKey || '') +
       (parentKey && option.name ? '.' : '') + (option.name || '');
-  } 
+  };
 
-  function addTabOptions($parent, keyName, values, options) {
+  const addTabOptions = ($parent, keyName, values, options) => {
     options.forEach((option) => {
-      var key = getKeyPath(keyName, option);
-      var value = values[key];
-      var latestValue = value;
+      const key = getKeyPath(keyName, option);
+      let value = values[key];
+      let latestValue = value;
 
       // Clone value so that it can be compared to new value.
-      var cloneValue = () => { value = util.deepClone(latestValue); };
+      const cloneValue = () => { value = util.deepClone(latestValue); };
       $saveButton.addEventListener('click', cloneValue);
 
       // Use requestAnimationFrame whenever possible,
       // so that it doensn't seep into load time.
       requestAnimationFrame(cloneValue);
 
-      var save = (newValue) => {
+      const save = (newValue) => {
         latestValue = newValue;
 
         requestAnimationFrame(() => {
-          var isEqual = util.deepEqual(value, newValue);
+          const isEqual = util.deepEqual(value, newValue);
           if (chrome.options.opts.autoSave) {
             if (!isEqual) {
               chrome.storage.sync.set({ [key]: newValue });
@@ -225,20 +226,15 @@
           }
         });
       };
-      var $container = addOption(key, values, value, save, option, top);
+      const $container = addOption(key, values, value, save, option, top);
       if ($container) { $parent.append($container); }
     });
-  }
+  };
 
-  function addH3(option) {
-    return !hashOption && h('h3', option.desc);
-  }
+  const addH3 = (option) => !hashOption && h('h3', option.desc);
+  const addHtml = (option) => !hashOption && h('', { innerHTML: option.html });
 
-  function addHtml(option) {
-    return !hashOption && h('', { innerHTML: option.html });
-  }
-
-  function addOption(key, values, value, save, option, top) {
+  const addOption = (key, values, value, save, option, top) => {
     if (hashOption) {
       if (hashPosition < hashPath.length &&
           option.name && option.name !== hashPath[hashPosition]) {
@@ -254,7 +250,7 @@
       }
     }
 
-    var $option, r;
+    let $option, r;
     switch (option.type) {
       case 'checkbox':
         $option = chrome.options.base.checkbox(value, save, option, key);
@@ -295,22 +291,22 @@
 
     if (hashOption) { hashPosition--; }
     if (option.preview) {
-      var $label = $option.querySelector('label');
+      const $label = $option.querySelector('label');
       $label.append(h('span.preview-container', h('span.preview')),
         h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
     }
 
     return $option;
-  }
+  };
 
   chrome.options.base.checkbox = (value, save, option, key) => {
-    var $label = h('label');
-    var $container = h('.checkbox', $label);
-    var $subContainer, $triangle;
-    var options = option.options;
-    var hasOptions = !!options;
+    const $label = h('label');
+    const $container = h('.checkbox', $label);
+    let $subContainer, $triangle;
+    const options = option.options;
+    const hasOptions = !!options;
 
-    var checked = value;
+    let checked = value;
     if (hasOptions) {
       if (value == null || typeof value !== 'object') {
         value = {};
@@ -318,7 +314,7 @@
       checked = value.enabled;
     }
 
-    var $checkbox = chrome.options.fields.checkbox(checked, (checked) => {
+    const $checkbox = chrome.options.fields.checkbox(checked, (checked) => {
       if (hasOptions) {
         value.enabled = checked;
       } else {
@@ -333,7 +329,7 @@
       $container.append($subContainer);
       if (!checked) { $subContainer.style.display = 'none'; }
 
-      var toggleContainer = (checked) => {
+      const toggleContainer = (checked) => {
         if (checked) {
           $triangle.textContent = '▼';
           slideYShow($subContainer);
@@ -364,7 +360,7 @@
     if (value == null || typeof value !== 'object') {
       value = {};
     }
-    var mustSave = false;
+    let mustSave = false;
     if (value.enabled === undefined && option.defaultEnabled !== undefined) {
       value.enabled = option.defaultEnabled;
       mustSave = true;
@@ -380,8 +376,8 @@
     if (!chrome.options.fields[type]) {
       throw Error('Could not find option type: ' + type);
     }
-    var $container = h('.suboption');
-    var $box = $container.appendChild(h('span'));
+    const $container = h('.suboption');
+    const $box = $container.appendChild(h('span'));
 
     $box
       .append(chrome.options.fields.checkbox(value.enabled, (checked) => {
@@ -401,19 +397,19 @@
   };
 
   chrome.options.base.object = (value, save, option, key) => {
-    var $container = h('.object', h('label', option.desc));
+    const $container = h('.object', h('label', option.desc));
     $container.append(addOptions(value, save, option, key));
     return $container;
   };
 
-  function addOptions(value, save, option, key) {
+  const addOptions = (value, save, option, key) => {
     if (value == null || typeof value !== 'object') {
       value = {};
     }
-    var $container = h('.suboptions');
+    const $container = h('.suboptions');
     option.options.forEach((option) => {
-      var optionKey = getKeyPath(key, option);
-      var $option = addOption(optionKey, value, value[option.name],
+      const optionKey = getKeyPath(key, option);
+      const $option = addOption(optionKey, value, value[option.name],
         (newValue) => {
           if (option.name) { value[option.name] = newValue; }
           save(value);
@@ -421,25 +417,25 @@
       if ($option) { $container.append($option); }
     });
     return $container;
-  }
+  };
 
   chrome.options.addLabelNField = (value, save, option) => {
-    var $container = h('.suboption', h('label', option.desc || ''));
-    var $field = chrome.options.addField(value, save, option);
+    const $container = h('.suboption', h('label', option.desc || ''));
+    const $field = chrome.options.addField(value, save, option);
     $container.append(h('.field-container', $field));
     $container.classList.add(option.singleline ? 'singleline' : 'multiline');
     return $container;
   };
 
   chrome.options.base.list = (list, save, options, key) => {
-    var $container = h('.suboption.list');
-    var $wrapper, shown = true;
+    const $container = h('.suboption.list');
+    let $wrapper, shown = true;
 
     if (options.desc) {
-      var $label = $container.appendChild(h('label', options.desc));
+      const $label = $container.appendChild(h('label', options.desc));
       if (options.collapsible) {
         shown = false;
-        var $triangle = h('span.triangle', {
+        const $triangle = h('span.triangle', {
           onclick: () => {
             shown = !shown;
             if (shown) {
@@ -456,20 +452,20 @@
     }
 
     list = list || [];
-    var $table = $container.appendChild(h('table'));
+    const $table = $container.appendChild(h('table'));
     if (options.desc && options.collapsible) {
       $wrapper = $container.appendChild(h('', { style: 'display: none' }, $table));
     }
-    var $tbody = $table.appendChild(h('tbody'));
-    var rows;
-    var heads = {};
+    const $tbody = $table.appendChild(h('tbody'));
+    let rows;
+    let heads = {};
 
     if (options.head) {
-      var $thead = h('tr');
-      var prevfield;
+      const $thead = h('tr');
+      let prevfield;
       options.fields.forEach((field) => {
         if (!field.bindTo || !prevfield.bindTo) {
-          var $container = heads[field.name] = h('div', field.desc);
+          const $container = heads[field.name] = h('div', field.desc);
           $thead.append(h('th', $container));
         } else {
           heads[field.name] = heads[prevfield.name];
@@ -480,12 +476,12 @@
     }
 
     // Check if each column should be shown.
-    function checkColumns(init) {
+    const checkColumns = (init) => {
       options.fields.forEach((field) => {
         if (!field.bindTo) { return; }
-        var show = rows.some(row => row.shown[field.name]);
-        var $head = heads[field.name];
-        var isVisible = !!$head.offsetParent;
+        const show = rows.some(row => row.shown[field.name]);
+        const $head = heads[field.name];
+        const isVisible = !!$head.offsetParent;
         if (show && !isVisible) {
           setTimeout(slideXShow.bind(null, $head), init ? 0 : 500);
         } else if (!show && isVisible) {
@@ -496,18 +492,17 @@
           }
         }
       });
-    }
+    };
 
-    function saveFields() {
-      var newValues = rows.map(getValue => getValue());
+    const saveFields = () => {
+      const newValues = rows.map(getValue => getValue());
       save(newValues.filter((rowValue) => {
         if (rowValue == null || rowValue === '') {
           return false;
         } else if (options.filter && !options.filter(rowValue)) {
           return false;
         } else if (typeof rowValue === 'object') {
-          for (var i = 0, len = options.fields.length; i < len; i++) {
-            var field = options.fields[i];
+          for (let field of options.fields) {
             if (field.required && !rowValue[field.name]) {
               return false;
             }
@@ -520,33 +515,33 @@
         rows.forEach((row) => { row.update(newValues); });
         if (options.head) { checkColumns(false); }
       });
-    }
+    };
 
-    var fieldsMap = {};
+    const fieldsMap = {};
     options.fields.forEach((field) => { fieldsMap[field.name] = field; });
 
-    function addNewRow(animate) {
-      var row;
-      function remove() {
+    const addNewRow = (animate) => {
+      let row;
+      const remove = () => {
         rows.splice(rows.indexOf(row), 1);
         saveFields();
-      }
+      };
       row = addListRow($tbody, null, options.fields, fieldsMap, saveFields,
         remove, false, options.sortable, animate, key);
       rows.push(row);
       requestAnimationFrame(() => {
-        var rowValues = rows.map(getValue => getValue());
+        const rowValues = rows.map(getValue => getValue());
         rows.forEach((row) => { row.update(rowValues); });
       });
-    }
+    };
 
     rows = list.map((rowData, i) => {
-      var row;
-      function remove() {
+      let row;
+      const remove = () => {
         rows.splice(rows.indexOf(row), 1);
         saveFields();
-      }
-      var fields = i === 0 && options.first ? options.first : options.fields;
+      };
+      const fields = i === 0 && options.first ? options.first : options.fields;
       row = addListRow($tbody, rowData, fields, fieldsMap, saveFields,
         remove, i === 0 && options.first,
         options.sortable, false, key);
@@ -554,7 +549,7 @@
     });
 
     if (options.first && !rows.length) {
-      var row = addListRow($tbody, null, options.first, fieldsMap,
+      const row = addListRow($tbody, null, options.first, fieldsMap,
         saveFields, () => {}, true, options.sortable, false, key);
       rows.push(row);
       saveFields();
@@ -569,11 +564,11 @@
     }
 
     // When user edits the last row, add another.
-    function onChange(e) {
+    const onChange = (e) => {
       if ($tbody.lastChild.contains(e.target)) {
         addNewRow(true);
       }
-    }
+    };
 
     $tbody.addEventListener('input', onChange);
     $tbody.addEventListener('change', onChange);
@@ -595,17 +590,17 @@
         // Set the mirror's td's to a fixed width since taking a row
         // out of a table removes its alignments from the
         // table's columns.
-        var $mirrorTDs = $mirror.querySelectorAll(':scope > td');
+        const $mirrorTDs = $mirror.querySelectorAll(':scope > td');
         $original.querySelectorAll(':scope > td').forEach(($td, i) => {
           $mirrorTDs[i].style.width = $td.offsetWidth + 'px';
         });
 
         // Copy the value of the mirror's form elements.
         // Since `node.cloneNode()` does not do so for some of them.
-        var selection = 'select, input[type=radio]';
-        var $mirrorFields = $mirror.querySelectorAll(selection);
+        const selection = 'select, input[type=radio]';
+        const $mirrorFields = $mirror.querySelectorAll(selection);
         $original.querySelectorAll(selection).forEach(($field, i) => {
-          var $node = $mirrorFields[i];
+          const $node = $mirrorFields[i];
           $node.value = $field.value;
           if ($node.checked) {
             // Change the name of the radio field so that checking the
@@ -617,7 +612,7 @@
 
       }).on('dragend', () => {
         rows.forEach((a) => {
-          var $child = a.$tr;
+          let $child = a.$tr;
           a.index = 0;
           while (($child = $child.previousSibling) != null) { a.index++; }
         });
@@ -629,9 +624,9 @@
     return $container;
   };
 
-  function addListRow($table, values, fields, fieldsMap, save, remove,
-    unremovable, sort, animate, key) {
-    var $tr = h('tr');
+  const addListRow = ($table, values, fields, fieldsMap, save, remove,
+    unremovable, sort, animate, key) => {
+    const $tr = h('tr');
     if (unremovable) {
       $tr.classList.add('unremovable');
     }
@@ -640,16 +635,16 @@
       setTimeout(showTR.bind(null, $tr), 100);
     }
 
-    var getValue = () => values;
+    const getValue = () => values;
     getValue.$tr = $tr;
 
     // Keep track which fields in this row are being shown.
     getValue.shown = {};
 
-    var $prevtd, prevfield;
-    var fieldUpdates = fields.map((field) => {
-      function saveField(newValue) {
-        var name = field.name;
+    let $prevtd, prevfield;
+    const fieldUpdates = fields.map((field) => {
+      const saveField = (newValue) => {
+        const name = field.name;
         if (fields.length === 1) {
           values = newValue;
         } else if (name) {
@@ -657,15 +652,15 @@
         }
         fieldUpdates.forEach((up) => { up.checkBind(name, newValue); });
         save();
-      }
+      };
 
-      var $field;
-      var update = {};
+      let $field;
+      const update = {};
       update.checkBind = (name, newValue) => {
-        var bindTo = field.bindTo;
+        const bindTo = field.bindTo;
         if (bindTo && bindTo.field === name) {
-          var isVisible = !!$field.offsetParent;
-          var equals = bindToEquals(bindTo.value, newValue);
+          const isVisible = !!$field.offsetParent;
+          const equals = bindToEquals(bindTo.value, newValue);
           if (equals && !isVisible) {
             slideXShow($field);
             getValue.shown[field.name] = true;
@@ -687,7 +682,7 @@
           field.options
             .filter(f => f.unique)
             .forEach((option) => {
-              var display = newValues.some((rowValue) => {
+              const display = newValues.some((rowValue) => {
                 return rowValue !== values &&
                   rowValue[field.name] === option.value;
               }) ? 'none' : '';
@@ -698,16 +693,16 @@
         }
       };
 
-      var bindTo = field.bindTo;
-      var $td = bindTo && prevfield && prevfield.bindTo ?
+      const bindTo = field.bindTo;
+      const $td = bindTo && prevfield && prevfield.bindTo ?
         $prevtd : h('td');
       if (bindTo) {
         $td.classList.add('bind-to');
       }
       $prevtd = $td;
       prevfield = field;
-      var $fieldContainer = $tr.appendChild($td);
-      var fieldValue;
+      const $fieldContainer = $tr.appendChild($td);
+      let fieldValue;
       if (!values && (fields.length > 1 ||
           field.type === 'column' || field.type === 'row')) {
         values = {};
@@ -780,12 +775,12 @@
     };
 
     return getValue;
-  }
+  };
 
-  function bindToEquals(bindToValue, fieldValue) {
+  const bindToEquals = (bindToValue, fieldValue) => {
     return Array.isArray(bindToValue) ?
       bindToValue.indexOf(fieldValue) > -1 : bindToValue === fieldValue;
-  }
+  };
 
   chrome.options.base.singleFieldList = (value, save, options, type) => {
     options.fields = [{ type: type, name: options.name }];
@@ -794,7 +789,7 @@
 
   chrome.options.base.column = (values, save, option, key, top) => {
     delete option.name;
-    var $container;
+    let $container;
     if (top) {
       $container = h('div.column');
       addTabOptions($container, key, values, option.options);
@@ -806,16 +801,17 @@
   };
 
   chrome.options.base.row = (values, save, option, key, top) => {
-    var $container =  chrome.options.base.column(values, save, option, key, top);
+    const $container =
+      chrome.options.base.column(values, save, option, key, top);
     $container.classList.add('row');
     return $container;
   };
 
   chrome.options.addField = (value, save, option, type) => {
-    var fn = chrome.options.fields[type || option.type];
+    const fn = chrome.options.fields[type || option.type];
     if (!fn) { return; }
-    var lastTimeStamp;
-    var $field = fn(value, (newValue, e) => {
+    let lastTimeStamp;
+    const $field = fn(value, (newValue, e) => {
       if (e) {
         if (e.timeStamp < lastTimeStamp) { return; }
         lastTimeStamp = e.timeStamp;
@@ -844,7 +840,7 @@
 chrome.options.fields = {};
 
 chrome.options.fields.checkbox = (value, save) => {
-  var $checkbox = h('input[type=checkbox]');
+  const $checkbox = h('input[type=checkbox]');
 
   if (value != null) {
     $checkbox.checked = value;
@@ -858,11 +854,11 @@ chrome.options.fields.checkbox = (value, save) => {
 };
 
 chrome.options.fields.text = (value, save) => {
-  var $textbox = h('input[type=text]');
+  const $textbox = h('input[type=text]');
   if (value !== undefined) {
     $textbox.value = value;
   }
-  var debouncedInput = util.debounce(500, (e) => {
+  const debouncedInput = util.debounce(500, (e) => {
     if (e.target.validity.valid) {
       save($textbox.value, e);
     }
@@ -873,29 +869,29 @@ chrome.options.fields.text = (value, save) => {
 };
 
 chrome.options.fields.color = (value, save, option) => {
-  var first = true;
-  var format = option.format || 'rgba';
+  let first = true;
+  const format = option.format || 'rgba';
   if (!['rgb', 'rgba', 'hsl', 'hsla', 'hex'].includes(format)) {
     throw TypeError('Unsupported format given for color field: ' + format);
   }
-  var showAlpha = ['rgba', 'hsla'].includes(format);
-  var hsv2hsl = (d) => {
+  const showAlpha = ['rgba', 'hsla'].includes(format);
+  const hsv2hsl = (d) => {
     return [
       Math.round(d[0] * 360),
       Math.round(d[1] * 100) + '%',
       Math.round(d[2] * 100) + '%'
     ];
   };
-  var fn = {
+  const fn = {
     rgb: CP._HSV2RGB, rgba: CP._HSV2RGB,
     hsl: hsv2hsl, hsv2hsl,
     hex: CP._HSV2HEX,
   }[format];
-  var debouncedSave = util.debounce(500, save);
-  var onchange = () => {
+  const debouncedSave = util.debounce(500, save);
+  const onchange = () => {
     if (first) { return first = false; }
-    var v = fn(picker.set());
-    var color = /^hex/.test(format) ?
+    const v = fn(picker.set());
+    const color = /^hex/.test(format) ?
       `#${v}` :
       `${format}(${v.join(', ')}${showAlpha ? `, ${$alpha.value}` : ''})`;
     $field.value = color;
@@ -903,36 +899,37 @@ chrome.options.fields.color = (value, save, option) => {
     debouncedSave(color);
   };
 
-  function getAlpha(value) {
-    var r = /(?:rgba|hsla)\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*(\d?(?:\.\d+)?)\s*\)/
+  const getAlpha = (value) => {
+    const r = /(?:rgba|hsla)\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*(\d?(?:\.\d+)?)\s*\)/
       .exec(value);
     return r && r[1] != '' ? r[1] : 1;
-  }
+  };
 
-  var $container = h('span.color');
+  const $container = h('span.color');
   $container.append(h('span.color-alpha'));
-  var $color = $container.appendChild(h('span.color-box', {
+  const $color = $container.appendChild(h('span.color-box', {
     style: value ? `background-color: ${value};` : '',
     onclick: () => { picker.enter(); },
   }));
-  var $field = chrome.options.fields.text(value, () => {
+  const $field = chrome.options.fields.text(value, () => {
     if ($alpha) {
       $alpha.value = getAlpha($field.value);
     }
 
     // color-picker doesn't accept alpha, so take it out.
-    var s = $field.value .split(',');
+    let s = $field.value .split(',');
     s = s.length >=4 ? s.slice(0, 3).join(',') + ')' : s.join(',');
     s = s.replace('rgba', 'rgb').replace('hsla', 'hsv').replace('hsl', 'hsv');
     picker.set(s);
   });
   $container.append($field);
-  var picker = new CP($field);
+  const picker = new CP($field);
   picker.on('change', onchange);
 
-  var $extraOptions = picker.picker.appendChild(h('.extra-options'));
+  const $extraOptions = picker.picker.appendChild(h('.extra-options'));
+  let $alpha;
   if (showAlpha) {
-    var $alpha = h('input[type=range][min=0][max=1][step=.1]', {
+    $alpha = h('input[type=range][min=0][max=1][step=.1]', {
       'data-title': 'Alpha',
       onchange,
       oninput: onchange,
@@ -955,23 +952,23 @@ chrome.options.fields.color = (value, save, option) => {
 };
 
 chrome.options.fields.url = (value, save, option) => {
-  var $field = chrome.options.fields.text(value, save, option);
+  const $field = chrome.options.fields.text(value, save, option);
   $field.setAttribute('type', 'url');
   return $field;
 };
 
 chrome.options.fields.select = (value, save, option) => {
-  var valueMap = {};
-  var $select = h('select', {
+  const valueMap = {};
+  const $select = h('select', {
     onchange: (e) => {
-      var val = $select.value;
+      const val = $select.value;
       save(valueMap[val] !== undefined ? valueMap[val] : val, e);
     },
   });
-  var firstValue = null;
+  let firstValue = null;
   option.options.forEach((option) => {
-    var value = typeof option === 'object' ? option.value : option ;
-    var desc = typeof option === 'object' ? option.desc : option;
+    const value = typeof option === 'object' ? option.value : option ;
+    const desc = typeof option === 'object' ? option.desc : option;
     valueMap[value] = value;
     $select.append(h('option', { value }, desc));
     if (firstValue === null) {
@@ -983,14 +980,14 @@ chrome.options.fields.select = (value, save, option) => {
 };
 
 chrome.options.fields.radio = (value, save, option) => {
-  var $container = h('.radio-options');
-  var name = (~~(Math.random() * 1e9)).toString(36);
+  const $container = h('.radio-options');
+  const name = (~~(Math.random() * 1e9)).toString(36);
   option.options.forEach((option) => {
-    var val = typeof option === 'object' ? option.value : option;
-    var desc = typeof option === 'object' ? option.desc : option;
-    var id = (~~(Math.random() * 1e9)).toString(36);
-    var $row = $container.appendChild(h('.radio-option'));
-    var $radio = $row.appendChild(h('input[type=radio]', {
+    const val = typeof option === 'object' ? option.value : option;
+    const desc = typeof option === 'object' ? option.desc : option;
+    const id = (~~(Math.random() * 1e9)).toString(36);
+    const $row = $container.appendChild(h('.radio-option'));
+    const $radio = $row.appendChild(h('input[type=radio]', {
       id, name,
       value: val,
       checked: value == val,
@@ -1008,10 +1005,22 @@ chrome.options.fields.radio = (value, save, option) => {
 };
 
 chrome.options.fields.predefined_sound = (value, save, option) => {
-  var $container = h('span.predefined-sound');
-  var $play = h('span.play', { onclick: playSound, innerHTML: '&#9654;' });
+  const playSound = () => {
+    if (!value) {
+      $play.classList.add('disabled');
+      return;
+    }
+    $play.classList.remove('disabled');
+    const audio = new Audio();
+    audio.src = 'bower_components/chrome-options/sounds/' + value + '.wav';
+    audio.onerror = console.error;
+    audio.play();
+  };
 
-  var options = [
+  const $container = h('span.predefined-sound');
+  const $play = h('span.play', { onclick: playSound, innerHTML: '&#9654;' });
+
+  const options = [
     'Basso', 'Bip', 'Blow', 'Boing', 'Bottle', 'Clink-Klank',
     'Droplet', 'Frog', 'Funk', 'Glass', 'Hero', 'Indigo', 'Laugh',
     'Logjam', 'Monkey', 'moof', 'Ping', 'Pong2003', 'Pop',
@@ -1027,24 +1036,12 @@ chrome.options.fields.predefined_sound = (value, save, option) => {
     value = value || options[0];
   }
 
-  function saveField(newValue, e) {
+  const saveField = (newValue, e) => {
     value = newValue;
     save(newValue, e);
-  }
+  };
 
-  function playSound() {
-    if (!value) {
-      $play.classList.add('disabled');
-      return;
-    }
-    $play.classList.remove('disabled');
-    var audio = new Audio();
-    audio.src = 'bower_components/chrome-options/sounds/' + value + '.wav';
-    audio.onerror = console.error;
-    audio.play();
-  }
-
-  var $field = chrome.options.fields.select(value, saveField, { options });
+  const $field = chrome.options.fields.select(value, saveField, { options });
   $field.addEventListener('change', playSound);
   $container.append($field, $play);
 
@@ -1052,20 +1049,20 @@ chrome.options.fields.predefined_sound = (value, save, option) => {
 };
 
 chrome.options.fields.custom_sound = (value, save) => {
-  var $container = h('span.custom-sound');
+  const $container = h('span.custom-sound');
 
-  function saveField(newValue, e) {
+  const saveField = (newValue, e) => {
     value = newValue;
     save(newValue, e);
-  }
+  };
 
-  function playSound() {
-    var audio = new Audio();
+  const playSound = () => {
+    const audio = new Audio();
     audio.src = value;
     audio.play();
-  }
+  };
 
-  var $field = chrome.options.addField(value, saveField, { type: 'url' });
+  const $field = chrome.options.addField(value, saveField, { type: 'url' });
   $field.addEventListener('keypress', (e) => {
     if (e.keyCode === 13) {
       playSound();
