@@ -1,3 +1,7 @@
+html, body {
+  height: 100%;
+}
+
 .chrome-bootstrap .chrome-options.title {
   display: none;
 }
@@ -12,6 +16,10 @@
   margin-bottom: 31px;
 }
 
+body.open-in-tab .frame {
+  height: calc(100% - 31px);
+}
+
 .chrome-bootstrap .frame .navigation {
   display: none;
 }
@@ -19,7 +27,6 @@
 .chrome-bootstrap .frame .mainview {
   -webkit-margin-start: 10px;
   width: calc(100% - 155px);
-  position: relative;
   max-height: 450px;
 }
 
@@ -35,19 +42,19 @@
   display: none;
 }
 
-.chrome-bootstrap.show-title .chrome-options-title {
+body.show-title .chrome-options-title {
   display: block;
 }
 
-.chrome-bootstrap.show-about .menu.about {
+body.show-about .menu.about {
   display: block;
 }
 
-.chrome-bootstrap.show-sidebar .frame .navigation {
+body.show-sidebar .frame .navigation {
   display: block;
 }
 
-.chrome-bootstrap.show-tab-title .frame .mainview header {
+body.show-tab-title .frame .mainview header {
   display: block;
   position: relative;
 }
@@ -79,7 +86,8 @@
 }
 
 .chrome-bootstrap .frame .mainview > div > .content {
-  height: 100%;
+  min-width: 738px;
+  width: auto;
   position: relative;
 }
 

@@ -108,6 +108,10 @@
       }
     }
 
+    if (!manifest.options_ui || manifest.options_ui.open_in_tab) {
+      document.body.classList.add('open-in-tab');
+    }
+
     if (!urlParams.hideSidebar) {
       document.body.classList.add('show-sidebar');
     }
