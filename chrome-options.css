@@ -20,6 +20,10 @@ body.open-in-tab .frame {
   height: calc(100% - 31px);
 }
 
+body:not(.open-in-tab) .frame .mainview {
+  max-height: 450px;
+}
+
 .chrome-bootstrap .frame .navigation {
   display: none;
 }
@@ -27,7 +31,6 @@ body.open-in-tab .frame {
 .chrome-bootstrap .frame .mainview {
   -webkit-margin-start: 10px;
   width: calc(100% - 155px);
-  max-height: 450px;
 }
 
 .chrome-bootstrap .frame .mainview header {
@@ -74,7 +77,6 @@ body.show-tab-title .frame .mainview header {
   left: 0;
   float: none;
   height: 100%;
-  max-height: 450px;
   display: flex;
   flex-direction: column;
 }
