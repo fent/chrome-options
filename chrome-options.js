@@ -831,7 +831,8 @@
       $field.setAttribute('data-title', option.desc);
     }
     if (option.disabled) {
-      $field.querySelectorAll('input, select, textarea').forEach(($f) => {
+      $field.setAttribute('disabled', true);
+      $field.querySelectorAll(':scope, input, select, textarea').forEach(($f) => {
         $f.setAttribute('disabled', true);
       });
     }
