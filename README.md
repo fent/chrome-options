@@ -11,7 +11,7 @@ This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bo
 
 # Install
 
-Recommended that you create an options folder in your extension, for organization purposes.
+Recommended that you create an options folder in your extension, keep things organized.
 
     mkdir options
     cd options
@@ -50,7 +50,7 @@ Afterwards, you can start setting up your options page by editing `options.js`, 
 
 # Setup
 
-Use only one of the following functions to setup your options. If you're planning on using multi tab form, use `chrome.options.addTab()`, called once for each tab. Otherwise, use `chrome.options.set()`.
+Use only one of the following two functions to setup your options. If you're planning on using multi tab form, use `chrome.options.addTab()`, called once for each tab. Otherwise, use `chrome.options.set()`.
 
 ### `chrome.options.set([description], options)`
 * `description` - Will be displayed at the top of the page.
@@ -61,16 +61,16 @@ Use only one of the following functions to setup your options. If you're plannin
 * `string` - `description` - Will be placed on top of the page when tab is viewed.
 * `Array.<Object>` - `options` - List of options.
 
-Options all can have the following properties.
+Options can all have the following properties,
 
-* `string` - `type` - What type of option this is. Defaults to "checkbox".
+* `string` - `type` - What type of option this is, more info below. Defaults to "checkbox".
 * `string` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
-* `string` - `description`
+* `string` - `desc`
 * `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
 * `boolean` - `disabled` - The field can be disabled, for whatever reason...
 * `boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
-* `Function` - `validate` - Will be given the new value of the field, will only save if it returns `true`.
+* `Function` - `validate` - Called with the new value of field, will only save if it returns `true`.
 
 
 # Fields Types Available
@@ -105,7 +105,7 @@ Uses [this color picker library](https://github.com/tovic/color-picker).
 
 ![select](images/field_radio.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties.
+* `Array.<Object|string>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties.
 
 ### predefined_sound
 
