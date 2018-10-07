@@ -1,3 +1,5 @@
+@import '~chrome-bootstrap/chrome-bootstrap.css';
+
 html, body {
   height: 100%;
 }
@@ -262,6 +264,11 @@ body.show-tab-title .frame .mainview header {
   background: #fff;
   border: 1px solid #000;
   border-radius: 5px;
+}
+
+.chrome-bootstrap .color-picker-container {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .chrome-bootstrap .color-picker .extra-options {

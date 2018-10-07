@@ -1,6 +1,14 @@
-/* global chrome, dragula, CP */
-/* global h, slideYShow, slideYHide, slideXShow, slideXHide, hideTR, showTR */
-/* global flashClass, util */
+/* global chrome, CP */
+
+require('c-p');
+require('c-p/color-picker.css');
+
+import dragula from 'dragula';
+require('dragula/dist/dragula.css');
+
+import h from './hyperscript.js';
+import * as dom from './dom.js';
+import * as util from './util.js';
 
 (() => {
   // Expose this library.
@@ -77,8 +85,8 @@
     chrome.storage.sync.set(changedValues);
     $saveButton.setAttribute('disabled', true);
   });
-  const showSavedAlert = flashClass($saveContainer, 'show', 2000);
-  const flashSavedAlert = flashClass($saveContainer, 'flash', 150);
+  const showSavedAlert = dom.flashClass($saveContainer, 'show', 2000);
+  const flashSavedAlert = dom.flashClass($saveContainer, 'flash', 150);
 
   // Add the extension's title to the top of the page.
   let setupRan = false;
@@ -176,7 +184,7 @@
 
 
   /**
-   * @param {string} desc
+   * @param {!string} desc
    * @param {Array.<Object>} options
    */
   chrome.options.set = (desc, options) => {
@@ -336,10 +344,10 @@
       const toggleContainer = (checked) => {
         if (checked) {
           $triangle.textContent = '▼';
-          slideYShow($subContainer);
+          dom.slideYShow($subContainer);
         } else {
           $triangle.textContent = '▶';
-          slideYHide($subContainer);
+          dom.slideYHide($subContainer);
         }
       };
 
@@ -424,7 +432,9 @@
   };
 
   chrome.options.addLabelNField = (value, save, option) => {
-    const $container = h('.suboption', h('label', option.desc || ''));
+    const $label = h('label');
+    $label.innerHTML = option.desc || '';
+    const $container = h('.suboption', $label);
     const $field = chrome.options.addField(value, save, option);
     $container.append(h('.field-container', $field));
     $container.classList.add(option.singleline ? 'singleline' : 'multiline');
@@ -444,10 +454,10 @@
             shown = !shown;
             if (shown) {
               $triangle.textContent = '▼';
-              slideYShow($wrapper);
+              dom.slideYShow($wrapper);
             } else {
               $triangle.textContent = '▶';
-              slideYHide($wrapper);
+              dom.slideYHide($wrapper);
             }
           },
         }, '▶');
@@ -487,12 +497,12 @@
         const $head = heads[field.name];
         const isVisible = !!$head.offsetParent;
         if (show && !isVisible) {
-          setTimeout(slideXShow.bind(null, $head), init ? 0 : 500);
+          setTimeout(dom.slideXShow.bind(null, $head), init ? 0 : 500);
         } else if (!show && isVisible) {
           if (init) {
             $head.style.display = 'none';
           } else {
-            slideXHide($head);
+            dom.slideXHide($head);
           }
         }
       });
@@ -636,7 +646,7 @@
     }
     if (animate) {
       $tr.style.display = 'none';
-      setTimeout(showTR.bind(null, $tr), 100);
+      setTimeout(dom.showTR.bind(null, $tr), 100);
     }
 
     const getValue = () => values;
@@ -666,10 +676,10 @@
           const isVisible = !!$field.offsetParent;
           const equals = bindToEquals(bindTo.value, newValue);
           if (equals && !isVisible) {
-            slideXShow($field);
+            dom.slideXShow($field);
             getValue.shown[field.name] = true;
           } else if (!equals && isVisible) {
-            slideXHide($field);
+            dom.slideXHide($field);
             getValue.shown[field.name] = false;
           }
         }
@@ -677,7 +687,7 @@
 
       update.hide = () => {
         if (field.bindTo) {
-          slideXHide($field);
+          dom.slideXHide($field);
         }
       };
 
@@ -744,7 +754,7 @@
         } else {
           if (animate) {
             setTimeout(() => {
-              slideXShow($field);
+              dom.slideXShow($field);
             }, 500);
           } else {
             $field.style.display = '';
@@ -761,7 +771,7 @@
       onclick: () => {
         fieldUpdates.forEach((update) => { update.hide(); });
         setTimeout(() => {
-          hideTR($tr, () => { $tr.remove(); });
+          dom.hideTR($tr, () => { $tr.remove(); });
         }, 250);
         remove();
       },
@@ -931,7 +941,7 @@ chrome.options.fields.color = (value, save, option) => {
   const picker = new CP($field);
   picker.on('change', onchange);
 
-  const $extraOptions = picker.picker.appendChild(h('.extra-options'));
+  const $extraOptions = picker.self.appendChild(h('.extra-options'));
   let $alpha;
   if (showAlpha) {
     $alpha = h('input[type=range][min=0][max=1][step=.1]', {

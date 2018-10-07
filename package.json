@@ -1,6 +1,6 @@
 {
   "name": "chrome-options",
-  "main": "chrome-options.js",
+  "main": "dist/chrome-options.min.js",
   "version": "0.2.2",
   "description": "Options page for your Chrome extension",
   "author": "fent (https://github.com/fent)",
@@ -11,7 +11,25 @@
   ],
   "homepage": "https://github.com/fent/chrome-options",
   "license": "MIT",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "watch": "webpack --mode=development --watch"
+  },
   "ignore": [
-    "images"
-  ]
+    "images",
+    "src",
+    "node_modules"
+  ],
+  "devDependencies": {
+    "c-p": "github:tovic/color-picker",
+    "chrome-bootstrap": "^1.5.0",
+    "css-loader": "^1.0.0",
+    "dragula": "^3.7.2",
+    "file-loader": "^2.0.0",
+    "style-loader": "^0.23.0",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  }
 }

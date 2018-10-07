@@ -19,8 +19,8 @@ Recommended that you create an options folder in your extension, keep things org
 
 Download chrome-options
 
-    bower install chrome-options
-    ln bower_components/chrome-options/options.html .
+    npm install chrome-options
+    ln node_modules/chrome-options/options.html .
     touch custom.css
     touch options.js
 
