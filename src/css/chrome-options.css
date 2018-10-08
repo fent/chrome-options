@@ -92,6 +92,7 @@ body.show-tab-title .frame .mainview header {
 .chrome-bootstrap .frame .mainview > div > .content {
   min-width: 738px;
   width: auto;
+  height: 100%;
   position: relative;
 }
 
