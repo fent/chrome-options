@@ -213,9 +213,8 @@ import * as util from './util.js';
       requestAnimationFrame(cloneValue);
 
       const save = (newValue) => {
-        latestValue = newValue;
-
         requestAnimationFrame(() => {
+          latestValue = newValue;
           const isEqual = util.deepEqual(value, newValue);
           if (chrome.options.opts.autoSave) {
             if (!isEqual) {
@@ -257,6 +256,10 @@ import * as util from './util.js';
 
     if (value === undefined && option.default != null) {
       value = option.default;
+      if ((!option.type || option.type === 'checkbox') &&
+        option.options && typeof value === 'boolean') {
+        value = { enabled: value };
+      }
       if (chrome.options.opts.saveDefaults) {
         save(value);
       }
