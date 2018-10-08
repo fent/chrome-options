@@ -16,6 +16,11 @@
     "build:dev": "webpack --mode=development",
     "watch": "webpack --mode=development --watch"
   },
+  "standard-version": {
+    "scripts": {
+      "precommit": "webpack --mode=production"
+    }
+  },
   "ignore": [
     "images",
     "src",
