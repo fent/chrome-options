@@ -40,10 +40,10 @@ Needs `storage` permission. Options are saved to [`chrome.storage.sync`](https:/
 If you'll be using the [predefined_sound](#predefined_sound) fields, and want to play sounds from a content script, also add
 
     "web_accessible_resources": [
-      "options/bower_components/chrome-options/sounds/*.wav"
+      "options/node_modules/chrome-options/sounds/*.wav"
     ]
 
-If you're using git, consider adding `options/bower_components` to your `.gitignore`.
+If you're using git, consider adding `options/node_modules` to your `.gitignore`.
 
 Afterwards, you can start setting up your options page by editing `options.js`, and additionally, `custom.css` if you need to set any styles.
 

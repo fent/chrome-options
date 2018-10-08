@@ -2,18 +2,14 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    main: './src/chrome-options.js',
-    styles: './src/chrome-options.css'
+    main: './src/js/chrome-options.js',
+    styles: './src/css/chrome-options.css'
   },
   output: {
     filename: '[name].min.js',
     path: path.resolve(__dirname, './dist')
   },
   devtool: 'cheap-module-source-map',
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  },
   module: {
     rules: [
       {
