@@ -9,7 +9,7 @@ module.exports = {
     filename: '[name].min.js',
     path: path.resolve(__dirname, './dist')
   },
-  devtool: 'cheap-module-source-map',
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {

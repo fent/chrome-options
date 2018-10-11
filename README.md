@@ -236,6 +236,11 @@ You can also choose to display one option, suboption, or part of an option, by s
 
     /options.html?#general.my_option
 
+Try it in the demo:
+
+<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile>
+<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile.party>
+
 
 # Roadmap
 
@@ -247,5 +252,5 @@ You can also choose to display one option, suboption, or part of an option, by s
   * Image upload
 * Optionally include sound files in installation
 * Easier way to include other scripts
-* Updating options from other options
-* Updating structure of options
+* Migrating options from other options
+* Migrating structure of options

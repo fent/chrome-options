@@ -123,7 +123,7 @@ export const showTR = ($tr) => {
     let $wrapper = $td.appendChild(h('', {
       style: 'display: none',
     }, $td.childNodes));
-    window.slideYShow($wrapper);
+    slideYShow($wrapper);
     setTimeout(() => {
       $td.append(...$wrapper.childNodes);
       $wrapper.remove();
@@ -137,7 +137,7 @@ export const hideTR = ($tr, callback) => {
     let $wrapper = h('');
     $wrapper.append(...$td.childNodes);
     $td.append($wrapper);
-    window.slideYHide($wrapper);
+    slideYHide($wrapper);
     setTimeout(() => {
       $tr.style.display = 'none';
       $td.append(...$wrapper.childNodes);

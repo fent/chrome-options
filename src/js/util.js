@@ -18,9 +18,13 @@ export const deepEqual = (a, b) => {
 
 export const deepClone = (obj) => {
   if (!(obj instanceof Object)) { return obj; }
-  const clone = {};
-  for (let prop in obj) { clone[prop] = deepClone(obj[prop]); }
-  return clone;
+  if (Array.isArray(obj)) {
+    return obj.slice().map(deepClone);
+  } else {
+    const clone = {};
+    for (let prop in obj) { clone[prop] = deepClone(obj[prop]); }
+    return clone;
+  }
 };
 
 export const debounce = (wait, func) => {
