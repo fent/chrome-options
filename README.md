@@ -65,7 +65,7 @@ Options can all have the following properties,
 
 * `string` - `type` - What type of option this is, more info below. Defaults to "checkbox".
 * `string` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
-* `string` - `desc`
+* `string` - `desc` - Description of option, supports syntax from [lightdown](https://github.com/WebReflection/lightdown), a markdown-like language.
 * `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
 * `boolean` - `disabled` - The field can be disabled.
@@ -143,7 +143,7 @@ Similar to checkbox with `options`, but without the checkbox. Not just for aesth
 ![list](images/complex_list.png)
 
 * `Array.<Object>` - `fields` - Required. List of fields for this list.
-  * `string` - `type` - Only basic field types listed above and custom fields supported.
+  * `string` - `type` - Only basic fields, layout types, and custom fields supported.
   * `string` - `name` - Required for non-layout types.
   * `boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
   * `Object` - `bindTo` - Will only display this field if another field with name matching `bindTo.field` has the value `bindTo.value`, which can be be a string or an array of strings.

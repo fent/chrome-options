@@ -5,12 +5,19 @@ import * as dom from './dom.js';
 import dragula from 'dragula';
 require('dragula/dist/dragula.css');
 
+import lightdown from 'lightdown';
+
 chrome.options = {};
 chrome.options.base = {};
 chrome.options.fields = {};
 
 const addH3 = (option) => h('h3', option.desc);
 const addHtml = (option) => h('', { innerHTML: option.html });
+const parseDesc = (desc) => ({
+  innerHTML: lightdown(
+    desc.replace(/[<>]/g, m => ({'<': '&lt;', '>': '&gt;'}[m]))
+  )
+});
 
 chrome.options.addOption = (key, value, save, option) => {
   if (value === undefined && option.default != null) {
@@ -133,7 +140,7 @@ chrome.options.base.checkbox = (value, save, option, key) => {
     });
   }
 
-  $label.append(h('span', option.desc));
+  $label.append(h('span', parseDesc(option.desc)));
   return $container;
 };
 
@@ -173,13 +180,13 @@ chrome.options.base.checkboxNField = (value, save, option, type) => {
   }, option));
 
   if (option.desc) {
-    $container.append(h('label', option.desc));
+    $container.append(h('label', parseDesc(option.desc)));
   }
   return $container;
 };
 
 chrome.options.base.object = (value, save, option, key) => {
-  const $container = h('.object', h('label', option.desc));
+  const $container = h('.object', h('label', parseDesc(option.desc)));
   $container.append(addOptions(value, save, option, key));
   return $container;
 };
@@ -204,9 +211,7 @@ const addOptions = (value, save, option, key) => {
 };
 
 chrome.options.addLabelNField = (value, save, option) => {
-  const $label = h('label');
-  $label.innerHTML = option.desc || '';
-  const $container = h('.suboption', $label);
+  const $container = h('.suboption', h('label', parseDesc(option.desc)));
   const $field = chrome.options.addField(value, save, option);
   $container.append(h('.field-container', $field));
   $container.classList.add(option.singleline ? 'singleline' : 'multiline');
@@ -218,7 +223,8 @@ chrome.options.base.list = (list, save, options, key) => {
   let $wrapper, shown = true;
 
   if (options.desc) {
-    const $label = $container.appendChild(h('label', options.desc));
+    const $label =
+      $container.appendChild(h('label', parseDesc(options.desc)));
     if (options.collapsible) {
       shown = false;
       const $triangle = h('span.triangle', {
@@ -251,7 +257,7 @@ chrome.options.base.list = (list, save, options, key) => {
     let prevfield;
     options.fields.forEach((field) => {
       if (!field.bindTo || !prevfield.bindTo) {
-        const $container = heads[field.name] = h('div', field.desc);
+        const $container = heads[field.name] = h('div', parseDesc(field.desc));
         $thead.append(h('th', $container));
       } else {
         heads[field.name] = heads[prevfield.name];
