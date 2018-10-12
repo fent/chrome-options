@@ -66,6 +66,7 @@ chrome.options.addOption = (key, value, save, option) => {
   if (option.hidden) {
     $option.classList.add('hidden');
   } else if (option.disabled) {
+    $option.classList.add('disabled');
     $option.querySelectorAll('input, select, textarea').forEach(($f) => {
       $f.setAttribute('disabled', true);
     });
