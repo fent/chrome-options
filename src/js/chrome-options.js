@@ -223,12 +223,14 @@ const addTabOptions = (tabKey, values, options) => {
     // so that it doensn't seep into load time.
     requestAnimationFrame(cloneValue);
 
+    let duringLoad = true;
     const save = (newValue) => {
+      const autoSave = chrome.options.opts.autoSave || duringLoad;
       requestAnimationFrame(() => {
         latestValue = newValue;
         const isEqual = util.deepEqual(value, newValue);
         const valueToSave = isLayout ? newValue : { [key]: newValue };
-        if (chrome.options.opts.autoSave) {
+        if (autoSave) {
           if (!isEqual) {
             chrome.storage.sync.set(valueToSave);
             showSavedAlert();
@@ -249,6 +251,8 @@ const addTabOptions = (tabKey, values, options) => {
         }
       });
     };
-    return chrome.options.addOption(key, value, save, option);
+    const $option = chrome.options.addOption(key, value, save, option);
+    duringLoad = false;
+    return $option;
   }));
 };
