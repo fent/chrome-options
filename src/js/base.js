@@ -63,17 +63,17 @@ chrome.options.addOption = (key, value, save, option) => {
       }
   }
 
-  // `key` is passed down from parent options to be used here.
-  if (option.preview) {
-    const $label = $option.querySelector('label');
-    $label.append(h('span.preview-container', h('span.preview')),
-      h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
-  }
-
-  if (option.disabled) {
+  if (option.hidden) {
+    $option.classList.add('hidden');
+  } else if (option.disabled) {
     $option.querySelectorAll('input, select, textarea').forEach(($f) => {
       $f.setAttribute('disabled', true);
     });
+  } else if (option.preview) {
+    // `key` is passed down from parent options to be used here.
+    const $label = $option.querySelector('label');
+    $label.append(h('span.preview-container', h('span.preview')),
+      h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
   }
 
   return $option;

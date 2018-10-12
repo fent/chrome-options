@@ -68,7 +68,8 @@ Options can all have the following properties,
 * `string` - `desc`
 * `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
-* `boolean` - `disabled` - The field can be disabled, for whatever reason...
+* `boolean` - `disabled` - The field can be disabled.
+* `boolean` - `hidden` - A hidden field, default options will still be saved.
 * `boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
 * `Function` - `validate` - Called with the new value of field, will only save if it returns `true`.
 

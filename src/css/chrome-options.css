@@ -310,6 +310,10 @@ body.show-tab-title .frame .mainview header {
   display: inline-block;
 }
 
+.chrome-bootstrap .hidden {
+  display: none;
+}
+
 .chrome-bootstrap .preview-container {
   position: relative;
   padding: 0 1em;
