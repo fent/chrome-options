@@ -70,6 +70,12 @@ chrome.options.addOption = (key, value, save, option) => {
       h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
   }
 
+  if (option.disabled) {
+    $option.querySelectorAll('input, select, textarea').forEach(($f) => {
+      $f.setAttribute('disabled', true);
+    });
+  }
+
   return $option;
 };
 
@@ -597,12 +603,6 @@ chrome.options.addField = (value, save, option) => {
   }, option);
   if (option.desc) {
     $field.setAttribute('data-title', option.desc);
-  }
-  if (option.disabled) {
-    $field.setAttribute('disabled', true);
-    $field.querySelectorAll(':scope, input, select, textarea').forEach(($f) => {
-      $f.setAttribute('disabled', true);
-    });
   }
   return $field;
 };
