@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: {
     main: './src/js/chrome-options.js',
     styles: './src/css/chrome-options.css'
@@ -9,7 +9,7 @@ module.exports = {
     filename: '[name].min.js',
     path: path.resolve(__dirname, './dist')
   },
-  devtool: 'inline-source-map',
+  devtool: `${argv.mode === 'production' ? '' : 'inline-'}source-map`,
   module: {
     rules: [
       {
@@ -26,4 +26,4 @@ module.exports = {
       }
     ]
   }
-};
+});
