@@ -1,7 +1,7 @@
 {
   "name": "chrome-options",
   "main": "dist/chrome-options.min.js",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Options page for your Chrome extension",
   "author": "fent (https://github.com/fent)",
   "keywords": [
