@@ -11,10 +11,16 @@ This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bo
 
 # Install
 
-Recommended that you create an options folder in your extension, for organization purposes.
+Recommended that you create an options folder in your extension, keep things organized.
+
+    mkdir options
+    cd options
+
+
+Download chrome-options
 
     bower install chrome-options
-    ln -s bower_components/chrome-options/options.html .
+    ln bower_components/chrome-options/options.html .
     touch custom.css
     touch options.js
 
@@ -25,7 +31,7 @@ Add options page to `manifest.json`. `open_in_tab` set to `true` or `false` are 
       "open_in_tab": false
     }
 
-Also needs `storage` permission. Options are saved to [`chrome.storage.sync`](https://developer.chrome.com/extensions/storage#property-sync).
+Needs `storage` permission. Options are saved to [`chrome.storage.sync`](https://developer.chrome.com/extensions/storage#property-sync).
 
     "permissions": [
       "storage"
@@ -44,27 +50,28 @@ Afterwards, you can start setting up your options page by editing `options.js`, 
 
 # Setup
 
-Use only one of the following functions to setup your options. If you're planning on using multi tab form, use `chrome.options.addTab()`, called once for each tab. Otherwise, use `chrome.options.set()`.
+Use only one of the following two functions to setup your options. If you're planning on using multi tab form, use `chrome.options.addTab()`, called once for each tab. Otherwise, use `chrome.options.set()`.
 
 ### `chrome.options.set([description], options)`
 * `description` - Will be displayed at the top of the page.
 * `options` - List of options.
 
 ### `chrome.options.addTab(name, [description], options)`
-* `String` - `name` - Name of the tab. Will be prepended along with "." to each option's name that's displayed under this tab.
-* `String` - `description` - Will be placed on top of the page when tab is viewed.
+* `string` - `name` - Name of the tab. Will be prepended along with "." to each option's name that's displayed under this tab.
+* `string` - `description` - Will be placed on top of the page when tab is viewed.
 * `Array.<Object>` - `options` - List of options.
 
-Options all can have the following properties.
+Options can all have the following properties,
 
-* `String` - `type` - What type of option this is. Defaults to "checkbox".
-* `String` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
-* `String` - `description`
-* `String` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
+* `string` - `type` - What type of option this is, more info below. Defaults to "checkbox".
+* `string` - `name` - Required. What to save the key as. Also used as class name to add to field containers, in case you'd like to style it further.
+* `string` - `desc` - Description of option, supports syntax from [lightdown](https://github.com/WebReflection/lightdown), a markdown-like language.
+* `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
-* `Boolean` - `disabled` - The field can be disabled, for whatever reason...
-* `Boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
-* `Function` - `validate` - Will be given the new value of the field, will only save if it returns `true`.
+* `boolean` - `disabled` - The field can be disabled.
+* `boolean` - `hidden` - A hidden field, default options will still be saved.
+* `boolean` - `singleline` - If you'd like to position the label and the field on the same line, instead of the default multiline layout.
+* `Function` - `validate` - Called with the new value of field, will only save if it returns `true`.
 
 
 # Fields Types Available
@@ -81,7 +88,7 @@ Options all can have the following properties.
 
 ![color](images/field_color.png)
 
-* `String` - `format` - Can be `hex`, `rgb`, `rgba`, `hsl`, or `hsla.`.
+* `string` - `format` - Can be `hex`, `rgb`, `rgba`, `hsl`, or `hsla.`.
 
 If `default` is set, will have an additional button for resetting to that color.
 
@@ -93,19 +100,19 @@ Uses [this color picker library](https://github.com/tovic/color-picker).
 
 ![select](images/field_select.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties. `value` can be a string or int.
+* `Array.<Object|string>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties. `value` can be a string or int.
 
 ### radio
 
 ![select](images/field_radio.png)
 
-* `Array.<Object|String>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties.
+* `Array.<Object|string>` - `options` - List of options for this field. If a list of objects, each option must have `value` and `desc` properties.
 
 ### predefined_sound
 
 ![predefined_sound](images/field_predefined_sound.png)
 
-* `Boolean` - `allowNoSound` - Adds a no sound option to the top of the select field.
+* `boolean` - `allowNoSound` - Adds a no sound option to the top of the select field.
 
 ### custom_sound
 
@@ -127,7 +134,7 @@ When saved, will be saved as an object with all option names as keys along with 
 ![object](images/complex_object.png)
 
 * `Array.<Object>` - `options`
-* `String` - `layout` - "column" or "row". Defaults to "column".
+* `string` - `layout` - "column" or "row". Defaults to "column".
 
 Similar to checkbox with `options`, but without the checkbox. Not just for aesthetic purposes, will still be saved as an object.
 
@@ -136,13 +143,13 @@ Similar to checkbox with `options`, but without the checkbox. Not just for aesth
 ![list](images/complex_list.png)
 
 * `Array.<Object>` - `fields` - Required. List of fields for this list.
-  * `String` - `type` - Only basic field types listed above and custom fields supported.
-  * `String` - `name` - Required for non-layout types.
-  * `Boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
+  * `string` - `type` - Only basic fields, layout types, and custom fields supported.
+  * `string` - `name` - Required for non-layout types.
+  * `boolean` - `required` - Set to true if you require this particular field to be a truthy value for this row to be saved.
   * `Object` - `bindTo` - Will only display this field if another field with name matching `bindTo.field` has the value `bindTo.value`, which can be be a string or an array of strings.
-* `Boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
-* `Boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
-* `Boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
+* `boolean` - `head` - True if you want to display table headings. Requires fields to have `desc` properties.
+* `boolean` - `sortable` - True if you'd like users to be able to drag and reorder rows around.
+* `boolean` - `collapsible` - True if you want the table's content to be collapsible. `desc` recommended.
 * `Array.<Option>` - `first` - You can specify a different set of fields for the first row.
 
 Will save its value as an array. If there is only one field, it will be an array of values of that field. Otherwise, an array of objects. When the last row's value is changed, a new row will be added.
@@ -157,7 +164,7 @@ Shortcut for a checkbox with a field right next to it.
 
 ![checkbox-field](images/complex_checkbox_field.png)
 
-* `Boolean` - `defaultEnabled`
+* `boolean` - `defaultEnabled`
 * `Object` - `defaultValue`
 
 Saved as an object, `enabled` set to `true` when the checkbox is checked, and `value` set to the field's value.
@@ -169,7 +176,7 @@ Use these to help structure the layout of your page.
 
 ### h3
 
-* `String` - `desc` - Text contents.
+* `string` - `desc` - Text contents.
 
 A heading that can be used as a separator.
 
@@ -230,6 +237,11 @@ You can also choose to display one option, suboption, or part of an option, by s
 
     /options.html?#general.my_option
 
+Try it in the demo:
+
+<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile>
+<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile.party>
+
 
 # Roadmap
 
@@ -237,7 +249,9 @@ You can also choose to display one option, suboption, or part of an option, by s
   * Number
   * Slider
   * Date picker
-  * file upload
-  * image upload
-* Build and minimize release
-  * Optionally include sound files in installation
+  * File upload
+  * Image upload
+* Optionally include sound files in installation
+* Easier way to include other scripts
+* Migrating options from other options
+* Migrating structure of options

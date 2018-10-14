@@ -1,3 +1,9 @@
+@import '~chrome-bootstrap/chrome-bootstrap.css';
+
+html, body {
+  height: 100%;
+}
+
 .chrome-bootstrap .chrome-options.title {
   display: none;
 }
@@ -6,12 +12,27 @@
   display: none;
 }
 
+.chrome-bootstrap .frame {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 31px;
+}
+
+body.open-in-tab .frame {
+  height: calc(100% - 31px);
+}
+
+body:not(.open-in-tab) .frame .mainview {
+  max-height: 450px;
+}
+
 .chrome-bootstrap .frame .navigation {
   display: none;
 }
 
 .chrome-bootstrap .frame .mainview {
   -webkit-margin-start: 10px;
+  width: calc(100% - 155px);
 }
 
 .chrome-bootstrap .frame .mainview header {
@@ -19,60 +40,60 @@
 }
 
 .chrome-bootstrap .frame .content {
-  padding-top: 2px;
+  padding-top: 12px;
 }
 
 .chrome-bootstrap .frame .content .tab-desc {
   display: none;
 }
 
-.chrome-bootstrap.show-title .chrome-options-title {
+body.show-title .chrome-options-title {
   display: block;
 }
 
-.chrome-bootstrap.show-about .menu.about {
+body.show-about .menu.about {
   display: block;
 }
 
-.chrome-bootstrap.show-sidebar .frame .navigation {
+body.show-sidebar .frame .navigation {
   display: block;
 }
 
-.chrome-bootstrap.show-sidebar .frame .mainview {
-  -webkit-margin-start: 155px;
-}
-
-.chrome-bootstrap.show-tab-title .frame .mainview header {
+body.show-tab-title .frame .mainview header {
   display: block;
-}
-
-.chrome-bootstrap.show-tab-title .frame .content {
-  padding-top: 55px;
+  position: relative;
 }
 
 .chrome-bootstrap .frame .content .tab-desc {
   display: block;
 }
 
-.chrome-bootstrap .navigation {
+.chrome-bootstrap .frame .navigation {
   background: #fff;
   position: relative;
 }
 
 .chrome-bootstrap .frame .mainview > div {
-  position: static;
+  position: relative;
+  top: 0;
+  left: 0;
+  float: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .chrome-bootstrap .frame .mainview > div:not(.selected) {
-  position: relative;
-  height: 0;
-  width: 0;
-  overflow: hidden;
-  transition: margin 100ms;
+  position: absolute;
+  left: -99999px;
+  float: left;
 }
 
 .chrome-bootstrap .frame .mainview > div > .content {
-  padding-bottom: 10%;
+  min-width: 738px;
+  width: auto;
+  height: 100%;
+  position: relative;
 }
 
 .chrome-bootstrap .predefined-sound,
@@ -246,6 +267,11 @@
   border-radius: 5px;
 }
 
+.chrome-bootstrap .color-picker-container {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .chrome-bootstrap .color-picker .extra-options {
   display: flex;
 }
@@ -282,6 +308,14 @@
 
 .chrome-bootstrap .image-upload {
   display: inline-block;
+}
+
+.chrome-bootstrap .hidden {
+  display: none;
+}
+
+.chrome-bootstrap .disabled {
+  opacity: 0.7;
 }
 
 .chrome-bootstrap .preview-container {
@@ -332,7 +366,7 @@
 
 .chrome-bootstrap .preview-image {
   position: absolute;
-  margin: 0.65em 0 40px;
+  margin-top: 0.65em;
   padding: 5px;
   border-radius: 5px;
   background: #fff;
