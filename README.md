@@ -239,8 +239,8 @@ You can also choose to display one option, suboption, or part of an option, by s
 
 Try it in the demo:
 
-<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile>
-<https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile.party>
+- <https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile>
+- <https://fent.github.io/chrome-options/?hideSidebar&hideTabTitle#general.profile.party>
 
 
 # Roadmap
