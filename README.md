@@ -1,4 +1,4 @@
-Option pages should be easy to make given a structure of your options, and look like Chrome's options.
+Option pages should be simple to create given a structure of your options, ~and look like Chrome's options~.
 
 ![example](images/example.png)
 
