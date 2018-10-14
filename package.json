@@ -17,8 +17,9 @@
     "watch": "webpack --mode=development --watch"
   },
   "standard-version": {
+    "commitAll": true,
     "scripts": {
-      "precommit": "webpack --mode=production"
+      "postbump": "webpack --mode=production && git add dist/"
     }
   },
   "ignore": [
