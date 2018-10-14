@@ -166,8 +166,9 @@ chrome.options.addTab = (name, desc, options) => {
     const filterOptions = (options = [], depth) => {
       if (tabHashPath.length <= depth) { return options; }
       return options.filter(option => {
-        // Layout field types, such as `column` and `row, have no name.
-        return !option.name || option.name === tabHashPath[depth];
+        // Allow layout based options.
+        return option.type === 'column' || option.type === 'row'
+          || option.name === tabHashPath[depth];
       }).map((option, depth) => {
         option = Object.assign({}, option);
         if (option.name) { depth++; }
