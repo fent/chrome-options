@@ -10,7 +10,7 @@ chrome.options.fields.predefined_sound = (value, save, option) => {
     }
     $play.classList.remove('disabled');
     const audio = new Audio();
-    audio.src = 'node_modules/chrome-options/sounds/' + value + '.wav';
+    audio.src = 'bower_components/chrome-options/sounds/' + value + '.wav';
     audio.onerror = console.error;
     audio.play();
   };

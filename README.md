@@ -19,8 +19,8 @@ Recommended that you create an options folder in your extension, keep things org
 
 Download chrome-options
 
-    npm install chrome-options
-    ln node_modules/chrome-options/options.html .
+    bower install chrome-options
+    ln bower_components/chrome-options/options.html .
     touch custom.css
     touch options.js
 
@@ -40,10 +40,10 @@ Needs `storage` permission. Options are saved to [`chrome.storage.sync`](https:/
 If you'll be using the [predefined_sound](#predefined_sound) fields, and want to play sounds from a content script, also add
 
     "web_accessible_resources": [
-      "options/node_modules/chrome-options/sounds/*.wav"
+      "options/bower_components/chrome-options/sounds/*.wav"
     ]
 
-If you're using git, consider adding `options/node_modules` to your `.gitignore`.
+If you're using git, consider adding `options/bower_components` to your `.gitignore`.
 
 Afterwards, you can start setting up your options page by editing `options.js`, and additionally, `custom.css` if you need to set any styles.
 
