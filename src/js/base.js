@@ -196,16 +196,18 @@ const getKeyPath = (parentKey, option) => {
     (parentKey && option.name ? '.' : '') + (option.name || '');
 };
 
-const addOptions = (value, save, option, key) => {
-  if (value == null || typeof value !== 'object') {
-    value = {};
+const addOptions = (values, save, option, key) => {
+  if (values == null || typeof values !== 'object') {
+    values = {};
   }
   return h('.suboptions', option.options.map((option) => {
     const optionKey = getKeyPath(key, option);
-    return chrome.options.addOption(optionKey, value[option.name],
+    const isLayout = option.type === 'column' || option.type === 'row';
+    const value = isLayout ? values : values[option.name];
+    return chrome.options.addOption(optionKey, value,
       (newValue) => {
-        if (option.name) { value[option.name] = newValue; }
-        save(value);
+        if (option.name) { values[option.name] = newValue; }
+        save(values);
       }, option);
   }));
 };
