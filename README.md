@@ -11,6 +11,8 @@ This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bo
 
 # Install
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/fent/chrome-options.svg)](https://greenkeeper.io/)
+
 Recommended that you create an options folder in your extension, keep things organized.
 
     mkdir options
