@@ -65,7 +65,11 @@ function generateStylesJs() {
   }
 }
 
-build().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  build().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = build;

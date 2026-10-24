@@ -14,7 +14,8 @@
   "scripts": {
     "build": "node build.js",
     "build:dev": "node build.js --dev",
-    "watch": "node build.js --watch"
+    "watch": "node build.js --watch",
+    "test": "mocha --exit test/*-test.js"
   },
   "standard-version": {
     "commitAll": true,
@@ -32,6 +33,8 @@
     "chrome-bootstrap": "^1.5.0",
     "dragula": "^3.7.2",
     "esbuild": "^0.25.0",
-    "lightdown": "^0.5.3"
+    "lightdown": "^0.5.3",
+    "mocha": "^12.0.3",
+    "puppeteer-core": "^25.16.0"
   }
 }
