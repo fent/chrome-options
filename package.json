@@ -12,14 +12,14 @@
   "homepage": "https://github.com/fent/chrome-options",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --mode=production",
-    "build:dev": "webpack --mode=development",
-    "watch": "webpack --mode=development --watch"
+    "build": "node build.js",
+    "build:dev": "node build.js --dev",
+    "watch": "node build.js --watch"
   },
   "standard-version": {
     "commitAll": true,
     "scripts": {
-      "postbump": "webpack --mode=production && git add dist/"
+      "postbump": "node build.js && git add dist/"
     }
   },
   "ignore": [
@@ -28,15 +28,10 @@
     "node_modules"
   ],
   "devDependencies": {
-    "c-p": "github:tovic/color-picker",
+    "c-p": "github:tovic/color-picker#1722fec9b8564eaf3b56b00a2b608d29ce129087",
     "chrome-bootstrap": "^1.5.0",
-    "css-loader": "^7.1.2",
     "dragula": "^3.7.2",
-    "file-loader": "^2.0.0",
-    "lightdown": "^0.5.3",
-    "style-loader": "^0.23.0",
-    "url-loader": "^1.1.1",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2"
+    "esbuild": "^0.25.0",
+    "lightdown": "^0.5.3"
   }
 }

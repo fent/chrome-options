@@ -3,7 +3,6 @@ import h from './hyperscript.js';
 import * as dom from './dom.js';
 
 import dragula from 'dragula';
-require('dragula/dist/dragula.css');
 
 import lightdown from 'lightdown';
 

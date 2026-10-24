@@ -1,7 +1,6 @@
 /* global chrome, CP */
 
 require('c-p');
-require('c-p/color-picker.css');
 
 import h from './hyperscript.js';
 import { debounce } from './util.js';

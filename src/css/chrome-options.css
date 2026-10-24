@@ -1,4 +1,6 @@
-@import '~chrome-bootstrap/chrome-bootstrap.css';
+@import 'chrome-bootstrap/chrome-bootstrap.css';
+@import 'dragula/dist/dragula.css';
+@import 'c-p/color-picker.css';
 
 html, body {
   height: 100%;
