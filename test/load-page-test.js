@@ -3,7 +3,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert');
 const puppeteer = require('puppeteer-core');
-const build = require('../build');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.resolve(ROOT_DIR, 'dist');
@@ -16,9 +15,6 @@ describe('chrome-options page loading', function() {
   let browser;
 
   before(async () => {
-    // Ensure fresh build exists
-    await build();
-
     server = http.createServer((req, res) => {
       const urlPath = req.url.split('?')[0];
 
