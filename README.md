@@ -40,7 +40,10 @@ Needs `storage` permission. Options are saved to [`chrome.storage.sync`](https:/
 If you'll be using the [predefined_sound](#predefined_sound) fields, and want to play sounds from a content script, also add
 
     "web_accessible_resources": [
-      "options/node_modules/chrome-options/sounds/*.wav"
+      {
+        "resources": ["options/node_modules/chrome-options/sounds/*.wav"],
+        "matches": ["<all_urls>"]
+      }
     ]
 
 If you're using git, consider adding `options/node_modules` to your `.gitignore`.
@@ -215,7 +218,7 @@ To use one of the already existing basic fields with your custom field, you can 
 
 A few options are supported.
 
-* `chrome.options.opts.title` - Title of the page if opening the page in a new tab. If not set, will set thet title to the extension's name from the manifest. Set to `false` if you don't want a title displayed.
+* `chrome.options.opts.title` - Title of the page if opening the page in a new tab. If not set, will set the title to the extension's name from the manifest. Set to `false` if you don't want a title displayed.
 * `chrome.options.opts.about` - Contents of the About tab. If not set, will set the contents to the extension's description from the manifest. Can be an html string. Set to `false` if you don't want this tab at all.
 * `chrome.options.opts.autoSave` - If `true`, will save options as they are changed. Otherwise, a button will be shown on the bottom left of the page for saving. Defaults to `true`.
 * `chrome.options.opts.saveDefaults` - If `true`, will save any options that have defaults set, if those options have never been saved before. Can be useful if you only want to keep defaults in your options page, and not in background and/or content pages for when your extension is first installed. Defaults to `true`.
