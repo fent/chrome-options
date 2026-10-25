@@ -4,7 +4,7 @@ Option pages should be simple to create given a structure of your options, ~and 
 
 Screenshot is from extension [veefeed](https://github.com/fent/chrome-veefeed)
 
-Here's a [demo](https://fent.github.io/chrome-options/).
+Here's a [demo](https://fent.github.io/chrome-options/). You can also look at the [`gh-pages`](https://github.com/fent/chrome-options/tree/gh-pages) branch for what an example extension looks like.
 
 This library uses [chrome-bootstrap](https://github.com/better-history/chrome-bootstrap) for styling.
 
