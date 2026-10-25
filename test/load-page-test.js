@@ -318,6 +318,22 @@ describe('chrome-options page loading', function() {
 
     const hasSelect = await page.$('select');
     assert.ok(hasSelect, 'Select dropdown should be rendered');
+
+    // Verify option containers have data-name and data-key attributes
+    const hasNamedCheckbox = await page.$('[data-name="enable_feature"][data-key="general.enable_feature"]');
+    assert.ok(hasNamedCheckbox, 'Checkbox container should have data-name and data-key');
+
+    const hasNamedText = await page.$('[data-name="username"][data-key="general.username"]');
+    assert.ok(hasNamedText, 'Text field container should have data-name and data-key');
+
+    const hasNamedColor = await page.$('[data-name="theme"][data-key="general.theme"]');
+    assert.ok(hasNamedColor, 'Color field container should have data-name and data-key');
+
+    const hasNamedList = await page.$('[data-name="todo_list"][data-key="general.todo_list"]');
+    assert.ok(hasNamedList, 'List container should have data-name and data-key');
+
+    const hasNestedObjectField = await page.$('[data-name="bio"][data-key="general.profile.bio"]');
+    assert.ok(hasNestedObjectField, 'Nested object field container should have data-name and full data-key');
   });
 
   it('loads single-page options layout with no console or runtime errors', async () => {
@@ -336,6 +352,9 @@ describe('chrome-options page loading', function() {
 
     const hasCheckbox = await page.$('input[type="checkbox"]');
     assert.ok(hasCheckbox, 'Checkbox should be rendered');
+
+    const hasSingleKey = await page.$('[data-name="simple_toggle"][data-key="simple_toggle"]');
+    assert.ok(hasSingleKey, 'Single page container should have data-name and data-key');
   });
 
   it('saves option changes to chrome.storage.sync without errors', async () => {

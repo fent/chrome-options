@@ -69,6 +69,11 @@ chrome.options.addOption = (key, value, save, option) => {
       }
   }
 
+  if (option.name) {
+    $option.setAttribute('data-name', option.name);
+    $option.setAttribute('data-key', key || option.name);
+  }
+
   if (option.hidden) {
     $option.classList.add('hidden');
   } else if (option.disabled) {
