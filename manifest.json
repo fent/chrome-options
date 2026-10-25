@@ -1,0 +1,23 @@
+{
+  "name": "Chrome Options Demo",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "description": "Example Chrome extension demonstrating chrome-options",
+  "permissions": [
+    "storage"
+  ],
+  "options_ui": {
+    "page": "index.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "node_modules/chrome-options/sounds/*.wav"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
