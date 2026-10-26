@@ -1,6 +1,6 @@
 {
   "name": "chrome-options",
-  "main": "dist/chrome-options.min.js",
+  "main": "dist/main.min.js",
   "version": "1.0.0",
   "description": "Options page for your Chrome extension",
   "author": "fent (https://github.com/fent)",
@@ -15,23 +15,33 @@
     "url": "git://github.com/fent/chrome-options.git"
   },
   "license": "MIT",
+  "files": [
+    "dist",
+    "sounds",
+    "options.html"
+  ],
   "scripts": {
     "build": "node build.js",
     "build:dev": "node build.js --dev",
     "watch": "node build.js --watch",
+    "pretest": "npm run build",
     "test": "nyc --reporter=lcov --reporter=text-summary mocha --exit test/*-test.js"
   },
-  "standard-version": {
-    "commitAll": true,
-    "scripts": {
-      "postbump": "node build.js && git add dist/"
-    }
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            { "path": "dist/**", "label": "Distribution files" }
+          ]
+        }
+      ]
+    ]
   },
-  "ignore": [
-    "images",
-    "src",
-    "node_modules"
-  ],
   "devDependencies": {
     "c-p": "github:tovic/color-picker#1722fec9b8564eaf3b56b00a2b608d29ce129087",
     "chrome-bootstrap": "^1.5.0",
