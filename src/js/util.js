@@ -2,7 +2,7 @@ export const deepEqual = (a, b) => {
   const t1 = typeof a;
   const t2 = typeof b;
   if (t1 !== t2) { return false; }
-  if (t1 !== 'object' || a == null) { return a === b; }
+  if (t1 !== 'object' || a == null || b == null) { return a === b; }
 
   const k1 = Object.keys(a).sort();
   const k2 = Object.keys(b).sort();

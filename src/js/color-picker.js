@@ -5,7 +5,7 @@ require('c-p');
 import h from './hyperscript.js';
 import { debounce } from './util.js';
 
-chrome.options.fields.color = (value, save, option) => {
+chrome.options.fields.color = (value, save, option = {}) => {
   let first = true;
   const format = option.format || 'rgba';
   if (!['rgb', 'rgba', 'hsl', 'hsla', 'hex'].includes(format)) {
@@ -21,7 +21,7 @@ chrome.options.fields.color = (value, save, option) => {
   };
   const fn = {
     rgb: CP._HSV2RGB, rgba: CP._HSV2RGB,
-    hsl: hsv2hsl, hsv2hsl,
+    hsl: hsv2hsl, hsla: hsv2hsl,
     hex: CP._HSV2HEX,
   }[format];
   const debouncedSave = debounce(500, save);
@@ -80,7 +80,7 @@ chrome.options.fields.color = (value, save, option) => {
       'data-title': 'Reset to default',
       onclick: () => {
         picker.set(option.default);
-        picker.trigger('change', [option.default]);
+        picker.fire('change', [option.default]);
       },
       style: `background-color: ${option.default};`,
     }));

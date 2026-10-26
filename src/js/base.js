@@ -14,7 +14,7 @@ const addH3 = (option) => h('h3', option.desc);
 const addHtml = (option) => h('', { innerHTML: option.html });
 const parseDesc = (desc) => ({
   innerHTML: lightdown(
-    desc.replace(/[<>]/g, m => ({'<': '&lt;', '>': '&gt;'}[m]))
+    (desc || '').replace(/[<>]/g, m => ({'<': '&lt;', '>': '&gt;'}[m]))
   )
 });
 
@@ -359,6 +359,8 @@ chrome.options.base.list = (list, save, options, key) => {
   // Check if columns with the `bindTo` should be displayed.
   if (options.head) {
     requestAnimationFrame(checkColumns.bind(null, true));
+    $container.checkColumns = checkColumns;
+    $container.heads = heads;
   }
 
   // When user edits the last row, add another.
@@ -372,7 +374,7 @@ chrome.options.base.list = (list, save, options, key) => {
   $tbody.addEventListener('change', onChange);
 
   if (options.sortable) {
-    dragula([$tbody], {
+    const dragulaOptions = {
       moves: (el, source, handle) => {
         return (!options.first || el != el.parentNode.children[0]) &&
           handle.classList.contains('sort') &&
@@ -384,7 +386,11 @@ chrome.options.base.list = (list, save, options, key) => {
       direction: 'vertical',
       mirrorContainer: $tbody,
 
-    }).on('cloned', ($mirror, $original) => {
+    };
+    $container.drake = dragula([$tbody], dragulaOptions);
+    $container.drake.moves = dragulaOptions.moves;
+    $container.drake.accepts = dragulaOptions.accepts;
+    $container.drake.on('cloned', ($mirror, $original) => {
       // Set the mirror's td's to a fixed width since taking a row
       // out of a table removes its alignments from the
       // table's columns.

@@ -8,6 +8,9 @@ import * as util from './util.js';
 
 
 // Expose this library.
+chrome.options.util = util;
+chrome.options.dom = dom;
+chrome.options.h = h;
 chrome.options.opts = {
   // If not given, title of the page will be set to the extension's name.
   // Set to `false` if you want to hide the title.
@@ -162,7 +165,8 @@ chrome.options.addTab = (name, desc, options) => {
   // If hash contains a specific option to display,
   // only display that one option.
   if (hashPath.length && hashPath[0].length) {
-    const tabHashPath = tabKey.length ? hashPath.slice(1) : hashPath.slice();
+    const tabHashPath = tabKey.length ? hashPath.slice(1) :
+      [hashPath[0].replace(/^#/, '')].concat(hashPath.slice(1));
     const filterOptions = (options = [], depth) => {
       if (tabHashPath.length <= depth) { return options; }
       return options.filter(option => {
