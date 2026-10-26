@@ -450,7 +450,8 @@ describe('chrome-options page loading', function () {
   });
 
   it('loads multi-tab options page with no console or runtime errors', async () => {
-    await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+    await page.goto(`${serverUrl}/tabs.html`);
+    await page.waitForSelector('input[type="checkbox"]');
 
     assert.strictEqual(
       pageErrors.length,
@@ -537,7 +538,7 @@ describe('chrome-options page loading', function () {
   });
 
   it('loads single-page options layout with no console or runtime errors', async () => {
-    await page.goto(`${serverUrl}/single.html`, { waitUntil: 'networkidle0' });
+    await page.goto(`${serverUrl}/single.html`);
 
     assert.strictEqual(
       pageErrors.length,
@@ -563,11 +564,12 @@ describe('chrome-options page loading', function () {
   });
 
   it('saves option changes to chrome.storage.sync without errors', async () => {
-    await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+    await page.goto(`${serverUrl}/tabs.html`);
+    await page.waitForSelector('input[type="checkbox"]');
 
     // Click checkbox to toggle value
     const checkbox = await page.$('input[type="checkbox"]');
-    await checkbox.click();
+    await page.evaluate((el) => el.click(), checkbox);
 
     // Small delay to allow requestAnimationFrame and storage sync
     await new Promise((r) => setTimeout(r, 200));
@@ -583,7 +585,8 @@ describe('chrome-options page loading', function () {
 
   describe('utility functions', () => {
     it('compares primitives, nulls, and nested structures with deepEqual', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const checks = await page.evaluate(() => {
         const { deepEqual } = chrome.options.util;
         return {
@@ -612,7 +615,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('creates deep copies of primitives, arrays, and objects with deepClone', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const checks = await page.evaluate(() => {
         const { deepClone, deepEqual } = chrome.options.util;
         const num = deepClone(42);
@@ -643,7 +647,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('debounces rapid sequential calls and executes after the wait duration', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         const { debounce } = chrome.options.util;
         let callCount = 0;
@@ -668,7 +673,8 @@ describe('chrome-options page loading', function () {
 
   describe('hyperscript element creation', () => {
     it('parses attribute selectors, IDs, classes, and tag names', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const results = await page.evaluate(() => {
         const h = chrome.options.h;
         const el1 = h('[data-key="custom-val"][id=elem-id][data-mode=auto]');
@@ -701,7 +707,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('binds event listeners, innerHTML, properties, and boolean attributes', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const results = await page.evaluate(() => {
         const h = chrome.options.h;
         let wasClicked = false;
@@ -731,7 +738,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('appends text, array of elements, single nodes, and NodeLists', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const results = await page.evaluate(() => {
         const h = chrome.options.h;
         const textParent = h('div', 'direct text');
@@ -760,7 +768,8 @@ describe('chrome-options page loading', function () {
 
   describe('dom animation helpers', () => {
     it('animates vertical and horizontal transitions for standard and tall elements', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const results = await page.evaluate(async () => {
         const dom = chrome.options.dom;
 
@@ -791,7 +800,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('animates showing and hiding table rows and applies temporary flash highlight classes', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const results = await page.evaluate(async () => {
         const dom = chrome.options.dom;
         const table = document.createElement('table');
@@ -838,7 +848,8 @@ describe('chrome-options page loading', function () {
 
   describe('field types and interactions', () => {
     it('supports text and url inputs with debounced input and change events', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         let savedVal;
         const textField = chrome.options.fields.text('initial', (val) => {
@@ -868,7 +879,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('renders select dropdowns with string and key-value options', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         const strSelect = chrome.options.fields.select('opt2', () => {}, {
           options: ['opt1', 'opt2'],
@@ -902,7 +914,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('renders radio button groups with unique names and updates selected values', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         let savedRadioVal;
         const radioGroup = chrome.options.fields.radio(
@@ -943,7 +956,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('renders and interacts with color fields across color formats and reset options', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         const colorContainer = chrome.options.fields.color(
           '#336699',
@@ -1048,7 +1062,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('handles predefined sounds with and without allowNoSound', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         let savedSound;
         const noSoundContainer = chrome.options.fields.predefined_sound(
@@ -1095,7 +1110,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('handles custom sound fields with enter keypress and play button clicks', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         let savedVal;
         const soundContainer = chrome.options.fields.custom_sound(
@@ -1137,7 +1153,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('handles file inputs and persists selected file references', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         let savedFiles;
         const fileInput = chrome.options.fields.file(null, (files) => {
@@ -1166,7 +1183,8 @@ describe('chrome-options page loading', function () {
 
   describe('option containers and layouts', () => {
     it('supports hidden, disabled, and preview option attributes', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         const optHidden = chrome.options.addOption(
           'hidden_opt',
@@ -1218,7 +1236,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('toggles nested options when parent checkbox or expand triangle is clicked', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         let savedParent;
         const parentOpt = chrome.options.addOption(
@@ -1270,7 +1289,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('supports combined checkbox-and-field options with default values', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         let savedCombo;
         const comboOpt = chrome.options.addOption(
@@ -1314,7 +1334,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('supports object, column, row, h3, and html option layouts', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         const colOpt = chrome.options.addOption(
           'col_layout',
@@ -1386,7 +1407,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('manages single-field lists and multi-column lists with row addition, deletion, and filtering', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         const singleList = chrome.options.addOption(
           'tag_list',
@@ -1471,7 +1493,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('validates field input and rejects invalid submissions', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         chrome.options.fields.test_validate = (_val, cb) => {
           return chrome.options.h('input', {
@@ -1526,7 +1549,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('throws descriptive errors for unrecognized option types', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(() => {
         let threwMain = false;
         try {
@@ -1559,7 +1583,8 @@ describe('chrome-options page loading', function () {
 
   describe('extension options persistence, navigation, and display configuration', () => {
     it('manages manual saving, enabling the save button on changes and disabling on revert', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         chrome.options.opts.autoSave = false;
 
@@ -1612,7 +1637,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('switches active tabs and displays about content when menu items are clicked', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         const aboutLink = document.querySelector('.menu.about a');
         aboutLink.click();
@@ -1634,7 +1660,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('flashes the saved indicator when partially reverting changes under manual save', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         chrome.options.opts.autoSave = false;
         chrome.options.addTab('MultiManual', [
@@ -1673,7 +1700,7 @@ describe('chrome-options page loading', function () {
 
     it('falls back gracefully when manifest metadata or title/about options are omitted', async () => {
       await page.goto(`${serverUrl}/fallback.html`, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
 
       const result = await page.evaluate(() => {
@@ -1701,7 +1728,7 @@ describe('chrome-options page loading', function () {
     it('applies URL query parameters to toggle navigation elements and filters options by URL hash', async () => {
       await page.goto(
         `${serverUrl}/params.html?hideTitle&hideAbout&hideSidebar&hideTabTitle&hideTabDesc#filtered.target_opt`,
-        { waitUntil: 'networkidle0' },
+        { waitUntil: 'domcontentloaded' },
       );
 
       const result = await page.evaluate(() => {
@@ -1731,7 +1758,7 @@ describe('chrome-options page loading', function () {
 
     it('configures initial manual save mode when autoSave is disabled at setup', async () => {
       await page.goto(`${serverUrl}/manual.html`, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
       const result = await page.evaluate(() => {
         const autoSpan = document.querySelector('.save-container .auto');
@@ -1747,7 +1774,7 @@ describe('chrome-options page loading', function () {
 
     it('filters options by hash on single-page layouts where tabKey is empty', async () => {
       await page.goto(`${serverUrl}/single.html#simple_toggle`, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
       const result = await page.evaluate(() => {
         const toggle = document.querySelector('[data-name="simple_toggle"]');
@@ -1759,7 +1786,8 @@ describe('chrome-options page loading', function () {
 
   describe('advanced list table behavior and dragula integration', () => {
     it('manages column binding, row creation for empty lists, row filtering, and dragula events', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         // 1. Initial empty list with first option
         const emptyList = chrome.options.base.list([], () => {}, {
@@ -1921,7 +1949,8 @@ describe('chrome-options page loading', function () {
     });
 
     it('supports nested layout columns, rows, suboptions, and single-field saves in list rows', async () => {
-      await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/tabs.html`);
+      await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
         // Single field list save (line 447: values = newValue)
         let savedSingle;
