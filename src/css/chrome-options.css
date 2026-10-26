@@ -1,8 +1,9 @@
-@import 'chrome-bootstrap/chrome-bootstrap.css';
-@import 'dragula/dist/dragula.css';
-@import 'c-p/color-picker.css';
+@import "chrome-bootstrap/chrome-bootstrap.css";
+@import "dragula/dist/dragula.css";
+@import "c-p/color-picker.css";
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -172,7 +173,12 @@ body.show-tab-title .frame .mainview header {
   display: none;
 }
 
-.chrome-bootstrap .list table tr:hover:not(:last-child):not(.unremovable) > td > .delete,
+.chrome-bootstrap
+  .list
+  table
+  tr:hover:not(:last-child):not(.unremovable)
+  > td
+  > .delete,
 .chrome-bootstrap .list table tr:hover > td > .sort {
   opacity: 1;
   visibility: visible;
@@ -204,8 +210,8 @@ body.show-tab-title .frame .mainview header {
   margin: 0.65em 0;
 }
 
-.chrome-bootstrap .checkbox label > input[type=checkbox],
-.chrome-bootstrap .checkbox span > input[type=checkbox],
+.chrome-bootstrap .checkbox label > input[type="checkbox"],
+.chrome-bootstrap .checkbox span > input[type="checkbox"],
 .chrome-bootstrap .suboption > input,
 .chrome-bootstrap .suboption > select,
 .chrome-bootstrap .suboption > span > input {
@@ -229,7 +235,12 @@ body.show-tab-title .frame .mainview header {
   margin: 0 0.4em;
 }
 
-.chrome-bootstrap .content .suboption .radio-option input:not(:checked) + label {
+.chrome-bootstrap
+  .content
+  .suboption
+  .radio-option
+  input:not(:checked)
+  + label {
   cursor: pointer;
 }
 
@@ -243,10 +254,27 @@ body.show-tab-title .frame .mainview header {
 
 .chrome-bootstrap .color .color-alpha {
   background-color: #ccc;
-  background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), 
-  linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+  background-image:
+    linear-gradient(
+      45deg,
+      #fff 25%,
+      transparent 25%,
+      transparent 75%,
+      #fff 75%,
+      #fff
+    ),
+    linear-gradient(
+      45deg,
+      #fff 25%,
+      transparent 25%,
+      transparent 75%,
+      #fff 75%,
+      #fff
+    );
   background-size: 8px 8px;
-  background-position: 0 0, 4px 4px
+  background-position:
+    0 0,
+    4px 4px;
 }
 
 .chrome-bootstrap .color .color-alpha,
@@ -259,7 +287,7 @@ body.show-tab-title .frame .mainview header {
   cursor: text;
 }
 
-.chrome-bootstrap .color input[type=text] {
+.chrome-bootstrap .color input[type="text"] {
   padding-left: 27px;
 }
 
@@ -278,7 +306,7 @@ body.show-tab-title .frame .mainview header {
   display: flex;
 }
 
-.chrome-bootstrap .color-picker input[type=range] {
+.chrome-bootstrap .color-picker input[type="range"] {
   flex-grow: 1;
 }
 
@@ -341,7 +369,8 @@ body.show-tab-title .frame .mainview header {
   opacity: 1;
 }
 
-.chrome-bootstrap .preview:before, .chrome-bootstarp .preview:after {
+.chrome-bootstrap .preview:before,
+.chrome-bootstarp .preview:after {
   content: "";
   position: absolute;
   display: block;
@@ -351,19 +380,19 @@ body.show-tab-title .frame .mainview header {
 }
 
 .chrome-bootstrap .preview:before {
-  height: .5em;
-  width: .5em;
+  height: 0.5em;
+  width: 0.5em;
   background: #fff;
-  margin-top: -.25em;
-  margin-left: -.25em;
+  margin-top: -0.25em;
+  margin-left: -0.25em;
 }
 
 .chrome-bootstrap .preview:after {
-  height: .25em;
-  width: .25em;
+  height: 0.25em;
+  width: 0.25em;
   background: #000;
-  margin-top: -.125em;
-  margin-left: -.125em;
+  margin-top: -0.125em;
+  margin-left: -0.125em;
 }
 
 .chrome-bootstrap .preview-image {
@@ -384,8 +413,8 @@ body.show-tab-title .frame .mainview header {
   z-index: 99;
 }
 
-.chrome-bootstrap input[type='url'] {
-  border: 1px solid #BFBFBF;
+.chrome-bootstrap input[type="url"] {
+  border: 1px solid #bfbfbf;
   border-radius: 2px;
   box-sizing: border-box;
   color: #444;
@@ -396,12 +425,12 @@ body.show-tab-title .frame .mainview header {
   padding-bottom: 4px;
 }
 
-.chrome-bootstrap input[type='url']:focus {
+.chrome-bootstrap input[type="url"]:focus {
   border-color: #4d90fe;
   outline: none;
 }
 
-.chrome-bootstrap input[type='url']:disabled {
+.chrome-bootstrap input[type="url"]:disabled {
   color: #999;
 }
 
@@ -438,8 +467,9 @@ body.show-tab-title .frame .mainview header {
   background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 2px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
-      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.75);
   color: #444;
   font: inherit;
   margin: 0 1px 0 0;
@@ -493,7 +523,14 @@ body.show-tab-title .frame .mainview header {
   white-space: pre;
 }
 
-.chrome-bootstrap .list > table > thead + tbody > tr > td > [data-title]:hover:after {
+.chrome-bootstrap
+  .list
+  > table
+  > thead
+  + tbody
+  > tr
+  > td
+  > [data-title]:hover:after {
   display: none;
 }
 
@@ -516,6 +553,7 @@ body.show-tab-title .frame .mainview header {
   margin-right: 0.65em;
 }
 
-.chrome-bootstrap .invalid, .chrome-bootstrap :invalid {
+.chrome-bootstrap .invalid,
+.chrome-bootstrap :invalid {
   outline: 1px solid red !important;
 }

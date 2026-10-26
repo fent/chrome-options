@@ -24,6 +24,8 @@
     "build": "node build.js",
     "build:dev": "node build.js --dev",
     "watch": "node build.js --watch",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "pretest": "npm run build",
     "test": "nyc --reporter=lcov --reporter=text-summary mocha --exit test/*-test.js"
   },
@@ -36,13 +38,17 @@
         "@semantic-release/github",
         {
           "assets": [
-            { "path": "dist/**", "label": "Distribution files" }
+            {
+              "path": "dist/**",
+              "label": "Distribution files"
+            }
           ]
         }
       ]
     ]
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
     "c-p": "github:tovic/color-picker#1722fec9b8564eaf3b56b00a2b608d29ce129087",
     "chrome-bootstrap": "^1.5.0",
     "dragula": "^3.7.2",

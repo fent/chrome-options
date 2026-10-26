@@ -3,8 +3,9 @@ import h from './hyperscript.js';
 const animTime = 500;
 const animFunc = 'ease-in-out';
 export const slideYShow = ($node, ms = animTime) => {
-  const startingHeight = $node.offsetParent ?
-    window.getComputedStyle($node).height : '0';
+  const startingHeight = $node.offsetParent
+    ? window.getComputedStyle($node).height
+    : '0';
   $node.style.display = 'block';
   $node.style.height = 'auto';
   $node.style.paddingTop = '';
@@ -47,7 +48,7 @@ export const slideYHide = ($node, ms = animTime) => {
   const heightInt = parseInt(height, 10);
   $node.style.height = height;
   if (heightInt > window.innerHeight) {
-    ms *= 1 + (((heightInt / window.innerHeight) - 1) / 2);
+    ms *= 1 + (heightInt / window.innerHeight - 1) / 2;
   }
   $node.style.transition = `
     height ${ms}ms ${animFunc},
@@ -119,10 +120,16 @@ export const slideXHide = ($node, ms = animTime) => {
 
 export const showTR = ($tr) => {
   $tr.style.display = '';
-  for (let $td of $tr.children) {
-    let $wrapper = $td.appendChild(h('', {
-      style: 'display: none',
-    }, $td.childNodes));
+  for (const $td of $tr.children) {
+    const $wrapper = $td.appendChild(
+      h(
+        '',
+        {
+          style: 'display: none',
+        },
+        $td.childNodes,
+      ),
+    );
     slideYShow($wrapper);
     setTimeout(() => {
       $td.append(...$wrapper.childNodes);
@@ -133,8 +140,8 @@ export const showTR = ($tr) => {
 
 export const hideTR = ($tr, callback) => {
   let n = $tr.children.length;
-  for (let $td of $tr.children) {
-    let $wrapper = h('');
+  for (const $td of $tr.children) {
+    const $wrapper = h('');
     $wrapper.append(...$td.childNodes);
     $td.append($wrapper);
     slideYHide($wrapper);
@@ -144,7 +151,9 @@ export const hideTR = ($tr, callback) => {
       $wrapper.remove();
       if (--n === 0) {
         $tr.style.display = 'none';
-        if (callback) { callback(); }
+        if (callback) {
+          callback();
+        }
       }
     }, animTime);
   }

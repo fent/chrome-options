@@ -2,10 +2,9 @@
 
 import './base.js';
 import './fields.js';
-import h from './hyperscript.js';
 import * as dom from './dom.js';
+import h from './hyperscript.js';
 import * as util from './util.js';
-
 
 // Expose this library.
 chrome.options.util = util;
@@ -31,7 +30,6 @@ chrome.options.opts = {
   saveDefaults: true,
 };
 
-
 const $menu = document.querySelector('#main-menu');
 const $mainview = document.querySelector('.mainview');
 let lastHash = null;
@@ -40,13 +38,17 @@ let hashPath = window.location.hash.split('.');
 const menuClick = () => {
   const newHash = window.location.hash;
   if (!newHash) {
-    document.querySelector('.mainview > *:nth-child(2)')
+    document
+      .querySelector('.mainview > *:nth-child(2)')
       .classList.add('selected');
-    document.querySelector('#main-menu li:first-child')
+    document
+      .querySelector('#main-menu li:first-child')
       .classList.add('selected');
     return;
   }
-  if (newHash === lastHash) { return; }
+  if (newHash === lastHash) {
+    return;
+  }
   lastHash = newHash;
 
   document.querySelectorAll('.mainview > *, .menu li').forEach((el) => {
@@ -57,7 +59,8 @@ const menuClick = () => {
 
   const $currentView = document.querySelector(hashPath[0]);
   if ($currentView) {
-    document.querySelector('.menu a[href="' + hashPath[0] + '"]')
+    document
+      .querySelector(`.menu a[href="${hashPath[0]}"]`)
       .parentNode.classList.add('selected');
     $currentView.classList.add('selected');
     document.body.scrollTop = 0;
@@ -68,9 +71,12 @@ setTimeout(menuClick, 100);
 window.addEventListener('hashchange', menuClick);
 
 const urlParams = {};
-window.location.search.substring(1).split('&').forEach((param) => {
-  urlParams[param] = true;
-});
+window.location.search
+  .substring(1)
+  .split('&')
+  .forEach((param) => {
+    urlParams[param] = true;
+  });
 
 const changedValues = {};
 const $saveContainer = document.querySelector('.save-container');
@@ -85,24 +91,26 @@ const flashSavedAlert = dom.flashClass($saveContainer, 'flash', 150);
 // Add the extension's title to the top of the page.
 let setupRan = false;
 const setup = () => {
-  if (setupRan) { return; }
+  if (setupRan) {
+    return;
+  }
   const manifest = chrome.runtime.getManifest();
 
-  const extensionName =
-    chrome.options.opts.title || manifest.name || 'chrome';
-  document.querySelector('title').textContent =
-    extensionName + ' options';
+  const extensionName = chrome.options.opts.title || manifest.name || 'chrome';
+  document.querySelector('title').textContent = `${extensionName} options`;
   const $title = document.querySelector('.chrome-options-title');
   $title.textContent = extensionName;
   if (chrome.options.opts.title !== false && !urlParams.hideTitle) {
     document.body.classList.add('show-title');
   }
 
-  if (chrome.options.opts.about !== false &&
-     (chrome.options.opts.about || manifest.description) &&
-      !urlParams.hideAbout) {
+  if (
+    chrome.options.opts.about !== false &&
+    (chrome.options.opts.about || manifest.description) &&
+    !urlParams.hideAbout
+  ) {
     document.body.classList.add('show-about');
-    let $about = document.querySelector('#about .content > p');
+    const $about = document.querySelector('#about .content > p');
     if (chrome.options.opts.about) {
       $about.innerHTML = chrome.options.opts.about;
     } else {
@@ -137,8 +145,11 @@ const setup = () => {
 };
 
 const getKeyPath = (parentKey, option) => {
-  return (parentKey || '') +
-    (parentKey && option.name ? '.' : '') + (option.name || '');
+  return (
+    (parentKey || '') +
+    (parentKey && option.name ? '.' : '') +
+    (option.name || '')
+  );
 };
 
 /**
@@ -165,20 +176,30 @@ chrome.options.addTab = (name, desc, options) => {
   // If hash contains a specific option to display,
   // only display that one option.
   if (hashPath.length && hashPath[0].length) {
-    const tabHashPath = tabKey.length ? hashPath.slice(1) :
-      [hashPath[0].replace(/^#/, '')].concat(hashPath.slice(1));
+    const tabHashPath = tabKey.length
+      ? hashPath.slice(1)
+      : [hashPath[0].replace(/^#/, '')].concat(hashPath.slice(1));
     const filterOptions = (options = [], depth) => {
-      if (tabHashPath.length <= depth) { return options; }
-      return options.filter(option => {
-        // Allow layout based options.
-        return option.type === 'column' || option.type === 'row'
-          || option.name === tabHashPath[depth];
-      }).map((option, depth) => {
-        option = Object.assign({}, option);
-        if (option.name) { depth++; }
-        option.options = filterOptions(option.options, depth);
-        return option;
-      });
+      if (tabHashPath.length <= depth) {
+        return options;
+      }
+      return options
+        .filter((option) => {
+          // Allow layout based options.
+          return (
+            option.type === 'column' ||
+            option.type === 'row' ||
+            option.name === tabHashPath[depth]
+          );
+        })
+        .map((option, depth) => {
+          option = Object.assign({}, option);
+          if (option.name) {
+            depth++;
+          }
+          option.options = filterOptions(option.options, depth);
+          return option;
+        });
     };
     options = filterOptions(options, 0);
   }
@@ -202,7 +223,6 @@ chrome.options.addTab = (name, desc, options) => {
   $mainview.append($tabview);
 };
 
-
 /**
  * @param {!string} desc
  * @param {Array.<Object>} options
@@ -214,50 +234,57 @@ chrome.options.set = (desc, options) => {
 };
 
 const addTabOptions = (tabKey, values, options) => {
-  return h('', options.map((option) => {
-    const key = getKeyPath(tabKey, option);
-    const isLayout = option.type === 'column' || option.type === 'row';
-    let value = isLayout ? values : values[key];
-    let latestValue = value;
+  return h(
+    '',
+    options.map((option) => {
+      const key = getKeyPath(tabKey, option);
+      const isLayout = option.type === 'column' || option.type === 'row';
+      let value = isLayout ? values : values[key];
+      let latestValue = value;
 
-    // Clone value so that it can be compared to new value.
-    const cloneValue = () => { value = util.deepClone(latestValue); };
-    $saveButton.addEventListener('click', cloneValue);
+      // Clone value so that it can be compared to new value.
+      const cloneValue = () => {
+        value = util.deepClone(latestValue);
+      };
+      $saveButton.addEventListener('click', cloneValue);
 
-    // Use requestAnimationFrame whenever possible,
-    // so that it doensn't seep into load time.
-    requestAnimationFrame(cloneValue);
+      // Use requestAnimationFrame whenever possible,
+      // so that it doensn't seep into load time.
+      requestAnimationFrame(cloneValue);
 
-    let duringLoad = true;
-    const save = (newValue) => {
-      const autoSave = chrome.options.opts.autoSave || duringLoad;
-      requestAnimationFrame(() => {
-        latestValue = newValue;
-        const isEqual = util.deepEqual(value, newValue);
-        const valueToSave = isLayout ? newValue : { [key]: newValue };
-        if (autoSave) {
-          if (!isEqual) {
-            chrome.storage.sync.set(valueToSave);
-            showSavedAlert();
-            flashSavedAlert();
-            cloneValue();
-          }
-        } else if (isEqual) {
-          for (let optionKey in valueToSave) { delete changedValues[optionKey]; }
-          if (!Object.keys(changedValues).length) {
-            $saveButton.setAttribute('disabled', true);
+      let duringLoad = true;
+      const save = (newValue) => {
+        const autoSave = chrome.options.opts.autoSave || duringLoad;
+        requestAnimationFrame(() => {
+          latestValue = newValue;
+          const isEqual = util.deepEqual(value, newValue);
+          const valueToSave = isLayout ? newValue : { [key]: newValue };
+          if (autoSave) {
+            if (!isEqual) {
+              chrome.storage.sync.set(valueToSave);
+              showSavedAlert();
+              flashSavedAlert();
+              cloneValue();
+            }
+          } else if (isEqual) {
+            for (const optionKey in valueToSave) {
+              delete changedValues[optionKey];
+            }
+            if (!Object.keys(changedValues).length) {
+              $saveButton.setAttribute('disabled', true);
+            } else {
+              flashSavedAlert();
+            }
           } else {
+            Object.assign(changedValues, valueToSave);
+            $saveButton.removeAttribute('disabled');
             flashSavedAlert();
           }
-        } else {
-          Object.assign(changedValues, valueToSave);
-          $saveButton.removeAttribute('disabled');
-          flashSavedAlert();
-        }
-      });
-    };
-    const $option = chrome.options.addOption(key, value, save, option);
-    duringLoad = false;
-    return $option;
-  }));
+        });
+      };
+      const $option = chrome.options.addOption(key, value, save, option);
+      duringLoad = false;
+      return $option;
+    }),
+  );
 };

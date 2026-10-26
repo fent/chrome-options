@@ -51,7 +51,7 @@ chrome.options.fields.select = (value, save, option) => {
   });
   let firstValue = null;
   option.options.forEach((option) => {
-    const value = typeof option === 'object' ? option.value : option ;
+    const value = typeof option === 'object' ? option.value : option;
     const desc = typeof option === 'object' ? option.desc : option;
     valueMap[value] = value;
     $select.append(h('option', { value }, desc));
@@ -71,16 +71,19 @@ chrome.options.fields.radio = (value, save, option) => {
     const desc = typeof option === 'object' ? option.desc : option;
     const id = (~~(Math.random() * 1e9)).toString(36);
     const $row = $container.appendChild(h('.radio-option'));
-    const $radio = $row.appendChild(h('input[type=radio]', {
-      id, name,
-      value: val,
-      checked: value == val,
-      onchange: (e) => {
-        if ($radio.checked) {
-          save(val, e);
-        }
-      },
-    }));
+    const $radio = $row.appendChild(
+      h('input[type=radio]', {
+        id,
+        name,
+        value: val,
+        checked: value === val,
+        onchange: (e) => {
+          if ($radio.checked) {
+            save(val, e);
+          }
+        },
+      }),
+    );
 
     $row.append(h('label', { for: id }, desc));
   });
@@ -109,7 +112,9 @@ chrome.options.fields.custom_sound = (value, save) => {
     }
   });
   $container.append($field);
-  $container.append(h('span.play', { onclick: playSound, innerHTML: '&#9654;' }));
+  $container.append(
+    h('span.play', { onclick: playSound, innerHTML: '&#9654;' }),
+  );
 
   return $container;
 };

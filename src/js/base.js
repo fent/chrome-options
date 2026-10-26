@@ -1,10 +1,9 @@
 /* global chrome */
-import h from './hyperscript.js';
-import * as dom from './dom.js';
 
 import dragula from 'dragula';
-
 import lightdown from 'lightdown';
+import * as dom from './dom.js';
+import h from './hyperscript.js';
 
 chrome.options = {};
 chrome.options.base = {};
@@ -14,15 +13,18 @@ const addH3 = (option) => h('h3', option.desc);
 const addHtml = (option) => h('', { innerHTML: option.html });
 const parseDesc = (desc) => ({
   innerHTML: lightdown(
-    (desc || '').replace(/[<>]/g, m => ({'<': '&lt;', '>': '&gt;'}[m]))
-  )
+    (desc || '').replace(/[<>]/g, (m) => ({ '<': '&lt;', '>': '&gt;' })[m]),
+  ),
 });
 
 chrome.options.addOption = (key, value, save, option) => {
   if (value === undefined && option.default != null) {
     value = option.default;
-    if ((!option.type || option.type === 'checkbox') &&
-      option.options && typeof value === 'boolean') {
+    if (
+      (!option.type || option.type === 'checkbox') &&
+      option.options &&
+      typeof value === 'boolean'
+    ) {
       value = { enabled: value };
     }
     if (chrome.options.opts.saveDefaults) {
@@ -30,7 +32,7 @@ chrome.options.addOption = (key, value, save, option) => {
     }
   }
 
-  let $option, r;
+  let $option;
   switch (option.type) {
     case 'checkbox':
       $option = chrome.options.base.checkbox(value, save, option, key);
@@ -58,14 +60,24 @@ chrome.options.addOption = (key, value, save, option) => {
         $option = chrome.options.base.checkbox(value, save, option, key);
       } else if (chrome.options.fields[option.type]) {
         $option = chrome.options.addLabelNField(value, save, option);
-      } else if ((r = /(\w+)-list/.exec(option.type))) {
-        $option = chrome.options.base
-          .singleFieldList(value, save, option, r[1]);
-      } else if ((r = /checkbox-(\w+)/.exec(option.type))) {
-        $option = chrome.options.base
-          .checkboxNField(value, save, option, r[1]);
+      } else if (/(\w+)-list/.test(option.type)) {
+        const match = /(\w+)-list/.exec(option.type);
+        $option = chrome.options.base.singleFieldList(
+          value,
+          save,
+          option,
+          match[1],
+        );
+      } else if (/checkbox-(\w+)/.test(option.type)) {
+        const match = /checkbox-(\w+)/.exec(option.type);
+        $option = chrome.options.base.checkboxNField(
+          value,
+          save,
+          option,
+          match[1],
+        );
       } else {
-        throw Error('Could not find option type: ' + option.type);
+        throw Error(`Could not find option type: ${option.type}`);
       }
   }
 
@@ -84,8 +96,10 @@ chrome.options.addOption = (key, value, save, option) => {
   } else if (option.preview) {
     // `key` is passed down from parent options to be used here.
     const $label = $option.querySelector('label');
-    $label.append(h('span.preview-container', h('span.preview')),
-      h('img.preview-image', { src: 'previews/' + key + '.' + option.preview }));
+    $label.append(
+      h('span.preview-container', h('span.preview')),
+      h('img.preview-image', { src: `previews/${key}.${option.preview}` }),
+    );
   }
 
   return $option;
@@ -106,20 +120,26 @@ chrome.options.base.checkbox = (value, save, option, key) => {
     checked = value.enabled;
   }
 
-  const $checkbox = chrome.options.fields.checkbox(checked, (checked) => {
-    if (hasOptions) {
-      value.enabled = checked;
-    } else {
-      value = checked;
-    }
-    save(value);
-  }, option);
+  const $checkbox = chrome.options.fields.checkbox(
+    checked,
+    (checked) => {
+      if (hasOptions) {
+        value.enabled = checked;
+      } else {
+        value = checked;
+      }
+      save(value);
+    },
+    option,
+  );
   $label.append($checkbox);
 
   if (hasOptions) {
     $subContainer = addOptions(value, save, option, key);
     $container.append($subContainer);
-    if (!checked) { $subContainer.style.display = 'none'; }
+    if (!checked) {
+      $subContainer.style.display = 'none';
+    }
 
     const toggleContainer = (checked) => {
       if (checked) {
@@ -166,22 +186,33 @@ chrome.options.base.checkboxNField = (value, save, option, type) => {
   }
 
   if (!chrome.options.fields[type]) {
-    throw Error('Could not find option type: ' + type);
+    throw Error(`Could not find option type: ${type}`);
   }
   const $container = h('.suboption');
   const $box = $container.appendChild(h('span'));
 
-  $box
-    .append(chrome.options.fields.checkbox(value.enabled, (checked) => {
-      value.enabled = checked;
-      save(value);
-    }, option));
+  $box.append(
+    chrome.options.fields.checkbox(
+      value.enabled,
+      (checked) => {
+        value.enabled = checked;
+        save(value);
+      },
+      option,
+    ),
+  );
 
   option = Object.assign({}, option, { type });
-  $container.append(chrome.options.addField(value.value, (newValue) => {
-    value.value = newValue;
-    save(value);
-  }, option));
+  $container.append(
+    chrome.options.addField(
+      value.value,
+      (newValue) => {
+        value.value = newValue;
+        save(value);
+      },
+      option,
+    ),
+  );
 
   if (option.desc) {
     $container.append(h('label', parseDesc(option.desc)));
@@ -196,24 +227,36 @@ chrome.options.base.object = (value, save, option, key) => {
 };
 
 const getKeyPath = (parentKey, option) => {
-  return (parentKey || '') +
-    (parentKey && option.name ? '.' : '') + (option.name || '');
+  return (
+    (parentKey || '') +
+    (parentKey && option.name ? '.' : '') +
+    (option.name || '')
+  );
 };
 
 const addOptions = (values, save, option, key) => {
   if (values == null || typeof values !== 'object') {
     values = {};
   }
-  return h('.suboptions', option.options.map((option) => {
-    const optionKey = getKeyPath(key, option);
-    const isLayout = option.type === 'column' || option.type === 'row';
-    const value = isLayout ? values : values[option.name];
-    return chrome.options.addOption(optionKey, value,
-      (newValue) => {
-        if (option.name) { values[option.name] = newValue; }
-        save(values);
-      }, option);
-  }));
+  return h(
+    '.suboptions',
+    option.options.map((option) => {
+      const optionKey = getKeyPath(key, option);
+      const isLayout = option.type === 'column' || option.type === 'row';
+      const value = isLayout ? values : values[option.name];
+      return chrome.options.addOption(
+        optionKey,
+        value,
+        (newValue) => {
+          if (option.name) {
+            values[option.name] = newValue;
+          }
+          save(values);
+        },
+        option,
+      );
+    }),
+  );
 };
 
 chrome.options.addLabelNField = (value, save, option) => {
@@ -226,25 +269,29 @@ chrome.options.addLabelNField = (value, save, option) => {
 
 chrome.options.base.list = (list, save, options, key) => {
   const $container = h('.suboption.list');
-  let $wrapper, shown = true;
+  let $wrapper,
+    shown = true;
 
   if (options.desc) {
-    const $label =
-      $container.appendChild(h('label', parseDesc(options.desc)));
+    const $label = $container.appendChild(h('label', parseDesc(options.desc)));
     if (options.collapsible) {
       shown = false;
-      const $triangle = h('span.triangle', {
-        onclick: () => {
-          shown = !shown;
-          if (shown) {
-            $triangle.textContent = '▼';
-            dom.slideYShow($wrapper);
-          } else {
-            $triangle.textContent = '▶';
-            dom.slideYHide($wrapper);
-          }
+      const $triangle = h(
+        'span.triangle',
+        {
+          onclick: () => {
+            shown = !shown;
+            if (shown) {
+              $triangle.textContent = '▼';
+              dom.slideYShow($wrapper);
+            } else {
+              $triangle.textContent = '▶';
+              dom.slideYHide($wrapper);
+            }
+          },
         },
-      }, '▶');
+        '▶',
+      );
       $label.prepend($triangle);
     }
   }
@@ -252,18 +299,21 @@ chrome.options.base.list = (list, save, options, key) => {
   list = list || [];
   const $table = $container.appendChild(h('table'));
   if (options.desc && options.collapsible) {
-    $wrapper = $container.appendChild(h('', { style: 'display: none' }, $table));
+    $wrapper = $container.appendChild(
+      h('', { style: 'display: none' }, $table),
+    );
   }
   const $tbody = $table.appendChild(h('tbody'));
   let rows;
-  let heads = {};
+  const heads = {};
 
   if (options.head) {
     const $thead = h('tr');
     let prevfield;
     options.fields.forEach((field) => {
       if (!field.bindTo || !prevfield.bindTo) {
-        const $container = heads[field.name] = h('div', parseDesc(field.desc));
+        const $container = h('div', parseDesc(field.desc));
+        heads[field.name] = $container;
         $thead.append(h('th', $container));
       } else {
         heads[field.name] = heads[prevfield.name];
@@ -276,8 +326,10 @@ chrome.options.base.list = (list, save, options, key) => {
   // Check if each column should be shown.
   const checkColumns = (init) => {
     options.fields.forEach((field) => {
-      if (!field.bindTo) { return; }
-      const show = rows.some(row => row.shown[field.name]);
+      if (!field.bindTo) {
+        return;
+      }
+      const show = rows.some((row) => row.shown[field.name]);
       const $head = heads[field.name];
       const isVisible = !!$head.offsetParent;
       if (show && !isVisible) {
@@ -293,30 +345,38 @@ chrome.options.base.list = (list, save, options, key) => {
   };
 
   const saveFields = () => {
-    const newValues = rows.map(getValue => getValue());
-    save(newValues.filter((rowValue) => {
-      if (rowValue == null || rowValue === '') {
-        return false;
-      } else if (options.filter && !options.filter(rowValue)) {
-        return false;
-      } else if (typeof rowValue === 'object') {
-        for (let field of options.fields) {
-          if (field.required && !rowValue[field.name]) {
-            return false;
+    const newValues = rows.map((getValue) => getValue());
+    save(
+      newValues.filter((rowValue) => {
+        if (rowValue == null || rowValue === '') {
+          return false;
+        } else if (options.filter && !options.filter(rowValue)) {
+          return false;
+        } else if (typeof rowValue === 'object') {
+          for (const field of options.fields) {
+            if (field.required && !rowValue[field.name]) {
+              return false;
+            }
           }
+          return Object.keys(rowValue).some((key) => rowValue[key] != null);
         }
-        return Object.keys(rowValue).some(key => rowValue[key] != null);
-      }
-      return true;
-    }));
+        return true;
+      }),
+    );
     requestAnimationFrame(() => {
-      rows.forEach((row) => { row.update(newValues); });
-      if (options.head) { checkColumns(false); }
+      rows.forEach((row) => {
+        row.update(newValues);
+      });
+      if (options.head) {
+        checkColumns(false);
+      }
     });
   };
 
   const fieldsMap = {};
-  options.fields.forEach((field) => { fieldsMap[field.name] = field; });
+  options.fields.forEach((field) => {
+    fieldsMap[field.name] = field;
+  });
 
   const addNewRow = (animate) => {
     let row;
@@ -324,12 +384,24 @@ chrome.options.base.list = (list, save, options, key) => {
       rows.splice(rows.indexOf(row), 1);
       saveFields();
     };
-    row = addListRow($tbody, null, options.fields, fieldsMap, saveFields,
-      remove, false, options.sortable, animate, key);
+    row = addListRow(
+      $tbody,
+      null,
+      options.fields,
+      fieldsMap,
+      saveFields,
+      remove,
+      false,
+      options.sortable,
+      animate,
+      key,
+    );
     rows.push(row);
     requestAnimationFrame(() => {
-      const rowValues = rows.map(getValue => getValue());
-      rows.forEach((row) => { row.update(rowValues); });
+      const rowValues = rows.map((getValue) => getValue());
+      rows.forEach((row) => {
+        row.update(rowValues);
+      });
     });
   };
 
@@ -340,15 +412,34 @@ chrome.options.base.list = (list, save, options, key) => {
       saveFields();
     };
     const fields = i === 0 && options.first ? options.first : options.fields;
-    row = addListRow($tbody, rowData, fields, fieldsMap, saveFields,
-      remove, i === 0 && options.first,
-      options.sortable, false, key);
+    row = addListRow(
+      $tbody,
+      rowData,
+      fields,
+      fieldsMap,
+      saveFields,
+      remove,
+      i === 0 && options.first,
+      options.sortable,
+      false,
+      key,
+    );
     return row;
   });
 
   if (options.first && !rows.length) {
-    const row = addListRow($tbody, null, options.first, fieldsMap,
-      saveFields, () => {}, true, options.sortable, false, key);
+    const row = addListRow(
+      $tbody,
+      null,
+      options.first,
+      fieldsMap,
+      saveFields,
+      () => {},
+      true,
+      options.sortable,
+      false,
+      key,
+    );
     rows.push(row);
     saveFields();
   }
@@ -375,61 +466,76 @@ chrome.options.base.list = (list, save, options, key) => {
 
   if (options.sortable) {
     const dragulaOptions = {
-      moves: (el, source, handle) => {
-        return (!options.first || el != el.parentNode.children[0]) &&
+      moves: (el, _source, handle) => {
+        return (
+          (!options.first || el !== el.parentNode.children[0]) &&
           handle.classList.contains('sort') &&
-          handle.closest('tbody') == $tbody;
+          handle.closest('tbody') === $tbody
+        );
       },
-      accepts: (el, target, source, sibling) => {
+      accepts: (_el, _target, _source, sibling) => {
         return !sibling.classList.contains('gu-mirror');
       },
       direction: 'vertical',
       mirrorContainer: $tbody,
-
     };
     $container.drake = dragula([$tbody], dragulaOptions);
     $container.drake.moves = dragulaOptions.moves;
     $container.drake.accepts = dragulaOptions.accepts;
-    $container.drake.on('cloned', ($mirror, $original) => {
-      // Set the mirror's td's to a fixed width since taking a row
-      // out of a table removes its alignments from the
-      // table's columns.
-      const $mirrorTDs = $mirror.querySelectorAll(':scope > td');
-      $original.querySelectorAll(':scope > td').forEach(($td, i) => {
-        $mirrorTDs[i].style.width = $td.offsetWidth + 'px';
-      });
+    $container.drake
+      .on('cloned', ($mirror, $original) => {
+        // Set the mirror's td's to a fixed width since taking a row
+        // out of a table removes its alignments from the
+        // table's columns.
+        const $mirrorTDs = $mirror.querySelectorAll(':scope > td');
+        $original.querySelectorAll(':scope > td').forEach(($td, i) => {
+          $mirrorTDs[i].style.width = `${$td.offsetWidth}px`;
+        });
 
-      // Copy the value of the mirror's form elements.
-      // Since `node.cloneNode()` does not do so for some of them.
-      const selection = 'select, input[type=radio]';
-      const $mirrorFields = $mirror.querySelectorAll(selection);
-      $original.querySelectorAll(selection).forEach(($field, i) => {
-        const $node = $mirrorFields[i];
-        $node.value = $field.value;
-        if ($node.checked) {
-          // Change the name of the radio field so that checking the
-          // original element again won't uncheck the mirrored element.
-          $node.setAttribute('name', $node.getAttribute('name') + '_');
-          $field.checked = true;
-        }
+        // Copy the value of the mirror's form elements.
+        // Since `node.cloneNode()` does not do so for some of them.
+        const selection = 'select, input[type=radio]';
+        const $mirrorFields = $mirror.querySelectorAll(selection);
+        $original.querySelectorAll(selection).forEach(($field, i) => {
+          const $node = $mirrorFields[i];
+          $node.value = $field.value;
+          if ($node.checked) {
+            // Change the name of the radio field so that checking the
+            // original element again won't uncheck the mirrored element.
+            $node.setAttribute('name', `${$node.getAttribute('name')}_`);
+            $field.checked = true;
+          }
+        });
+      })
+      .on('dragend', () => {
+        rows.forEach((a) => {
+          let $child = a.$tr.previousSibling;
+          a.index = 0;
+          while ($child != null) {
+            a.index++;
+            $child = $child.previousSibling;
+          }
+        });
+        rows.sort((a, b) => a.index - b.index);
+        saveFields();
       });
-
-    }).on('dragend', () => {
-      rows.forEach((a) => {
-        let $child = a.$tr;
-        a.index = 0;
-        while (($child = $child.previousSibling) != null) { a.index++; }
-      });
-      rows.sort((a, b) => a.index - b.index);
-      saveFields();
-    });
   }
 
   return $container;
 };
 
-const addListRow = ($table, values, fields, fieldsMap, save, remove,
-  unremovable, sort, animate, key) => {
+const addListRow = (
+  $table,
+  values,
+  fields,
+  fieldsMap,
+  save,
+  remove,
+  unremovable,
+  sort,
+  animate,
+  key,
+) => {
   const $tr = h('tr');
   if (unremovable) {
     $tr.classList.add('unremovable');
@@ -454,7 +560,9 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
       } else if (name) {
         values[name] = newValue;
       }
-      fieldUpdates.forEach((up) => { up.checkBind(name, newValue); });
+      fieldUpdates.forEach((up) => {
+        up.checkBind(name, newValue);
+      });
       save();
     };
 
@@ -484,22 +592,24 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
     update.checkSelect = (newValues) => {
       if (field.type === 'select') {
         field.options
-          .filter(f => f.unique)
+          .filter((f) => f.unique)
           .forEach((option) => {
             const display = newValues.some((rowValue) => {
-              return rowValue !== values &&
-                rowValue[field.name] === option.value;
-            }) ? 'none' : '';
-            $field
-              .querySelector('option[value="' + option.value + '"]')
-              .style.display = display;
+              return (
+                rowValue !== values && rowValue[field.name] === option.value
+              );
+            })
+              ? 'none'
+              : '';
+            $field.querySelector(
+              `option[value="${option.value}"]`,
+            ).style.display = display;
           });
       }
     };
 
     const bindTo = field.bindTo;
-    const $td = bindTo && prevfield && prevfield.bindTo ?
-      $prevtd : h('td');
+    const $td = bindTo && prevfield?.bindTo ? $prevtd : h('td');
     if (bindTo) {
       $td.classList.add('bind-to');
     }
@@ -507,8 +617,10 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
     prevfield = field;
     const $fieldContainer = $tr.appendChild($td);
     let fieldValue;
-    if (!values && (fields.length > 1 ||
-        field.type === 'column' || field.type === 'row')) {
+    if (
+      !values &&
+      (fields.length > 1 || field.type === 'column' || field.type === 'row')
+    ) {
       values = {};
     }
 
@@ -526,18 +638,19 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
     } else if (field.type === 'row') {
       $field = chrome.options.base.row(values, save, field, key);
     } else {
-      throw Error('Could not find option type: ' + field.type);
+      throw Error(`Could not find option type: ${field.type}`);
     }
     $fieldContainer.append($field);
 
     requestAnimationFrame(() => {
-      if (!bindTo) { return; }
+      if (!bindTo) {
+        return;
+      }
       if (
         (values[bindTo.field] &&
-         !bindToEquals(bindTo.value, values[bindTo.field])) ||
+          !bindToEquals(bindTo.value, values[bindTo.field])) ||
         (!values[bindTo.field] &&
-         !bindToEquals(bindTo.value,
-           fieldsMap[bindTo.field].options[0].value))
+          !bindToEquals(bindTo.value, fieldsMap[bindTo.field].options[0].value))
       ) {
         $field.style.display = 'none';
         getValue.shown[field.name] = false;
@@ -557,16 +670,29 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
     return update;
   });
 
-  $tr.append(h('td', h('a.delete', {
-    onclick: () => {
-      fieldUpdates.forEach((update) => { update.hide(); });
-      setTimeout(() => {
-        dom.hideTR($tr, () => { $tr.remove(); });
-      }, 250);
-      remove();
-    },
-  }, 'delete')));
-  
+  $tr.append(
+    h(
+      'td',
+      h(
+        'a.delete',
+        {
+          onclick: () => {
+            fieldUpdates.forEach((update) => {
+              update.hide();
+            });
+            setTimeout(() => {
+              dom.hideTR($tr, () => {
+                $tr.remove();
+              });
+            }, 250);
+            remove();
+          },
+        },
+        'delete',
+      ),
+    ),
+  );
+
   if (!unremovable && sort) {
     $tr.append(h('td', h('a.sort', 'sort')));
   }
@@ -582,8 +708,9 @@ const addListRow = ($table, values, fields, fieldsMap, save, remove,
 };
 
 const bindToEquals = (bindToValue, fieldValue) => {
-  return Array.isArray(bindToValue) ?
-    bindToValue.indexOf(fieldValue) > -1 : bindToValue === fieldValue;
+  return Array.isArray(bindToValue)
+    ? bindToValue.indexOf(fieldValue) > -1
+    : bindToValue === fieldValue;
 };
 
 chrome.options.base.singleFieldList = (value, save, options, type) => {
@@ -606,20 +733,28 @@ chrome.options.base.row = (values, save, option, key) => {
 
 chrome.options.addField = (value, save, option) => {
   const fn = chrome.options.fields[option.type];
-  if (!fn) { return; }
+  if (!fn) {
+    return;
+  }
   let lastTimeStamp;
-  const $field = fn(value, (newValue, e) => {
-    if (e) {
-      if (e.timeStamp < lastTimeStamp) { return; }
-      lastTimeStamp = e.timeStamp;
-    }
-    if (option.validate && !option.validate(newValue)) {
-      $field.classList.add('invalid');
-    } else {
-      $field.classList.remove('invalid');
-      save(newValue, e);
-    }
-  }, option);
+  const $field = fn(
+    value,
+    (newValue, e) => {
+      if (e) {
+        if (e.timeStamp < lastTimeStamp) {
+          return;
+        }
+        lastTimeStamp = e.timeStamp;
+      }
+      if (option.validate && !option.validate(newValue)) {
+        $field.classList.add('invalid');
+      } else {
+        $field.classList.remove('invalid');
+        save(newValue, e);
+      }
+    },
+    option,
+  );
   if (option.desc) {
     $field.setAttribute('data-title', option.desc);
   }

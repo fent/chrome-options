@@ -1,6 +1,6 @@
 const esbuild = require('esbuild');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const isDev = process.argv.includes('--dev');
 const isWatch = process.argv.includes('--watch');
@@ -21,7 +21,7 @@ async function build() {
     minify: !isDev,
     target: ['chrome58'],
     loader: { '.png': 'dataurl' },
-    define: { global: 'window' }
+    define: { global: 'window' },
   };
 
   // 2. Bundle CSS
@@ -31,19 +31,21 @@ async function build() {
     bundle: true,
     sourcemap: true,
     minify: !isDev,
-    loader: { '.png': 'dataurl' }
+    loader: { '.png': 'dataurl' },
   };
 
   if (isWatch) {
     const jsCtx = await esbuild.context(jsOptions);
     const cssCtx = await esbuild.context({
       ...cssOptions,
-      plugins: [{
-        name: 'write-styles-js',
-        onEnd() {
-          generateStylesJs();
-        }
-      }]
+      plugins: [
+        {
+          name: 'write-styles-js',
+          onEnd() {
+            generateStylesJs();
+          },
+        },
+      ],
     });
     await jsCtx.watch();
     await cssCtx.watch();
@@ -66,7 +68,7 @@ function generateStylesJs() {
 }
 
 if (require.main === module) {
-  build().catch(err => {
+  build().catch((err) => {
     console.error(err);
     process.exit(1);
   });

@@ -1,7 +1,7 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const assert = require('node:assert');
+const assert = require('node:assert/strict');
 const puppeteer = require('puppeteer-core');
 const v8toIstanbul = require('v8-to-istanbul');
 const { createCoverageMap } = require('istanbul-lib-coverage');
@@ -9,7 +9,7 @@ const { createCoverageMap } = require('istanbul-lib-coverage');
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.resolve(ROOT_DIR, 'dist');
 
-describe('chrome-options page loading', function() {
+describe('chrome-options page loading', function () {
   this.timeout(15000);
 
   let server;
@@ -58,19 +58,28 @@ describe('chrome-options page loading', function() {
         return;
       }
 
-      if (urlPath === '/dist/main.min.js' || urlPath === '/node_modules/chrome-options/dist/main.min.js') {
+      if (
+        urlPath === '/dist/main.min.js' ||
+        urlPath === '/node_modules/chrome-options/dist/main.min.js'
+      ) {
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         res.end(fs.readFileSync(path.join(DIST_DIR, 'main.min.js')));
         return;
       }
 
-      if (urlPath === '/dist/styles.min.js' || urlPath === '/node_modules/chrome-options/dist/styles.min.js') {
+      if (
+        urlPath === '/dist/styles.min.js' ||
+        urlPath === '/node_modules/chrome-options/dist/styles.min.js'
+      ) {
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         res.end(fs.readFileSync(path.join(DIST_DIR, 'styles.min.js')));
         return;
       }
 
-      if (urlPath === '/dist/styles.min.css' || urlPath === '/node_modules/chrome-options/dist/styles.min.css') {
+      if (
+        urlPath === '/dist/styles.min.css' ||
+        urlPath === '/node_modules/chrome-options/dist/styles.min.css'
+      ) {
         res.writeHead(200, { 'Content-Type': 'text/css' });
         res.end(fs.readFileSync(path.join(DIST_DIR, 'styles.min.css')));
         return;
@@ -301,9 +310,16 @@ describe('chrome-options page loading', function() {
         return;
       }
 
-      if (urlPath.startsWith('/sounds/') || urlPath.startsWith('/node_modules/chrome-options/sounds/')) {
+      if (
+        urlPath.startsWith('/sounds/') ||
+        urlPath.startsWith('/node_modules/chrome-options/sounds/')
+      ) {
         const soundFile = path.basename(urlPath);
-        const filePath = path.join(ROOT_DIR, 'sounds', decodeURIComponent(soundFile));
+        const filePath = path.join(
+          ROOT_DIR,
+          'sounds',
+          decodeURIComponent(soundFile),
+        );
         if (fs.existsSync(filePath)) {
           res.writeHead(200, { 'Content-Type': 'audio/wav' });
           res.end(fs.readFileSync(filePath));
@@ -323,12 +339,13 @@ describe('chrome-options page loading', function() {
       });
     });
 
-    const executablePath = process.env.CHROME_BIN || process.env.PUPPETEER_EXECUTABLE_PATH;
+    const executablePath =
+      process.env.CHROME_BIN || process.env.PUPPETEER_EXECUTABLE_PATH;
     browser = await puppeteer.launch({
       channel: executablePath ? undefined : 'chrome',
       executablePath,
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   });
 
@@ -341,32 +358,34 @@ describe('chrome-options page loading', function() {
           server.closeAllConnections();
         }
         server.close();
-      } catch (e) {}
+      } catch (_e) {}
     }
     if (browser) {
       try {
         const proc = browser.process();
         await Promise.race([
           browser.close(),
-          new Promise((resolve) => setTimeout(resolve, 2000))
+          new Promise((resolve) => setTimeout(resolve, 2000)),
         ]);
         if (proc && !proc.killed) {
           proc.kill('SIGKILL');
         }
-      } catch (e) {}
+      } catch (_e) {}
     }
 
     if (collectedCoverage.length > 0) {
       try {
         const coverageMap = createCoverageMap({});
         for (const entry of collectedCoverage) {
-          if (entry.url && entry.url.includes('main.min.js') && entry.rawScriptCoverage) {
+          if (entry.url?.includes('main.min.js') && entry.rawScriptCoverage) {
             const filePath = path.join(DIST_DIR, 'main.min.js');
             const mapPath = path.join(DIST_DIR, 'main.min.js.map');
             if (fs.existsSync(mapPath)) {
               const converter = v8toIstanbul(filePath, 0, {
                 source: entry.text,
-                sourceMap: { sourcemap: JSON.parse(fs.readFileSync(mapPath, 'utf8')) }
+                sourceMap: {
+                  sourcemap: JSON.parse(fs.readFileSync(mapPath, 'utf8')),
+                },
               });
               await converter.load();
               converter.applyCoverage(entry.rawScriptCoverage.functions);
@@ -383,7 +402,10 @@ describe('chrome-options page loading', function() {
         if (!fs.existsSync(nycDir)) {
           fs.mkdirSync(nycDir, { recursive: true });
         }
-        fs.writeFileSync(path.join(nycDir, 'browser-coverage.json'), JSON.stringify(coverageMap.toJSON()));
+        fs.writeFileSync(
+          path.join(nycDir, 'browser-coverage.json'),
+          JSON.stringify(coverageMap.toJSON()),
+        );
       } catch (err) {
         console.error('Error generating coverage:', err);
       }
@@ -399,7 +421,10 @@ describe('chrome-options page loading', function() {
     consoleErrors = [];
     pageErrors = [];
 
-    await page.coverage.startJSCoverage({ includeRawScriptCoverage: true, resetOnNavigation: false });
+    await page.coverage.startJSCoverage({
+      includeRawScriptCoverage: true,
+      resetOnNavigation: false,
+    });
 
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -419,7 +444,7 @@ describe('chrome-options page loading', function() {
         if (pageCoverage) {
           collectedCoverage.push(...pageCoverage);
         }
-      } catch (e) {}
+      } catch (_e) {}
       await page.close();
     }
   });
@@ -430,16 +455,19 @@ describe('chrome-options page loading', function() {
     assert.strictEqual(
       pageErrors.length,
       0,
-      `Expected 0 page errors, received:\n${pageErrors.join('\n')}`
+      `Expected 0 page errors, received:\n${pageErrors.join('\n')}`,
     );
     assert.strictEqual(
       consoleErrors.length,
       0,
-      `Expected 0 console errors, received:\n${consoleErrors.join('\n')}`
+      `Expected 0 console errors, received:\n${consoleErrors.join('\n')}`,
     );
 
     // Verify title and manifest metadata applied
-    const titleText = await page.$eval('.chrome-options-title', (el) => el.textContent);
+    const titleText = await page.$eval(
+      '.chrome-options-title',
+      (el) => el.textContent,
+    );
     assert.strictEqual(titleText, 'Test Extension');
 
     // Verify tabs rendered in menu
@@ -447,7 +475,10 @@ describe('chrome-options page loading', function() {
     assert.strictEqual(tabCount, 2);
 
     // Verify style tag injected by styles.min.js
-    const styleInjected = await page.$eval('head style', (el) => el.textContent.length > 0);
+    const styleInjected = await page.$eval(
+      'head style',
+      (el) => el.textContent.length > 0,
+    );
     assert.strictEqual(styleInjected, true);
 
     // Verify fields rendered in DOM
@@ -464,20 +495,45 @@ describe('chrome-options page loading', function() {
     assert.ok(hasSelect, 'Select dropdown should be rendered');
 
     // Verify option containers have data-name and data-key attributes
-    const hasNamedCheckbox = await page.$('[data-name="enable_feature"][data-key="general.enable_feature"]');
-    assert.ok(hasNamedCheckbox, 'Checkbox container should have data-name and data-key');
+    const hasNamedCheckbox = await page.$(
+      '[data-name="enable_feature"][data-key="general.enable_feature"]',
+    );
+    assert.ok(
+      hasNamedCheckbox,
+      'Checkbox container should have data-name and data-key',
+    );
 
-    const hasNamedText = await page.$('[data-name="username"][data-key="general.username"]');
-    assert.ok(hasNamedText, 'Text field container should have data-name and data-key');
+    const hasNamedText = await page.$(
+      '[data-name="username"][data-key="general.username"]',
+    );
+    assert.ok(
+      hasNamedText,
+      'Text field container should have data-name and data-key',
+    );
 
-    const hasNamedColor = await page.$('[data-name="theme"][data-key="general.theme"]');
-    assert.ok(hasNamedColor, 'Color field container should have data-name and data-key');
+    const hasNamedColor = await page.$(
+      '[data-name="theme"][data-key="general.theme"]',
+    );
+    assert.ok(
+      hasNamedColor,
+      'Color field container should have data-name and data-key',
+    );
 
-    const hasNamedList = await page.$('[data-name="todo_list"][data-key="general.todo_list"]');
-    assert.ok(hasNamedList, 'List container should have data-name and data-key');
+    const hasNamedList = await page.$(
+      '[data-name="todo_list"][data-key="general.todo_list"]',
+    );
+    assert.ok(
+      hasNamedList,
+      'List container should have data-name and data-key',
+    );
 
-    const hasNestedObjectField = await page.$('[data-name="bio"][data-key="general.profile.bio"]');
-    assert.ok(hasNestedObjectField, 'Nested object field container should have data-name and full data-key');
+    const hasNestedObjectField = await page.$(
+      '[data-name="bio"][data-key="general.profile.bio"]',
+    );
+    assert.ok(
+      hasNestedObjectField,
+      'Nested object field container should have data-name and full data-key',
+    );
   });
 
   it('loads single-page options layout with no console or runtime errors', async () => {
@@ -486,19 +542,24 @@ describe('chrome-options page loading', function() {
     assert.strictEqual(
       pageErrors.length,
       0,
-      `Expected 0 page errors, received:\n${pageErrors.join('\n')}`
+      `Expected 0 page errors, received:\n${pageErrors.join('\n')}`,
     );
     assert.strictEqual(
       consoleErrors.length,
       0,
-      `Expected 0 console errors, received:\n${consoleErrors.join('\n')}`
+      `Expected 0 console errors, received:\n${consoleErrors.join('\n')}`,
     );
 
     const hasCheckbox = await page.$('input[type="checkbox"]');
     assert.ok(hasCheckbox, 'Checkbox should be rendered');
 
-    const hasSingleKey = await page.$('[data-name="simple_toggle"][data-key="simple_toggle"]');
-    assert.ok(hasSingleKey, 'Single page container should have data-name and data-key');
+    const hasSingleKey = await page.$(
+      '[data-name="simple_toggle"][data-key="simple_toggle"]',
+    );
+    assert.ok(
+      hasSingleKey,
+      'Single page container should have data-name and data-key',
+    );
   });
 
   it('saves option changes to chrome.storage.sync without errors', async () => {
@@ -533,7 +594,10 @@ describe('chrome-options page loading', function() {
           keyCountDiff: deepEqual({ a: 1 }, { a: 1, b: 2 }),
           keyNamesDiff: deepEqual({ a: 1 }, { b: 1 }),
           valuesDiff: deepEqual({ a: 1 }, { a: 2 }),
-          nestedMatch: deepEqual({ a: [1, 2], b: { c: 'd' } }, { a: [1, 2], b: { c: 'd' } })
+          nestedMatch: deepEqual(
+            { a: [1, 2], b: { c: 'd' } },
+            { a: [1, 2], b: { c: 'd' } },
+          ),
         };
       });
 
@@ -561,8 +625,14 @@ describe('chrome-options page loading', function() {
         return {
           numCopy: num === 42,
           nullCopy: nullVal === null,
-          arrEqual: deepEqual(originalArr, clonedArr) && originalArr !== clonedArr && originalArr[1] !== clonedArr[1],
-          objEqual: deepEqual(originalObj, clonedObj) && originalObj !== clonedObj && originalObj.y !== clonedObj.y
+          arrEqual:
+            deepEqual(originalArr, clonedArr) &&
+            originalArr !== clonedArr &&
+            originalArr[1] !== clonedArr[1],
+          objEqual:
+            deepEqual(originalObj, clonedObj) &&
+            originalObj !== clonedObj &&
+            originalObj.y !== clonedObj.y,
         };
       });
 
@@ -608,11 +678,20 @@ describe('chrome-options page loading', function() {
         const el5 = h('span#item.active');
 
         return {
-          el1Attr: el1.getAttribute('data-key') === 'custom-val' && el1.id === 'elem-id' && el1.getAttribute('data-mode') === 'auto',
-          el2Class: el2.tagName === 'DIV' && el2.classList.contains('alpha') && el2.classList.contains('beta'),
+          el1Attr:
+            el1.getAttribute('data-key') === 'custom-val' &&
+            el1.id === 'elem-id' &&
+            el1.getAttribute('data-mode') === 'auto',
+          el2Class:
+            el2.tagName === 'DIV' &&
+            el2.classList.contains('alpha') &&
+            el2.classList.contains('beta'),
           el3Id: el3.tagName === 'DIV' && el3.id === 'heading-id',
           el4Div: el4.tagName === 'DIV',
-          el5Span: el5.tagName === 'SPAN' && el5.id === 'item' && el5.classList.contains('active')
+          el5Span:
+            el5.tagName === 'SPAN' &&
+            el5.id === 'item' &&
+            el5.classList.contains('active'),
         };
       });
 
@@ -627,18 +706,21 @@ describe('chrome-options page loading', function() {
         const h = chrome.options.h;
         let wasClicked = false;
         const btn = h('button', {
-          onclick: () => { wasClicked = true; },
+          onclick: () => {
+            wasClicked = true;
+          },
           innerHTML: '<em>Action</em>',
           disabled: false,
-          tabindex: '2'
+          tabindex: '2',
         });
         btn.click();
 
         return {
           wasClicked,
-          hasInnerHTML: btn.querySelector('em') != null && btn.textContent === 'Action',
+          hasInnerHTML:
+            btn.querySelector('em') != null && btn.textContent === 'Action',
           disabledSkipped: !btn.hasAttribute('disabled'),
-          hasTabIndex: btn.getAttribute('tabindex') === '2'
+          hasTabIndex: btn.getAttribute('tabindex') === '2',
         };
       });
 
@@ -665,7 +747,7 @@ describe('chrome-options page loading', function() {
           textMatches: textParent.textContent === 'direct text',
           arrCount: arrParent.children.length === 2,
           nodeMatches: nodeParent.firstElementChild === singleNode,
-          listCount: listParent.childNodes.length === 2
+          listCount: listParent.childNodes.length === 2,
         };
       });
 
@@ -701,7 +783,7 @@ describe('chrome-options page loading', function() {
 
         await new Promise((resolve) => setTimeout(resolve, 50));
         return {
-          horizontalHidden: elHorizontal.style.display === 'none'
+          horizontalHidden: elHorizontal.style.display === 'none',
         };
       });
 
@@ -731,7 +813,9 @@ describe('chrome-options page loading', function() {
 
         dom.showTR(tr1);
         let hideCallbackRan = false;
-        dom.hideTR(tr1, () => { hideCallbackRan = true; });
+        dom.hideTR(tr1, () => {
+          hideCallbackRan = true;
+        });
         dom.hideTR(tr2);
 
         const flashTarget = document.createElement('div');
@@ -743,7 +827,7 @@ describe('chrome-options page loading', function() {
         await new Promise((resolve) => setTimeout(resolve, 600));
         return {
           hideCallbackRan,
-          flashRemoved: !flashTarget.classList.contains('active-flash')
+          flashRemoved: !flashTarget.classList.contains('active-flash'),
         };
       });
 
@@ -766,13 +850,16 @@ describe('chrome-options page loading', function() {
         textField.dispatchEvent(new Event('input', { bubbles: true }));
         textField.dispatchEvent(new Event('change', { bubbles: true }));
 
-        const urlField = chrome.options.fields.url('https://example.com', () => {});
+        const urlField = chrome.options.fields.url(
+          'https://example.com',
+          () => {},
+        );
         document.body.appendChild(urlField);
 
         await new Promise((resolve) => setTimeout(resolve, 600));
         return {
           savedVal,
-          isUrlType: urlField.getAttribute('type') === 'url'
+          isUrlType: urlField.getAttribute('type') === 'url',
         };
       });
 
@@ -783,27 +870,30 @@ describe('chrome-options page loading', function() {
     it('renders select dropdowns with string and key-value options', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
-        let savedStringVal;
-        const strSelect = chrome.options.fields.select('opt2', (val) => {
-          savedStringVal = val;
-        }, { options: ['opt1', 'opt2'] });
+        const strSelect = chrome.options.fields.select('opt2', () => {}, {
+          options: ['opt1', 'opt2'],
+        });
 
         let savedObjVal;
-        const objSelect = chrome.options.fields.select('k1', (val) => {
-          savedObjVal = val;
-        }, {
-          options: [
-            { value: 'k1', desc: 'Label One' },
-            { value: 'k2', desc: 'Label Two' }
-          ]
-        });
+        const objSelect = chrome.options.fields.select(
+          'k1',
+          (val) => {
+            savedObjVal = val;
+          },
+          {
+            options: [
+              { value: 'k1', desc: 'Label One' },
+              { value: 'k2', desc: 'Label Two' },
+            ],
+          },
+        );
 
         objSelect.value = 'k2';
         objSelect.dispatchEvent(new Event('change'));
 
         return {
           strSelected: strSelect.value === 'opt2',
-          savedObjVal
+          savedObjVal,
         };
       });
 
@@ -815,27 +905,36 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
         let savedRadioVal;
-        const radioGroup = chrome.options.fields.radio('a', (val) => {
-          savedRadioVal = val;
-        }, {
-          options: [
-            { value: 'a', desc: 'Option A' },
-            { value: 'b', desc: 'Option B' }
-          ]
-        });
+        const radioGroup = chrome.options.fields.radio(
+          'a',
+          (val) => {
+            savedRadioVal = val;
+          },
+          {
+            options: [
+              { value: 'a', desc: 'Option A' },
+              { value: 'b', desc: 'Option B' },
+            ],
+          },
+        );
         document.body.appendChild(radioGroup);
 
-        const secondRadio = radioGroup.querySelectorAll('input[type="radio"]')[1];
+        const secondRadio = radioGroup.querySelectorAll(
+          'input[type="radio"]',
+        )[1];
         secondRadio.checked = true;
         secondRadio.dispatchEvent(new Event('change', { bubbles: true }));
 
         // string option radio
-        const strRadioGroup = chrome.options.fields.radio('one', () => {}, { options: ['one', 'two'] });
+        const strRadioGroup = chrome.options.fields.radio('one', () => {}, {
+          options: ['one', 'two'],
+        });
         document.body.appendChild(strRadioGroup);
 
         return {
           savedRadioVal,
-          firstSelected: radioGroup.querySelector('input[type="radio"]').value === 'a'
+          firstSelected:
+            radioGroup.querySelector('input[type="radio"]').value === 'a',
         };
       });
 
@@ -846,10 +945,11 @@ describe('chrome-options page loading', function() {
     it('renders and interacts with color fields across color formats and reset options', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
-        let savedColor;
-        const colorContainer = chrome.options.fields.color('#336699', (val) => {
-          savedColor = val;
-        }, { format: 'hex', default: '#112233' });
+        const colorContainer = chrome.options.fields.color(
+          '#336699',
+          () => {},
+          { format: 'hex', default: '#112233' },
+        );
         document.body.appendChild(colorContainer);
 
         // Click color-box to open picker
@@ -863,12 +963,36 @@ describe('chrome-options page loading', function() {
         }
 
         // Test format rgba, rgb, hsl, hsla
-        const rgbaContainer = chrome.options.fields.color('rgba(10, 20, 30, 0.5)', () => {}, { format: 'rgba' });
-        const rgbContainer = chrome.options.fields.color('rgb(10, 20, 30)', () => {}, { format: 'rgb' });
-        const hslContainer = chrome.options.fields.color('hsl(120, 50%, 50%)', () => {}, { format: 'hsl' });
-        const hslaContainer = chrome.options.fields.color('hsla(120, 50%, 50%, 0.8)', () => {}, { format: 'hsla' });
-        const emptyColorContainer = chrome.options.fields.color('', () => {}, {});
-        const nullAlphaColorContainer = chrome.options.fields.color(null, () => {}, { format: 'rgba' });
+        const rgbaContainer = chrome.options.fields.color(
+          'rgba(10, 20, 30, 0.5)',
+          () => {},
+          { format: 'rgba' },
+        );
+        const rgbContainer = chrome.options.fields.color(
+          'rgb(10, 20, 30)',
+          () => {},
+          { format: 'rgb' },
+        );
+        const hslContainer = chrome.options.fields.color(
+          'hsl(120, 50%, 50%)',
+          () => {},
+          { format: 'hsl' },
+        );
+        const hslaContainer = chrome.options.fields.color(
+          'hsla(120, 50%, 50%, 0.8)',
+          () => {},
+          { format: 'hsla' },
+        );
+        const emptyColorContainer = chrome.options.fields.color(
+          '',
+          () => {},
+          {},
+        );
+        const nullAlphaColorContainer = chrome.options.fields.color(
+          null,
+          () => {},
+          { format: 'rgba' },
+        );
 
         document.body.appendChild(rgbaContainer);
         document.body.appendChild(rgbContainer);
@@ -896,7 +1020,7 @@ describe('chrome-options page loading', function() {
 
         await new Promise((resolve) => setTimeout(resolve, 600));
 
-        if (window.CP && window.CP.__instance__) {
+        if (window.CP?.__instance__) {
           for (const p of Object.values(window.CP.__instance__)) {
             if (p.fire) p.fire('change', [p.set()]);
           }
@@ -910,8 +1034,12 @@ describe('chrome-options page loading', function() {
         }
 
         return {
-          hasContainers: !!rgbaContainer && !!rgbContainer && !!hslContainer && !!hslaContainer,
-          threwUnsupported
+          hasContainers:
+            !!rgbaContainer &&
+            !!rgbContainer &&
+            !!hslContainer &&
+            !!hslaContainer,
+          threwUnsupported,
         };
       });
 
@@ -923,9 +1051,13 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
         let savedSound;
-        const noSoundContainer = chrome.options.fields.predefined_sound('', (val) => {
-          savedSound = val;
-        }, { allowNoSound: true });
+        const noSoundContainer = chrome.options.fields.predefined_sound(
+          '',
+          (val) => {
+            savedSound = val;
+          },
+          { allowNoSound: true },
+        );
         document.body.appendChild(noSoundContainer);
 
         const playBtn = noSoundContainer.querySelector('.play');
@@ -942,13 +1074,18 @@ describe('chrome-options page loading', function() {
         playBtn.click();
 
         // Without allowNoSound option
-        const standardContainer = chrome.options.fields.predefined_sound(null, () => {}, {});
+        const standardContainer = chrome.options.fields.predefined_sound(
+          null,
+          () => {},
+          {},
+        );
         document.body.appendChild(standardContainer);
 
         return {
           initiallyDisabled,
           savedSound,
-          hasStandardSelect: standardContainer.querySelector('select').value === 'Basso'
+          hasStandardSelect:
+            standardContainer.querySelector('select').value === 'Basso',
         };
       });
 
@@ -961,9 +1098,12 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
         let savedVal;
-        const soundContainer = chrome.options.fields.custom_sound('/sounds/Basso.wav', (val) => {
-          savedVal = val;
-        });
+        const soundContainer = chrome.options.fields.custom_sound(
+          '/sounds/Basso.wav',
+          (val) => {
+            savedVal = val;
+          },
+        );
         document.body.appendChild(soundContainer);
 
         const input = soundContainer.querySelector('input');
@@ -971,7 +1111,11 @@ describe('chrome-options page loading', function() {
         input.dispatchEvent(new Event('input', { bubbles: true }));
 
         // Press Enter key to trigger play
-        const enterEvent = new KeyboardEvent('keypress', { keyCode: 13, which: 13, bubbles: true });
+        const enterEvent = new KeyboardEvent('keypress', {
+          keyCode: 13,
+          which: 13,
+          bubbles: true,
+        });
         input.dispatchEvent(enterEvent);
 
         // Click play button
@@ -983,7 +1127,7 @@ describe('chrome-options page loading', function() {
         return {
           hasPlayBtn: !!playBtn,
           hasInput: !!input,
-          savedVal
+          savedVal,
         };
       });
 
@@ -1005,13 +1149,13 @@ describe('chrome-options page loading', function() {
         const changeEvent = new Event('change', { bubbles: true });
         Object.defineProperty(changeEvent, 'target', {
           value: { files: mockFileList },
-          writable: false
+          writable: false,
         });
         fileInput.dispatchEvent(changeEvent);
 
         return {
           hasFileAttribute: fileInput.getAttribute('type') === 'file',
-          savedFilesCount: savedFiles ? savedFiles.length : 0
+          savedFilesCount: savedFiles ? savedFiles.length : 0,
         };
       });
 
@@ -1024,28 +1168,47 @@ describe('chrome-options page loading', function() {
     it('supports hidden, disabled, and preview option attributes', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
-        const optHidden = chrome.options.addOption('hidden_opt', true, () => {}, {
-          name: 'hidden_opt',
-          type: 'checkbox',
-          hidden: true
-        });
-        const optDisabled = chrome.options.addOption('disabled_opt', 'val', () => {}, {
-          name: 'disabled_opt',
-          type: 'text',
-          disabled: true
-        });
-        const optPreview = chrome.options.addOption('preview_opt', true, () => {}, {
-          name: 'preview_opt',
-          type: 'checkbox',
-          preview: 'png'
-        });
+        const optHidden = chrome.options.addOption(
+          'hidden_opt',
+          true,
+          () => {},
+          {
+            name: 'hidden_opt',
+            type: 'checkbox',
+            hidden: true,
+          },
+        );
+        const optDisabled = chrome.options.addOption(
+          'disabled_opt',
+          'val',
+          () => {},
+          {
+            name: 'disabled_opt',
+            type: 'text',
+            disabled: true,
+          },
+        );
+        const optPreview = chrome.options.addOption(
+          'preview_opt',
+          true,
+          () => {},
+          {
+            name: 'preview_opt',
+            type: 'checkbox',
+            preview: 'png',
+          },
+        );
 
         document.body.append(optHidden, optDisabled, optPreview);
 
         return {
           isHidden: optHidden.classList.contains('hidden'),
-          isDisabled: optDisabled.classList.contains('disabled') && optDisabled.querySelector('input').disabled,
-          hasPreview: !!optPreview.querySelector('.preview-container') && !!optPreview.querySelector('img.preview-image')
+          isDisabled:
+            optDisabled.classList.contains('disabled') &&
+            optDisabled.querySelector('input').disabled,
+          hasPreview:
+            !!optPreview.querySelector('.preview-container') &&
+            !!optPreview.querySelector('img.preview-image'),
         };
       });
 
@@ -1058,19 +1221,24 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
         let savedParent;
-        const parentOpt = chrome.options.addOption('parent_feature', { enabled: true, sub_opt: 'text' }, (v) => {
-          savedParent = v;
-        }, {
-          name: 'parent_feature',
-          type: 'checkbox',
-          options: [
-            { name: 'sub_opt', type: 'text' }
-          ]
-        });
+        const parentOpt = chrome.options.addOption(
+          'parent_feature',
+          { enabled: true, sub_opt: 'text' },
+          (v) => {
+            savedParent = v;
+          },
+          {
+            name: 'parent_feature',
+            type: 'checkbox',
+            options: [{ name: 'sub_opt', type: 'text' }],
+          },
+        );
         document.body.appendChild(parentOpt);
 
         const triangle = parentOpt.querySelector('.triangle');
-        const parentCheckbox = parentOpt.querySelector('input[type="checkbox"]');
+        const parentCheckbox = parentOpt.querySelector(
+          'input[type="checkbox"]',
+        );
 
         // Click triangle to toggle collapse and expand
         triangle.click();
@@ -1091,7 +1259,7 @@ describe('chrome-options page loading', function() {
           collapsedText,
           expandedText,
           uncheckSaved,
-          recheckSaved
+          recheckSaved,
         };
       });
 
@@ -1105,15 +1273,20 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
         let savedCombo;
-        const comboOpt = chrome.options.addOption('combo_setting', null, (v) => {
-          savedCombo = v;
-        }, {
-          name: 'combo_setting',
-          type: 'checkbox-text',
-          defaultEnabled: true,
-          defaultValue: 'initial-val',
-          desc: 'Combined description'
-        });
+        const comboOpt = chrome.options.addOption(
+          'combo_setting',
+          null,
+          (v) => {
+            savedCombo = v;
+          },
+          {
+            name: 'combo_setting',
+            type: 'checkbox-text',
+            defaultEnabled: true,
+            defaultValue: 'initial-val',
+            desc: 'Combined description',
+          },
+        );
         document.body.appendChild(comboOpt);
 
         const chk = comboOpt.querySelector('input[type="checkbox"]');
@@ -1131,7 +1304,7 @@ describe('chrome-options page loading', function() {
         return {
           hasLabel: !!comboOpt.querySelector('label'),
           enabledUpdated: savedCombo && savedCombo.enabled === false,
-          valueUpdated: savedCombo && savedCombo.value === 'updated-val'
+          valueUpdated: savedCombo && savedCombo.value === 'updated-val',
         };
       });
 
@@ -1143,39 +1316,55 @@ describe('chrome-options page loading', function() {
     it('supports object, column, row, h3, and html option layouts', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
-        const colOpt = chrome.options.addOption('col_layout', { c1: 'a', c2: 'b' }, () => {}, {
-          type: 'column',
-          options: [
-            { name: 'c1', type: 'text' },
-            { name: 'c2', type: 'text' }
-          ]
-        });
-        const rowOpt = chrome.options.addOption('row_layout', { r1: 'x' }, () => {}, {
-          type: 'row',
-          options: [
-            { name: 'r1', type: 'text' }
-          ]
-        });
-        let objSaved = false;
-        const objOpt = chrome.options.addOption('obj_layout', { o1: 'y' }, () => { objSaved = true; }, {
-          type: 'object',
-          desc: 'Object Section',
-          options: [
-            { name: 'o1', type: 'text' }
-          ]
-        });
+        const colOpt = chrome.options.addOption(
+          'col_layout',
+          { c1: 'a', c2: 'b' },
+          () => {},
+          {
+            type: 'column',
+            options: [
+              { name: 'c1', type: 'text' },
+              { name: 'c2', type: 'text' },
+            ],
+          },
+        );
+        const rowOpt = chrome.options.addOption(
+          'row_layout',
+          { r1: 'x' },
+          () => {},
+          {
+            type: 'row',
+            options: [{ name: 'r1', type: 'text' }],
+          },
+        );
+
+        const objOpt = chrome.options.addOption(
+          'obj_layout',
+          { o1: 'y' },
+          () => {},
+          {
+            type: 'object',
+            desc: 'Object Section',
+            options: [{ name: 'o1', type: 'text' }],
+          },
+        );
         const objInput = objOpt.querySelector('input');
         objInput.value = 'updated_obj';
         objInput.dispatchEvent(new Event('input', { bubbles: true }));
         objInput.dispatchEvent(new Event('change', { bubbles: true }));
         const h3Opt = chrome.options.addOption('h3_layout', null, () => {}, {
           type: 'h3',
-          desc: 'Header Section'
+          desc: 'Header Section',
         });
-        const htmlOpt = chrome.options.addOption('html_layout', null, () => {}, {
-          type: 'html',
-          html: '<strong>Custom content</strong>'
-        });
+        const htmlOpt = chrome.options.addOption(
+          'html_layout',
+          null,
+          () => {},
+          {
+            type: 'html',
+            html: '<strong>Custom content</strong>',
+          },
+        );
 
         document.body.append(colOpt, rowOpt, objOpt, h3Opt, htmlOpt);
 
@@ -1183,8 +1372,9 @@ describe('chrome-options page loading', function() {
           isColumn: colOpt.classList.contains('column'),
           isRow: rowOpt.classList.contains('row'),
           isObject: objOpt.classList.contains('object'),
-          isH3: h3Opt.tagName === 'H3' && h3Opt.textContent === 'Header Section',
-          isHtml: htmlOpt.querySelector('strong') != null
+          isH3:
+            h3Opt.tagName === 'H3' && h3Opt.textContent === 'Header Section',
+          isHtml: htmlOpt.querySelector('strong') != null,
         };
       });
 
@@ -1198,13 +1388,15 @@ describe('chrome-options page loading', function() {
     it('manages single-field lists and multi-column lists with row addition, deletion, and filtering', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
-        let savedSingleList;
-        const singleList = chrome.options.addOption('tag_list', ['tag-a'], (v) => {
-          savedSingleList = v;
-        }, {
-          name: 'tag_list',
-          type: 'text-list'
-        });
+        const singleList = chrome.options.addOption(
+          'tag_list',
+          ['tag-a'],
+          () => {},
+          {
+            name: 'tag_list',
+            type: 'text-list',
+          },
+        );
         document.body.appendChild(singleList);
 
         // Edit last row in single list to add a new row
@@ -1213,34 +1405,44 @@ describe('chrome-options page loading', function() {
         lastInput.dispatchEvent(new Event('input', { bubbles: true }));
 
         // Multi-column list with collapsible header, column binding, and unique select
-        let savedMultiList;
-        const multiList = chrome.options.base.list([
-          { action: 'notify', details: 'email', priority: 'high' }
-        ], (v) => {
-          savedMultiList = v;
-        }, {
-          desc: 'Rule Table',
-          collapsible: true,
-          head: true,
-          sortable: true,
-          first: [
-            { name: 'action', type: 'select', options: [{ value: 'notify', desc: 'Notify' }] },
-            { name: 'details', type: 'text' }
-          ],
-          fields: [
-            {
-              name: 'action',
-              type: 'select',
-              options: [
-                { value: 'notify', desc: 'Notify', unique: true },
-                { value: 'log', desc: 'Log', unique: true }
-              ]
-            },
-            { name: 'details', type: 'text', bindTo: { field: 'action', value: 'notify' }, required: true },
-            { name: 'priority', type: 'select', options: ['low', 'high'] }
-          ],
-          filter: (row) => row.action !== 'skip'
-        }, 'rule_list');
+
+        const multiList = chrome.options.base.list(
+          [{ action: 'notify', details: 'email', priority: 'high' }],
+          () => {},
+          {
+            desc: 'Rule Table',
+            collapsible: true,
+            head: true,
+            sortable: true,
+            first: [
+              {
+                name: 'action',
+                type: 'select',
+                options: [{ value: 'notify', desc: 'Notify' }],
+              },
+              { name: 'details', type: 'text' },
+            ],
+            fields: [
+              {
+                name: 'action',
+                type: 'select',
+                options: [
+                  { value: 'notify', desc: 'Notify', unique: true },
+                  { value: 'log', desc: 'Log', unique: true },
+                ],
+              },
+              {
+                name: 'details',
+                type: 'text',
+                bindTo: { field: 'action', value: 'notify' },
+                required: true,
+              },
+              { name: 'priority', type: 'select', options: ['low', 'high'] },
+            ],
+            filter: (row) => row.action !== 'skip',
+          },
+          'rule_list',
+        );
         document.body.appendChild(multiList);
 
         // Click collapsible triangle in multi list
@@ -1260,7 +1462,7 @@ describe('chrome-options page loading', function() {
 
         return {
           hasSingleTable: !!singleList.querySelector('table'),
-          hasMultiTable: !!multiList.querySelector('table')
+          hasMultiTable: !!multiList.querySelector('table'),
         };
       });
 
@@ -1271,18 +1473,15 @@ describe('chrome-options page loading', function() {
     it('validates field input and rejects invalid submissions', async () => {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(() => {
-        let savedVal;
-        chrome.options.fields.test_validate = (val, cb) => {
+        chrome.options.fields.test_validate = (_val, cb) => {
           return chrome.options.h('input', {
-            oninput: (e) => cb(e.target.value, e)
+            oninput: (e) => cb(e.target.value, e),
           });
         };
-        const field = chrome.options.addField('valid', (val) => {
-          savedVal = val;
-        }, {
+        const field = chrome.options.addField('valid', () => {}, {
           type: 'test_validate',
           validate: (val) => val.length >= 4,
-          desc: 'Validating field'
+          desc: 'Validating field',
         });
         document.body.appendChild(field);
 
@@ -1296,7 +1495,7 @@ describe('chrome-options page loading', function() {
 
         // Test event timestamp ordering (older timestamp returns early)
         let callCount = 0;
-        chrome.options.fields.test_time = (val, cb) => {
+        chrome.options.fields.test_time = (_val, cb) => {
           const el = document.createElement('div');
           el.triggerEvents = () => {
             cb('first', { timeStamp: 200 });
@@ -1304,14 +1503,20 @@ describe('chrome-options page loading', function() {
           };
           return el;
         };
-        const timeField = chrome.options.addField('initial', () => { callCount++; }, { type: 'test_time' });
+        const timeField = chrome.options.addField(
+          'initial',
+          () => {
+            callCount++;
+          },
+          { type: 'test_time' },
+        );
         timeField.triggerEvents();
         const olderIgnored = callCount === 1;
 
         return {
           hasInvalidClass,
           removedInvalidClass,
-          olderIgnored
+          olderIgnored,
         };
       });
 
@@ -1325,14 +1530,21 @@ describe('chrome-options page loading', function() {
       const result = await page.evaluate(() => {
         let threwMain = false;
         try {
-          chrome.options.addOption('bad', null, () => {}, { type: 'nonexistent_option_type' });
+          chrome.options.addOption('bad', null, () => {}, {
+            type: 'nonexistent_option_type',
+          });
         } catch (e) {
           threwMain = e.message.includes('Could not find option type');
         }
 
         let threwCheckbox = false;
         try {
-          chrome.options.base.checkboxNField({}, () => {}, {}, 'nonexistent_subfield');
+          chrome.options.base.checkboxNField(
+            {},
+            () => {},
+            {},
+            'nonexistent_subfield',
+          );
         } catch (e) {
           threwCheckbox = e.message.includes('Could not find option type');
         }
@@ -1350,12 +1562,12 @@ describe('chrome-options page loading', function() {
       await page.goto(`${serverUrl}/tabs.html`, { waitUntil: 'networkidle0' });
       const result = await page.evaluate(async () => {
         chrome.options.opts.autoSave = false;
-        let savedPayload;
-        window.chrome.storage.sync.set = (obj) => { savedPayload = obj; };
+
+        window.chrome.storage.sync.set = () => {};
 
         // Add a tab with autoSave false
         chrome.options.addTab('Manual', [
-          { name: 'manual_chk', type: 'checkbox', default: true }
+          { name: 'manual_chk', type: 'checkbox', default: true },
         ]);
 
         await new Promise((resolve) => setTimeout(resolve, 150));
@@ -1389,7 +1601,7 @@ describe('chrome-options page loading', function() {
           initialDisabled,
           enabledAfterChange,
           disabledAfterRevert,
-          hasSaveBtn: !!saveBtn
+          hasSaveBtn: !!saveBtn,
         };
       });
 
@@ -1405,7 +1617,9 @@ describe('chrome-options page loading', function() {
         const aboutLink = document.querySelector('.menu.about a');
         aboutLink.click();
         await new Promise((resolve) => setTimeout(resolve, 150));
-        const aboutActive = document.querySelector('#about').classList.contains('selected');
+        const aboutActive = document
+          .querySelector('#about')
+          .classList.contains('selected');
 
         const generalLink = document.querySelector('#main-menu a');
         if (generalLink) {
@@ -1425,7 +1639,7 @@ describe('chrome-options page loading', function() {
         chrome.options.opts.autoSave = false;
         chrome.options.addTab('MultiManual', [
           { name: 'm_opt1', type: 'checkbox', default: true },
-          { name: 'm_opt2', type: 'checkbox', default: true }
+          { name: 'm_opt2', type: 'checkbox', default: true },
         ]);
 
         await new Promise((resolve) => setTimeout(resolve, 150));
@@ -1458,19 +1672,23 @@ describe('chrome-options page loading', function() {
     });
 
     it('falls back gracefully when manifest metadata or title/about options are omitted', async () => {
-      await page.goto(`${serverUrl}/fallback.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/fallback.html`, {
+        waitUntil: 'networkidle0',
+      });
 
       const result = await page.evaluate(() => {
         const titleText = document.querySelector('title').textContent;
         const hasShowTitle = document.body.classList.contains('show-title');
-        const aboutText = document.querySelector('#about .content > p').textContent;
+        const aboutText = document.querySelector(
+          '#about .content > p',
+        ).textContent;
         const openInTab = document.body.classList.contains('open-in-tab');
 
         return {
           titleMatches: titleText === 'chrome options',
           titleHidden: !hasShowTitle,
           aboutMatches: aboutText === 'Manifest fallback description',
-          notOpenInTab: !openInTab
+          notOpenInTab: !openInTab,
         };
       });
 
@@ -1483,14 +1701,13 @@ describe('chrome-options page loading', function() {
     it('applies URL query parameters to toggle navigation elements and filters options by URL hash', async () => {
       await page.goto(
         `${serverUrl}/params.html?hideTitle&hideAbout&hideSidebar&hideTabTitle&hideTabDesc#filtered.target_opt`,
-        { waitUntil: 'networkidle0' }
+        { waitUntil: 'networkidle0' },
       );
 
       const result = await page.evaluate(() => {
         const bodyClass = document.body.className;
         const targetOpt = document.querySelector('[data-name="target_opt"]');
         const otherOpt = document.querySelector('[data-name="other_opt"]');
-        const rowOpt = document.querySelector('[data-name="row_opt"]');
 
         return {
           hidesTitle: !bodyClass.includes('show-title'),
@@ -1499,7 +1716,7 @@ describe('chrome-options page loading', function() {
           hidesTabTitle: !bodyClass.includes('show-tab-title'),
           hidesTabDesc: !bodyClass.includes('show-tab-desc'),
           targetRendered: !!targetOpt,
-          otherFilteredOut: !otherOpt
+          otherFilteredOut: !otherOpt,
         };
       });
 
@@ -1513,13 +1730,15 @@ describe('chrome-options page loading', function() {
     });
 
     it('configures initial manual save mode when autoSave is disabled at setup', async () => {
-      await page.goto(`${serverUrl}/manual.html`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/manual.html`, {
+        waitUntil: 'networkidle0',
+      });
       const result = await page.evaluate(() => {
         const autoSpan = document.querySelector('.save-container .auto');
         const saveContainer = document.querySelector('.save-container');
         return {
           autoHidden: autoSpan.style.display === 'none',
-          containerShown: saveContainer.classList.contains('show')
+          containerShown: saveContainer.classList.contains('show'),
         };
       });
       assert.strictEqual(result.autoHidden, true);
@@ -1527,7 +1746,9 @@ describe('chrome-options page loading', function() {
     });
 
     it('filters options by hash on single-page layouts where tabKey is empty', async () => {
-      await page.goto(`${serverUrl}/single.html#simple_toggle`, { waitUntil: 'networkidle0' });
+      await page.goto(`${serverUrl}/single.html#simple_toggle`, {
+        waitUntil: 'networkidle0',
+      });
       const result = await page.evaluate(() => {
         const toggle = document.querySelector('[data-name="simple_toggle"]');
         return { hasToggle: !!toggle };
@@ -1543,29 +1764,44 @@ describe('chrome-options page loading', function() {
         // 1. Initial empty list with first option
         const emptyList = chrome.options.base.list([], () => {}, {
           first: [{ name: 'f1', type: 'text' }],
-          fields: [{ name: 'f1', type: 'text' }]
+          fields: [{ name: 'f1', type: 'text' }],
         });
         document.body.appendChild(emptyList);
-        const hasInitialFirstRow = emptyList.querySelectorAll('tbody tr').length > 0;
+        const hasInitialFirstRow =
+          emptyList.querySelectorAll('tbody tr').length > 0;
 
         // 2. Bound columns with consecutive bindTo fields sharing the column header
         // Start with mode: 'c' so initially shown is false and checkColumns(true) hides $head with display = 'none'
-        let boundSaved;
-        const boundTable = chrome.options.base.list([
-          { mode: 'c', choice: 'r1', optA: 'valA', optB: '' },
-          { mode: 'c', choice: 'r2', optA: '', optB: '' }
-        ], (v) => { boundSaved = v; }, {
-          head: true,
-          sortable: true,
-          fields: [
-            { name: 'mode', type: 'select', options: ['c', 'a', 'b'] },
-            { name: 'choice', type: 'radio', options: ['r1', 'r2'] },
-            { name: 'optA', type: 'text', desc: 'Combined Header', bindTo: { field: 'mode', value: ['a', 'b'] } },
-            { name: 'optB', type: 'text', desc: 'Combined Header', bindTo: { field: 'mode', value: ['a', 'b'] } },
-            { name: 'reqField', type: 'text', required: true }
+
+        const boundTable = chrome.options.base.list(
+          [
+            { mode: 'c', choice: 'r1', optA: 'valA', optB: '' },
+            { mode: 'c', choice: 'r2', optA: '', optB: '' },
           ],
-          filter: (r) => r.mode !== 'none'
-        });
+          () => {},
+          {
+            head: true,
+            sortable: true,
+            fields: [
+              { name: 'mode', type: 'select', options: ['c', 'a', 'b'] },
+              { name: 'choice', type: 'radio', options: ['r1', 'r2'] },
+              {
+                name: 'optA',
+                type: 'text',
+                desc: 'Combined Header',
+                bindTo: { field: 'mode', value: ['a', 'b'] },
+              },
+              {
+                name: 'optB',
+                type: 'text',
+                desc: 'Combined Header',
+                bindTo: { field: 'mode', value: ['a', 'b'] },
+              },
+              { name: 'reqField', type: 'text', required: true },
+            ],
+            filter: (r) => r.mode !== 'none',
+          },
+        );
         document.body.appendChild(boundTable);
 
         // Wait for checkColumns(true) to run on next frame
@@ -1588,14 +1824,16 @@ describe('chrome-options page loading', function() {
         await new Promise((resolve) => setTimeout(resolve, 600));
 
         // Call checkColumns(true) while column header is hidden but row is shown to exercise delay of 0 on init
-        if (boundTable.heads && boundTable.heads.optA && boundTable.checkColumns) {
+        if (boundTable.heads?.optA && boundTable.checkColumns) {
           boundTable.heads.optA.style.display = 'none';
           boundTable.checkColumns(true);
           await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         // Edit the last row to trigger addNewRow(true) with animation
-        const lastInput = boundTable.querySelector('tbody tr:last-child input[type="text"]');
+        const lastInput = boundTable.querySelector(
+          'tbody tr:last-child input[type="text"]',
+        );
         if (lastInput) {
           lastInput.value = 'new row';
           lastInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1603,9 +1841,12 @@ describe('chrome-options page loading', function() {
         }
 
         // Delete an existing row from the initial list (triggers lines 339-341)
-        const firstDelete = boundTable.querySelector('tbody tr:first-child .delete');
+        const firstDelete = boundTable.querySelector(
+          'tbody tr:first-child .delete',
+        );
         if (firstDelete) {
           firstDelete.click();
+          await new Promise((resolve) => setTimeout(resolve, 550));
         }
 
         // 3. Test dragula integration methods on sortable table
@@ -1623,8 +1864,10 @@ describe('chrome-options page loading', function() {
           // Test accepts
           const siblingWithMirror = document.createElement('tr');
           siblingWithMirror.className = 'gu-mirror';
-          const rejectsGuMirror = drake.accepts(trs[0], tbody, tbody, siblingWithMirror) === false;
-          const acceptsNormal = drake.accepts(trs[0], tbody, tbody, trs[1]) === true;
+          const rejectsGuMirror =
+            drake.accepts(trs[0], tbody, tbody, siblingWithMirror) === false;
+          const acceptsNormal =
+            drake.accepts(trs[0], tbody, tbody, trs[1]) === true;
           acceptsFilterPassed = rejectsGuMirror && acceptsNormal;
 
           // Emit cloned with matching clone mirror containing checked radio
@@ -1632,7 +1875,7 @@ describe('chrome-options page loading', function() {
           drake.emit('cloned', mirror, trs[0]);
 
           const mirrorRadio = mirror.querySelector('input[type="radio"]');
-          if (mirrorRadio && mirrorRadio.getAttribute('name').endsWith('_')) {
+          if (mirrorRadio?.getAttribute('name').endsWith('_')) {
             mirrorRadioRenamed = true;
           }
 
@@ -1644,14 +1887,19 @@ describe('chrome-options page loading', function() {
         // 4. Test saveDefaults on checkbox with sub-options
         let defaultSavedVal;
         chrome.options.opts.saveDefaults = true;
-        chrome.options.addOption('def_test', undefined, (v) => {
-          defaultSavedVal = v;
-        }, {
-          name: 'def_test',
-          type: 'checkbox',
-          default: true,
-          options: [{ name: 'sub_def', type: 'text' }]
-        });
+        chrome.options.addOption(
+          'def_test',
+          undefined,
+          (v) => {
+            defaultSavedVal = v;
+          },
+          {
+            name: 'def_test',
+            type: 'checkbox',
+            default: true,
+            options: [{ name: 'sub_def', type: 'text' }],
+          },
+        );
 
         await new Promise((resolve) => setTimeout(resolve, 350));
 
@@ -1660,7 +1908,8 @@ describe('chrome-options page loading', function() {
           drakeTested,
           acceptsFilterPassed,
           mirrorRadioRenamed,
-          defaultSavedEnabled: defaultSavedVal && defaultSavedVal.enabled === true
+          defaultSavedEnabled:
+            defaultSavedVal && defaultSavedVal.enabled === true,
         };
       });
 
@@ -1676,11 +1925,16 @@ describe('chrome-options page loading', function() {
       const result = await page.evaluate(async () => {
         // Single field list save (line 447: values = newValue)
         let savedSingle;
-        const single = chrome.options.base.singleFieldList(['initial_val'], (v) => {
-          savedSingle = v;
-        }, {
-          fields: [{ type: 'text' }]
-        }, 'text');
+        const single = chrome.options.base.singleFieldList(
+          ['initial_val'],
+          (v) => {
+            savedSingle = v;
+          },
+          {
+            fields: [{ type: 'text' }],
+          },
+          'text',
+        );
         document.body.appendChild(single);
 
         const singleInput = single.querySelector('tbody tr input');
@@ -1688,49 +1942,61 @@ describe('chrome-options page loading', function() {
         singleInput.dispatchEvent(new Event('change', { bubbles: true }));
 
         // List row with type column and row (lines 518-521)
-        let layoutSaved;
-        const layoutList = chrome.options.base.list([
-          { col_val: 'c1', row_val: 'r1' }
-        ], (v) => { layoutSaved = v; }, {
-          fields: [
-            {
-              type: 'column',
-              options: [{ name: 'col_val', type: 'text' }]
-            },
-            {
-              type: 'row',
-              options: [{ name: 'row_val', type: 'text' }]
-            }
-          ]
-        });
+
+        const layoutList = chrome.options.base.list(
+          [{ col_val: 'c1', row_val: 'r1' }],
+          () => {},
+          {
+            fields: [
+              {
+                type: 'column',
+                options: [{ name: 'col_val', type: 'text' }],
+              },
+              {
+                type: 'row',
+                options: [{ name: 'row_val', type: 'text' }],
+              },
+            ],
+          },
+        );
         document.body.appendChild(layoutList);
 
         // Unknown type in list row (line 523)
         let threwInvalidListField = false;
         try {
           chrome.options.base.list([], () => {}, {
-            fields: [{ type: 'invalid_field_xyz' }]
+            fields: [{ type: 'invalid_field_xyz' }],
           });
         } catch (e) {
-          threwInvalidListField = e.message.includes('Could not find option type: invalid_field_xyz');
+          threwInvalidListField = e.message.includes(
+            'Could not find option type: invalid_field_xyz',
+          );
         }
 
         // Option without type defaulting to checkbox (line 58)
-        let noTypeSaved;
-        const noTypeContainer = chrome.options.addOption('no_type_field', false, (v) => {
-          noTypeSaved = v;
-        }, { name: 'no_type_field' });
+
+        const noTypeContainer = chrome.options.addOption(
+          'no_type_field',
+          false,
+          () => {},
+          { name: 'no_type_field' },
+        );
         document.body.appendChild(noTypeContainer);
 
         // Suboption change propagating to parent save callback (lines 213-214)
         let subSaved;
-        const objOption = chrome.options.addOption('nested_parent', { sub_item: 'a' }, (v) => {
-          subSaved = v;
-        }, {
-          name: 'nested_parent',
-          type: 'object',
-          options: [{ name: 'sub_item', type: 'text' }]
-        });
+        const objOption = chrome.options.addOption(
+          'nested_parent',
+          { sub_item: 'a' },
+          (v) => {
+            subSaved = v;
+          },
+          {
+            name: 'nested_parent',
+            type: 'object',
+            options: [{ name: 'sub_item', type: 'text' }],
+          },
+        );
         document.body.appendChild(objOption);
 
         const subInput = objOption.querySelector('.suboptions input');
@@ -1738,30 +2004,34 @@ describe('chrome-options page loading', function() {
         subInput.dispatchEvent(new Event('change', { bubbles: true }));
 
         // List with unique select options and animated bound column reveal (lines 487-493, 544-546)
-        let animSaved;
-        const animTable = chrome.options.base.list([
-          { mode: 'x', bound_col: 'val 1' }
-        ], (v) => { animSaved = v; }, {
-          fields: [
-            {
-              name: 'mode',
-              type: 'select',
-              options: [
-                { value: 'x', desc: 'X', unique: true },
-                { value: 'y', desc: 'Y', unique: true }
-              ]
-            },
-            {
-              name: 'bound_col',
-              type: 'text',
-              bindTo: { field: 'mode', value: 'x' }
-            }
-          ]
-        });
+
+        const animTable = chrome.options.base.list(
+          [{ mode: 'x', bound_col: 'val 1' }],
+          () => {},
+          {
+            fields: [
+              {
+                name: 'mode',
+                type: 'select',
+                options: [
+                  { value: 'x', desc: 'X', unique: true },
+                  { value: 'y', desc: 'Y', unique: true },
+                ],
+              },
+              {
+                name: 'bound_col',
+                type: 'text',
+                bindTo: { field: 'mode', value: 'x' },
+              },
+            ],
+          },
+        );
         document.body.appendChild(animTable);
 
         // Edit the last row to trigger addNewRow(true) with animation
-        const lastAnimInput = animTable.querySelector('tbody tr:last-child input[type="text"]');
+        const lastAnimInput = animTable.querySelector(
+          'tbody tr:last-child input[type="text"]',
+        );
         if (lastAnimInput) {
           lastAnimInput.value = 'trigger new animated row';
           lastAnimInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1771,40 +2041,59 @@ describe('chrome-options page loading', function() {
         await new Promise((resolve) => setTimeout(resolve, 650));
 
         // Singleline option styling (line 223)
-        const singlelineOpt = chrome.options.addLabelNField('val', () => {}, { singleline: true, desc: 'Single Line' });
+        const singlelineOpt = chrome.options.addLabelNField('val', () => {}, {
+          singleline: true,
+          desc: 'Single Line',
+        });
         document.body.appendChild(singlelineOpt);
 
         // Falsy key attribute check (line 74)
-        const falsyKeyOpt = chrome.options.addOption('', 'val', () => {}, { name: 'falsy_key' });
+        const falsyKeyOpt = chrome.options.addOption('', 'val', () => {}, {
+          name: 'falsy_key',
+        });
         document.body.appendChild(falsyKeyOpt);
 
         // Suboption without name in object (line 200)
-        const noNameSubOpt = chrome.options.addOption('obj_noname', {}, () => {}, {
-          name: 'obj_noname',
-          type: 'object',
-          options: [{ type: 'h3', desc: 'Heading Without Name' }]
-        });
+        const noNameSubOpt = chrome.options.addOption(
+          'obj_noname',
+          {},
+          () => {},
+          {
+            name: 'obj_noname',
+            type: 'object',
+            options: [{ type: 'h3', desc: 'Heading Without Name' }],
+          },
+        );
         document.body.appendChild(noNameSubOpt);
 
         // Single field list with row undefined taking field default (line 514)
-        const defaultSingleList = chrome.options.base.list([undefined], () => {}, {
-          fields: [{ type: 'text', default: 'fallback_def' }]
-        });
+        const defaultSingleList = chrome.options.base.list(
+          [undefined],
+          () => {},
+          {
+            fields: [{ type: 'text', default: 'fallback_def' }],
+          },
+        );
         document.body.appendChild(defaultSingleList);
 
         // addField with unsupported type returning undefined (line 607)
-        const missingField = chrome.options.addField('val', () => {}, { type: 'unsupported_type' });
+        const missingField = chrome.options.addField('val', () => {}, {
+          type: 'unsupported_type',
+        });
 
         return {
           savedSingle,
           hasLayoutList: !!layoutList.querySelector('tbody tr'),
           threwInvalidListField,
-          isCheckboxInput: !!noTypeContainer.querySelector('input[type="checkbox"]'),
+          isCheckboxInput: !!noTypeContainer.querySelector(
+            'input[type="checkbox"]',
+          ),
           subSavedMatches: subSaved && subSaved.sub_item === 'b',
           isSingleline: singlelineOpt.classList.contains('singleline'),
           falsyKeyMatches: falsyKeyOpt.getAttribute('data-key') === 'falsy_key',
           hasMissingField: missingField === undefined,
-          defaultSingleVal: defaultSingleList.querySelector('input').value === 'fallback_def'
+          defaultSingleVal:
+            defaultSingleList.querySelector('input').value === 'fallback_def',
         };
       });
 
