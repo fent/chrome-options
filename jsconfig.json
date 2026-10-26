@@ -4,5 +4,5 @@
     "moduleResolution": "node",
     "checkJs": false
   },
-  "include": ["src/**/*", "build.js", "test/**/*", "types/**/*"]
+  "include": ["src/**/*"]
 }

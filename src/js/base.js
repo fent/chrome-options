@@ -1,7 +1,7 @@
 /* global chrome */
 
 import dragula from 'dragula';
-import lightdown from 'lightdown';
+import snarkdown from 'snarkdown';
 import * as dom from './dom.js';
 import h from './hyperscript.js';
 
@@ -12,7 +12,7 @@ chrome.options.fields = {};
 const addH3 = (option) => h('h3', option.desc);
 const addHtml = (option) => h('', { innerHTML: option.html });
 const parseDesc = (desc) => ({
-  innerHTML: lightdown(
+  innerHTML: snarkdown(
     (desc || '').replace(/[<>]/g, (m) => ({ '<': '&lt;', '>': '&gt;' })[m]),
   ),
 });

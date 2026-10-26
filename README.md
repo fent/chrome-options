@@ -68,7 +68,7 @@ Options can all have the following properties,
 
 * `string` - `type` - What type of option this is, more info below. Defaults to "checkbox".
 * `string` - `name` - Required. What to save the key as. Also added as `data-name` and `data-key` attributes to field containers, in case you'd like to style or select it further.
-* `string` - `desc` - Description of option, supports syntax from [lightdown](https://github.com/WebReflection/lightdown), a markdown-like language.
+* `string` - `desc` - Description of option, supports markdown syntax (via [snarkdown](https://github.com/developit/snarkdown)).
 * `string` - `preview` - A preview image. Represents the extension of the image, example "png". If this is used, the image must be placed in a `previews` folder where `options.html` is, and named the name as this option's key, which is its name prepended by tab name if any.
 * `Object` - `default` - Default value.
 * `boolean` - `disabled` - The field can be disabled.
