@@ -2,7 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const v8toIstanbul = require('v8-to-istanbul');
 const { createCoverageMap } = require('istanbul-lib-coverage');
 
@@ -342,7 +342,6 @@ describe('chrome-options page loading', function () {
     const executablePath =
       process.env.CHROME_BIN || process.env.PUPPETEER_EXECUTABLE_PATH;
     browser = await puppeteer.launch({
-      channel: executablePath ? undefined : 'chrome',
       executablePath,
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
