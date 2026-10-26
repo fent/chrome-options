@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert');
 const puppeteer = require('puppeteer-core');
+const v8toIstanbul = require('v8-to-istanbul');
+const { createCoverageMap } = require('istanbul-lib-coverage');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.resolve(ROOT_DIR, 'dist');
@@ -227,6 +229,8 @@ describe('chrome-options page loading', function() {
     });
   });
 
+  const collectedCoverage = [];
+
   after(async () => {
     if (server) {
       try {
@@ -248,6 +252,39 @@ describe('chrome-options page loading', function() {
         }
       } catch (e) {}
     }
+
+    if (collectedCoverage.length > 0) {
+      try {
+        const coverageMap = createCoverageMap({});
+        for (const entry of collectedCoverage) {
+          if (entry.url && entry.url.includes('main.min.js') && entry.rawScriptCoverage) {
+            const filePath = path.join(DIST_DIR, 'main.min.js');
+            const mapPath = path.join(DIST_DIR, 'main.min.js.map');
+            if (fs.existsSync(mapPath)) {
+              const converter = v8toIstanbul(filePath, 0, {
+                source: entry.text,
+                sourceMap: { sourcemap: JSON.parse(fs.readFileSync(mapPath, 'utf8')) }
+              });
+              await converter.load();
+              converter.applyCoverage(entry.rawScriptCoverage.functions);
+              const istanbulData = converter.toIstanbul();
+              for (const [sourcePath, data] of Object.entries(istanbulData)) {
+                if (sourcePath.startsWith(path.join(ROOT_DIR, 'src'))) {
+                  coverageMap.merge({ [sourcePath]: data });
+                }
+              }
+            }
+          }
+        }
+        const nycDir = path.join(ROOT_DIR, '.nyc_output');
+        if (!fs.existsSync(nycDir)) {
+          fs.mkdirSync(nycDir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(nycDir, 'browser-coverage.json'), JSON.stringify(coverageMap.toJSON()));
+      } catch (err) {
+        console.error('Error generating coverage:', err);
+      }
+    }
   });
 
   let page;
@@ -258,6 +295,8 @@ describe('chrome-options page loading', function() {
     page = await browser.newPage();
     consoleErrors = [];
     pageErrors = [];
+
+    await page.coverage.startJSCoverage({ includeRawScriptCoverage: true, resetOnNavigation: false });
 
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -272,6 +311,12 @@ describe('chrome-options page loading', function() {
 
   afterEach(async () => {
     if (page) {
+      try {
+        const pageCoverage = await page.coverage.stopJSCoverage();
+        if (pageCoverage) {
+          collectedCoverage.push(...pageCoverage);
+        }
+      } catch (e) {}
       await page.close();
     }
   });
