@@ -1,4 +1,10 @@
+# chrome-options
+
 Option pages should be simple to create given a structure of your options, ~and look like Chrome's options~.
+
+[![npm](https://img.shields.io/npm/v/chrome-options)](https://www.npmjs.com/package/chrome-options)
+[![Chrome CI](https://github.com/fent/chrome-options/actions/workflows/test.yml/badge.svg)](https://github.com/fent/chrome-options/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/fent/chrome-options/branch/master/graph/badge.svg)](https://codecov.io/gh/fent/chrome-options)
 
 ![example](images/example.png)
 
