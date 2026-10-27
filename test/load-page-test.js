@@ -792,10 +792,14 @@ describe('chrome-options page loading', function () {
         await new Promise((resolve) => setTimeout(resolve, 50));
         return {
           horizontalHidden: elHorizontal.style.display === 'none',
+          standardHeightCleared: elStandard.style.height === '',
+          standardOverflowCleared: elStandard.style.overflow === '',
         };
       });
 
       assert.strictEqual(results.horizontalHidden, true);
+      assert.strictEqual(results.standardHeightCleared, true);
+      assert.strictEqual(results.standardOverflowCleared, true);
     });
 
     it('animates showing and hiding table rows and applies temporary flash highlight classes', async () => {

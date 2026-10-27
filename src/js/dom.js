@@ -12,6 +12,7 @@ export const slideYShow = ($node, ms = animTime) => {
   $node.style.paddingBottom = '';
   $node.style.marginTop = '';
   $node.style.marginBottom = '';
+  $node.style.overflow = 'hidden';
   const height = window.getComputedStyle($node).height;
   const heightInt = parseInt(height, 10);
   $node.style.height = startingHeight;
@@ -19,7 +20,6 @@ export const slideYShow = ($node, ms = animTime) => {
   $node.style.paddingBottom = '0';
   $node.style.marginTop = '0';
   $node.style.marginBottom = '0';
-  $node.style.overflow = 'hidden';
   if (heightInt > window.innerHeight) {
     ms *= heightInt / window.innerHeight;
   }
@@ -35,6 +35,13 @@ export const slideYShow = ($node, ms = animTime) => {
     $node.style.marginTop = '';
     $node.style.marginBottom = '';
   });
+  setTimeout(() => {
+    if ($node.style.height === height) {
+      $node.style.height = '';
+      $node.style.overflow = '';
+      $node.style.transition = '';
+    }
+  }, ms);
 };
 
 export const slideYHide = ($node, ms = animTime) => {
@@ -61,6 +68,11 @@ export const slideYHide = ($node, ms = animTime) => {
     $node.style.paddingBottom = '0';
     $node.style.marginTop = '0';
     $node.style.marginBottom = '0';
+    setTimeout(() => {
+      if ($node.style.height === '0px' || $node.style.height === '0') {
+        $node.style.display = 'none';
+      }
+    }, ms);
   });
 };
 
