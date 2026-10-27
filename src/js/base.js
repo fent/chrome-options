@@ -1,6 +1,5 @@
 /* global chrome */
 
-import dragula from 'dragula';
 import snarkdown from 'snarkdown';
 import * as dom from './dom.js';
 import h from './hyperscript.js';
@@ -465,60 +464,143 @@ chrome.options.base.list = (list, save, options, key) => {
   $tbody.addEventListener('change', onChange);
 
   if (options.sortable) {
-    const dragulaOptions = {
-      moves: (el, _source, handle) => {
-        return (
-          (!options.first || el !== el.parentNode.children[0]) &&
-          handle.classList.contains('sort') &&
-          handle.closest('tbody') === $tbody
-        );
-      },
-      accepts: (_el, _target, _source, sibling) => {
-        return !sibling.classList.contains('gu-mirror');
-      },
-      direction: 'vertical',
-      mirrorContainer: $tbody,
-    };
-    $container.drake = dragula([$tbody], dragulaOptions);
-    $container.drake.moves = dragulaOptions.moves;
-    $container.drake.accepts = dragulaOptions.accepts;
-    $container.drake
-      .on('cloned', ($mirror, $original) => {
-        // Set the mirror's td's to a fixed width since taking a row
-        // out of a table removes its alignments from the
-        // table's columns.
-        const $mirrorTDs = $mirror.querySelectorAll(':scope > td');
-        $original.querySelectorAll(':scope > td').forEach(($td, i) => {
-          $mirrorTDs[i].style.width = `${$td.offsetWidth}px`;
-        });
+    let $dragged = null;
 
-        // Copy the value of the mirror's form elements.
-        // Since `node.cloneNode()` does not do so for some of them.
-        const selection = 'select, input[type=radio]';
-        const $mirrorFields = $mirror.querySelectorAll(selection);
-        $original.querySelectorAll(selection).forEach(($field, i) => {
-          const $node = $mirrorFields[i];
-          $node.value = $field.value;
-          if ($node.checked) {
-            // Change the name of the radio field so that checking the
-            // original element again won't uncheck the mirrored element.
-            $node.setAttribute('name', `${$node.getAttribute('name')}_`);
-            $field.checked = true;
+    $tbody.addEventListener('mousedown', (e) => {
+      const $handle = e.target.closest('.sort');
+      if (!$handle || $handle.closest('tbody') !== $tbody) {
+        return;
+      }
+      const $tr = $handle.closest('tr');
+      if (options.first && $tr === $tbody.children[0]) {
+        return;
+      }
+      if ($tr === $tbody.lastElementChild) {
+        return;
+      }
+      $tr.draggable = true;
+    });
+
+    $tbody.addEventListener('mouseup', () => {
+      if (!$dragged) {
+        const $draggable = $tbody.querySelector('tr[draggable="true"]');
+        if ($draggable) {
+          $draggable.draggable = false;
+        }
+      }
+    });
+
+    $tbody.addEventListener('dragstart', (e) => {
+      const $tr = e.target.closest('tr');
+      if (!$tr || $tr.closest('tbody') !== $tbody || !$tr.draggable) {
+        e.preventDefault();
+        return;
+      }
+      $dragged = $tr;
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', '');
+      }
+      $tr.classList.add('dragging');
+    });
+
+    $tbody.addEventListener('dragover', (e) => {
+      if (!$dragged) {
+        return;
+      }
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'move';
+      }
+      const $target = e.target.closest('tr');
+      if (
+        !$target ||
+        $target === $dragged ||
+        $target.closest('tbody') !== $tbody ||
+        (options.first && $target === $tbody.children[0])
+      ) {
+        return;
+      }
+
+      const rect = $target.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      if ($target === $tbody.lastElementChild && e.clientY >= mid) {
+        return;
+      }
+
+      const $beforeNode = e.clientY < mid ? $target : $target.nextSibling;
+      if (
+        $beforeNode === $dragged ||
+        $beforeNode === $dragged.nextSibling ||
+        (options.first && $beforeNode === $tbody.children[0])
+      ) {
+        return;
+      }
+
+      // Animate shifting rows using FLIP
+      const siblings = Array.from($tbody.children);
+      const prevRects = new Map();
+      for (const row of siblings) {
+        if (row !== $dragged) {
+          prevRects.set(row, row.getBoundingClientRect());
+        }
+      }
+
+      $tbody.insertBefore($dragged, $beforeNode);
+
+      for (const row of siblings) {
+        if (row !== $dragged && prevRects.has(row)) {
+          const prevRect = prevRects.get(row);
+          const currRect = row.getBoundingClientRect();
+          const deltaY = prevRect.top - currRect.top;
+          if (deltaY !== 0) {
+            row.style.transition = 'none';
+            row.style.transform = `translateY(${deltaY}px)`;
+            row.offsetHeight;
+            row.style.transition = 'transform 150ms ease';
+            row.style.transform = '';
+            row.addEventListener(
+              'transitionend',
+              () => {
+                row.style.transition = '';
+              },
+              { once: true },
+            );
           }
-        });
-      })
-      .on('dragend', () => {
-        rows.forEach((a) => {
-          let $child = a.$tr.previousSibling;
-          a.index = 0;
-          while ($child != null) {
-            a.index++;
-            $child = $child.previousSibling;
-          }
-        });
-        rows.sort((a, b) => a.index - b.index);
-        saveFields();
+        }
+      }
+    });
+
+    const onDragEnd = () => {
+      if (!$dragged) {
+        return;
+      }
+      $dragged.draggable = false;
+      $dragged.classList.remove('dragging');
+      $dragged = null;
+
+      for (const row of $tbody.children) {
+        row.style.transition = '';
+        row.style.transform = '';
+      }
+
+      rows.forEach((a) => {
+        let $child = a.$tr.previousSibling;
+        a.index = 0;
+        while ($child != null) {
+          a.index++;
+          $child = $child.previousSibling;
+        }
       });
+      rows.sort((a, b) => a.index - b.index);
+      saveFields();
+    };
+
+    $tbody.addEventListener('dragend', onDragEnd);
+    $tbody.addEventListener('drop', (e) => {
+      e.preventDefault();
+      onDragEnd();
+    });
   }
 
   return $container;

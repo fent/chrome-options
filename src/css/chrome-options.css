@@ -1,5 +1,4 @@
 @import "chrome-bootstrap/chrome-bootstrap.css";
-@import "dragula/dist/dragula.css";
 @import "c-p/color-picker.css";
 
 html,
@@ -203,6 +202,10 @@ body.show-tab-title .frame .mainview header {
 
 .chrome-bootstrap .sort:hover {
   opacity: 1;
+}
+
+.chrome-bootstrap .list table tr.dragging {
+  opacity: 0.4;
 }
 
 .chrome-bootstrap .checkbox,

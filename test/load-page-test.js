@@ -1787,8 +1787,8 @@ describe('chrome-options page loading', function () {
     });
   });
 
-  describe('advanced list table behavior and dragula integration', () => {
-    it('manages column binding, row creation for empty lists, row filtering, and dragula events', async () => {
+  describe('advanced list table behavior and sortable drag-and-drop integration', () => {
+    it('manages column binding, row creation for empty lists, row filtering, and drag-and-drop reordering', async () => {
       await page.goto(`${serverUrl}/tabs.html`);
       await page.waitForSelector('input[type="checkbox"]');
       const result = await page.evaluate(async () => {
@@ -1880,40 +1880,125 @@ describe('chrome-options page loading', function () {
           await new Promise((resolve) => setTimeout(resolve, 550));
         }
 
-        // 3. Test dragula integration methods on sortable table
-        const drake = boundTable.drake;
-        let drakeTested = false;
-        let mirrorRadioRenamed = false;
-        let acceptsFilterPassed = false;
-        if (drake) {
-          const tbody = boundTable.querySelector('tbody');
-          const trs = tbody.querySelectorAll('tr');
-          const mockHandle = trs[0].querySelector('.sort');
+        // 3. Test native HTML5 drag and drop on sortable table
+        const tbody = boundTable.querySelector('tbody');
+        const trs = tbody.querySelectorAll('tr');
+        const mockHandle = trs[0].querySelector('.sort');
 
-          const movesResult = drake.canMove(mockHandle);
+        // Mousedown on non-sort element
+        tbody.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
-          // Test accepts
-          const siblingWithMirror = document.createElement('tr');
-          siblingWithMirror.className = 'gu-mirror';
-          const rejectsGuMirror =
-            drake.accepts(trs[0], tbody, tbody, siblingWithMirror) === false;
-          const acceptsNormal =
-            drake.accepts(trs[0], tbody, tbody, trs[1]) === true;
-          acceptsFilterPassed = rejectsGuMirror && acceptsNormal;
+        // Attempting dragstart without draggable sets e.defaultPrevented
+        trs[1].dispatchEvent(new DragEvent('dragstart', { bubbles: true }));
 
-          // Emit cloned with matching clone mirror containing checked radio
-          const mirror = trs[0].cloneNode(true);
-          drake.emit('cloned', mirror, trs[0]);
+        // Mousedown on sort handle sets draggable
+        mockHandle.dispatchEvent(
+          new MouseEvent('mousedown', { bubbles: true }),
+        );
+        const tr0Draggable = trs[0].draggable === true;
 
-          const mirrorRadio = mirror.querySelector('input[type="radio"]');
-          if (mirrorRadio?.getAttribute('name').endsWith('_')) {
-            mirrorRadioRenamed = true;
-          }
+        // Mouseup without drag resets draggable
+        tbody.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        const tr0ResetAfterMouseup = trs[0].draggable === false;
 
-          // Emit dragend
-          drake.emit('dragend');
-          drakeTested = movesResult === true;
+        // Start drag
+        mockHandle.dispatchEvent(
+          new MouseEvent('mousedown', { bubbles: true }),
+        );
+        const dt = new DataTransfer();
+        trs[0].dispatchEvent(
+          new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }),
+        );
+        const hasDraggingClass = trs[0].classList.contains('dragging');
+
+        // Dragover trs[1] below midpoint to reorder after trs[1]
+        const r1 = trs[1].getBoundingClientRect();
+        trs[1].dispatchEvent(
+          new DragEvent('dragover', {
+            bubbles: true,
+            dataTransfer: dt,
+            clientY: r1.top + r1.height + 5,
+          }),
+        );
+
+        // Dragover above midpoint to reorder before
+        trs[1].dispatchEvent(
+          new DragEvent('dragover', {
+            bubbles: true,
+            dataTransfer: dt,
+            clientY: r1.top - 5,
+          }),
+        );
+
+        // Dragover invalid / self / lastElementChild
+        const lastRow = tbody.lastElementChild;
+        lastRow.dispatchEvent(
+          new DragEvent('dragover', {
+            bubbles: true,
+            dataTransfer: dt,
+            clientY: 9999,
+          }),
+        );
+        trs[0].dispatchEvent(
+          new DragEvent('dragover', {
+            bubbles: true,
+            dataTransfer: dt,
+            clientY: 0,
+          }),
+        );
+
+        // Drop / Dragend
+        trs[0].dispatchEvent(
+          new DragEvent('drop', { bubbles: true, dataTransfer: dt }),
+        );
+        trs[0].dispatchEvent(new DragEvent('dragend', { bubbles: true }));
+        const dragFinished = !trs[0].classList.contains('dragging');
+
+        // Also test sortable with options.first
+        let firstListSaved = false;
+        const firstTable = chrome.options.base.list(
+          [{ text: 'f1' }, { text: 'f2' }, { text: 'f3' }],
+          () => {
+            firstListSaved = true;
+          },
+          {
+            sortable: true,
+            first: [{ name: 'text', type: 'text' }],
+            fields: [{ name: 'text', type: 'text' }],
+          },
+        );
+        document.body.appendChild(firstTable);
+        const firstTbody = firstTable.querySelector('tbody');
+        const firstRows = firstTbody.querySelectorAll('tr');
+
+        // First row cannot be moved
+        const firstHandle0 = firstRows[0].querySelector('.sort');
+        if (firstHandle0) {
+          firstHandle0.dispatchEvent(
+            new MouseEvent('mousedown', { bubbles: true }),
+          );
         }
+        const firstRowDraggable = firstRows[0].draggable === true;
+
+        // Second row can be moved
+        const firstHandle1 = firstRows[1].querySelector('.sort');
+        firstHandle1.dispatchEvent(
+          new MouseEvent('mousedown', { bubbles: true }),
+        );
+        firstRows[1].dispatchEvent(
+          new DragEvent('dragstart', {
+            bubbles: true,
+            dataTransfer: new DataTransfer(),
+          }),
+        );
+        // Dragover first row is ignored
+        firstRows[0].dispatchEvent(
+          new DragEvent('dragover', {
+            bubbles: true,
+            clientY: 0,
+          }),
+        );
+        firstRows[1].dispatchEvent(new DragEvent('dragend', { bubbles: true }));
 
         // 4. Test saveDefaults on checkbox with sub-options
         let defaultSavedVal;
@@ -1936,18 +2021,24 @@ describe('chrome-options page loading', function () {
 
         return {
           hasInitialFirstRow,
-          drakeTested,
-          acceptsFilterPassed,
-          mirrorRadioRenamed,
+          tr0Draggable,
+          tr0ResetAfterMouseup,
+          hasDraggingClass,
+          dragFinished,
+          firstRowDraggable,
+          firstListSaved,
           defaultSavedEnabled:
             defaultSavedVal && defaultSavedVal.enabled === true,
         };
       });
 
       assert.strictEqual(result.hasInitialFirstRow, true);
-      assert.strictEqual(result.drakeTested, true);
-      assert.strictEqual(result.acceptsFilterPassed, true);
-      assert.strictEqual(result.mirrorRadioRenamed, true);
+      assert.strictEqual(result.tr0Draggable, true);
+      assert.strictEqual(result.tr0ResetAfterMouseup, true);
+      assert.strictEqual(result.hasDraggingClass, true);
+      assert.strictEqual(result.dragFinished, true);
+      assert.strictEqual(result.firstRowDraggable, false);
+      assert.strictEqual(result.firstListSaved, true);
       assert.strictEqual(result.defaultSavedEnabled, true);
     });
 
